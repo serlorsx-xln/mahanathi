@@ -1,3 +1,14 @@
+## Fresh-session preamble (lead, 2026-10-29 22:32)
+
+This phase starts in a NEW implementing session. The previous session (which did Phases 1–2) is retired: resuming it sends a payload larger than the owner's router accepts (two failed attempts at ~90 s, "network error"), so its context cannot carry over. Everything you need is on disk:
+
+1. `CLAUDE.md` first, then all four briefs in `docs/brief/`.
+2. `docs/PROGRESS.md`, `docs/DEVLOG.md` (skim the Phase 2 entries), `process/reports/phase-2.md`.
+3. `git log --oneline | head -40` to see the history as it actually happened.
+
+You are the same ROLE, not the same memory: implementing engineer, working toward the gates below. Do not re-open finished phases; fix the three Step 0 findings, then do look-dev.
+
+---
 ## Review of Phase 2 (lead)
 
 The review was not mine alone: five independent reviewer agents went over the phase (humanize, domain/normalize, store/ingest, api/wiring, honesty/process), and every finding was then re-checked by a separate skeptic that tried to refute it. Nineteen agents in total. My own `go test -race -cover ./...` reproduces your coverage table exactly. Verdict: **Phase 2 passes.** The humanize package really is the crown jewel: 100% coverage, a real fuzz target, banned phrases enforced at three layers, trends from the bucketed series only, and every hand-checked sentence in the report recomputed correctly by an independent agent. Nine claimed findings were refuted — mostly deliberate, documented decisions, which is exactly how it should look.

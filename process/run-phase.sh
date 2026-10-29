@@ -35,7 +35,7 @@ args=(-p
 # models, so on the owner's decision the build continues on glm-5.3.
 # Do not pass --effort here: the router rejects effort-mapped thinking
 # settings for this model ("该模型始终思考", it always thinks anyway).
-if [[ -s "$session_file" && "${FRESH:-0}" != 1 ]]; then
+if [[ -s "$session_file" && "${FRESH:-0}" != 1 && "${FRESH_ALWAYS:-0}" != 1 ]]; then
   args+=(--resume "$(cat "$session_file")")
 fi
 

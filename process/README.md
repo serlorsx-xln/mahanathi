@@ -14,6 +14,7 @@ This project is built in phases by an AI coding agent. The owner (ชานน) 
 Each loop goes: prompt → plan → small commits with tests → verification (with screenshots for UI) → report → lead review → next prompt.
 
 ## Session history
+| 3 (look-dev) | NEW session (fresh), 2026-10-29 ~22:32 | Resuming the 0d3d17b5 session sends a payload the owner's router rejects (two proxy "network error" failures). Phases now start fresh by default — the briefs, lead notes, PROGRESS and DEVLOG are the memory — so FRESH=1 is used for every phase from here on |
 | Phase | Session | Why |
 |---|---|---|
 | 1–2 | `0d3d17b5` (resumed every phase) | The implementing session keeps its context across phases |
