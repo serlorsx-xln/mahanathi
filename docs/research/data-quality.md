@@ -154,6 +154,24 @@ The previous reading is 10 minutes or 1 hour back depending on the agency, so it
 
 For scale: Gt.11 fell 0.90 m between 14:00 and 15:00 and 1.77 m in four hours (from the recorded graph), which is fast but real. The 3 m/h threshold leaves headroom over this.
 
+### Stability: a second snapshot at 19:05
+
+The same script was re-run on a `waterlevel_load` fetched at 19:05 ICT, 71 minutes later. Most hourly stations had moved on by one reading. The output is saved alongside the first one in the gitignored `.cache/thaiwater/`.
+
+| Check | 17:54 | 19:05 |
+|---|---|---|
+| A′ exact (±0.06 pp) / within 1 pp | 738 / 789 | 746 / 789 |
+| A′ misses, max implied level difference | 0.63 cm | 0.62 cm |
+| `situation_level` = `rule_web(storage_percent)` | 789 / 789 | 789 / 789 |
+| `\|wl − min_bank\|` = `diff_wl_bank` | 751 / 804 | 752 / 804 |
+| Side banks consistent / 1 cm–2 m off / ≥ 2 m off | 522 / 54 / 228 | unchanged |
+| Zero-coded / ground absent | 6 / 9 | unchanged |
+| Levels flipped by 2-decimal `min_bank` | 1 (URTU09) | 1 (URTU09) |
+| Older than 3 h (of which with a level) | 27 (25) | 28 (27) |
+| Level 5 count | 20 | 19 |
+
+The formula, the datum split and the zero codes held across the two snapshots. That is still only 71 minutes of evidence, so the night snapshot in Phase 2 remains on the list.
+
 ## Product behaviour per case (proposed, finalised in Phase 2)
 
 | Case | Detected by | Percent and level | Sentence | Gauge glyph |
@@ -176,7 +194,7 @@ When `ground_level` is absent but `min_bank` is present (9 stations), the distan
 
 ## What Phase 2 must still do
 
-1. Re-run the scan on at least two more snapshots, including one at night, and confirm the formula and the RID pattern are stable over time.
+1. Re-run the scan on at least two more snapshots, including one at night, and confirm the formula and the RID pattern are stable over time. A second daytime snapshot (19:05) already agrees; see Stability.
 2. Check whether `min_bank` and `ground_level` from `waterlevel_graph` differ from the load values beyond rounding, for every backfilled station. If they do, decide which one wins and record it in ADR 0003.
 3. Measure how many stations a full 72 h backfill marks suspect under the jump rule, and look at each one by hand.
 4. Put the final counts per case and the implemented behaviour into this file.

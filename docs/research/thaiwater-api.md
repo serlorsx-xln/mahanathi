@@ -97,7 +97,21 @@ Level 1's `colorname` is "gold", which does not match its colour. We use the lab
 
 27 rows are older than 3 h, and **25 of them still carry a `situation_level`**, so ThaiWater's headline counts include stale stations. At 17:54, one of the twenty level-5 stations (BKC004) had last reported on 2026-10-27 19:40. Our "now" counts exclude stale rows, so **our numbers will differ from ThaiWater's, and the about page should say why**.
 
-The newest reading in the response was 17:40, while the graph endpoint already had 17:50 for the same station, so `waterlevel_load` lags by at least one 10-minute step. Hourly stations had their 17:00 reading. The exact publication lag for the hourly stations was not measured; Phase 2 should measure it before fixing the poll minute.
+The newest reading in the response was 17:40, while the graph endpoint already had 17:50 for the same station, so `waterlevel_load` lags by at least one 10-minute step.
+
+**Publication lag.** Two more snapshots, at 19:05 and 19:10, show how far behind the hour each agency's newest reading is. The two responses differ (different sha256), so this is not a server cache:
+
+| Fetched (ICT) | HII (327), newest reading | RID (315) | EGAT (70) | FOP (92) |
+|---|---|---|---|---|
+| 17:54 | 315 at 17:40 | 217 at **17:00**, 80 at 16:00 | 59 at 17:00, 8 at 16:00 | 86 at 17:40 |
+| 19:05 | 315 at 18:50 | 298 at **18:00**, 0 at 19:00 | 6 at 19:00, 47 at 18:00, 13 at 17:00 | 83 at 18:50 |
+| 19:10 | 315 at 18:50 | 298 at **18:00**, 0 at 19:00 | 6 at 19:00, 47 at 18:00, 13 at 17:00 | 83 at 18:50 |
+
+- **RID's HH:00 readings appear between HH:10 and HH:54.** None of the 19:00 readings was there at 19:10, and 217 of 315 17:00 readings were there by 17:54.
+- **What a poll at :07 gets.** For most hourly stations it gets the *previous* hour's reading. That reading is complete (298 of 315 at 18:00) but about an hour old.
+- **What a poll at :55 would get.** It would catch about two thirds of the current hour, and leave the rest one hour behind.
+- **10-minute stations** trail by 10 to 20 minutes, whatever the minute.
+- **No minute makes everything fresh.** The stale threshold is 3 h, so either minute keeps the hourly stations "current". Phase 2 should still measure this across a few more hours before choosing.
 
 ## 2. `waterlevel_graph` (history)
 
@@ -185,7 +199,7 @@ In the station panel, also name the station's own agency, e.g. "สถานี�
 - **Timestamps:** parse `"2006-01-02 15:04"` in a fixed `UTC+7` zone (`time.FixedZone("ICT", 7*3600)`) so the binary does not depend on tzdata.
 - **Polling:**
   - Poll `waterlevel_load` hourly.
-  - Phase 2 should measure when the hourly stations' HH:00 readings appear before fixing the minute. The prompt suggests :07.
+  - The lag was partly measured on 2026-10-29: RID's HH:00 readings appear between HH:10 and HH:54 (see Freshness). A poll at :07 therefore stores the previous hour for hourly stations. The prompt suggests :07; Phase 2 should confirm over more hours before choosing the minute.
   - Upstream has no ETag, so hash the body to skip identical snapshots.
 - **User-Agent:** `Mahanathi/<version> (+<repo URL>)`. The repo URL is not known yet, so it should come from config with a sensible default.
 
