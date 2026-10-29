@@ -512,6 +512,13 @@ func TestRateLimit(t *testing.T) {
 	if resp.Header.Get("Cache-Control") != "no-store" {
 		t.Error("429 is cacheable")
 	}
+	// A 429 is still an API response: the security headers ride on it.
+	if got := resp.Header.Get("X-Content-Type-Options"); got != "nosniff" {
+		t.Errorf("429 X-Content-Type-Options = %q", got)
+	}
+	if got := resp.Header.Get("Content-Security-Policy"); got != "default-src 'none'; frame-ancestors 'none'" {
+		t.Errorf("429 Content-Security-Policy = %q", got)
+	}
 
 	// Half an hour later the bucket has half a token: still no.
 	now = recorded.Add(30 * time.Minute)

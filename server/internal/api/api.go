@@ -99,7 +99,9 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	api.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		h.error(w, http.StatusNotFound, "no such endpoint")
 	})
-	mux.Handle("/api/", h.limited(secured(api)))
+	// secured wraps limited (not the other way round) so the 429 reject branch
+	// carries the security headers too, like every other API response.
+	mux.Handle("/api/", secured(h.limited(api)))
 	mux.Handle("GET /readyz", secured(http.HandlerFunc(h.serveReadyz)))
 }
 
