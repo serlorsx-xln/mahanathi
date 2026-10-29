@@ -186,3 +186,10 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 - **Correction of a commit message (not history).** `5b86a32` says "51 table cases". The tables in `humanize_test.go` hold 46 `Describe` cases and 20 `National` cases. Per the lead's answer 11 the commit stays as written; this entry is the correction of record.
 
 - **21:07 Model switch, recorded per the lead's continuation note.** From this resume the implementing session runs on **GLM-5.3** through the owner's router. The owner chose this after the Anthropic subscription was blocked for past-due payment. Everything through `fc26478` (Phases 1 and the first half of Phase 2) was written by Claude Opus 5.5 at effort xhigh; from here the DEVLOG is the source of truth for which model wrote what. Same session id, context intact. The briefs, test discipline and gates are unchanged.
+
+- **~21:15 AI mistake caught by a test.** The ingest test expected BSP002's newest reading at the graph's 19:50, but that point's value is null; the newest valid point is 19:40. The expectation was written from the fixture's last row without checking its value.
+  - **Caught by:** `TestFirstRunStoresTheSnapshotAndBackfillsEveryStation` on the first run of the new `ingest.go`.
+  - **Fix:** the test now expects 19:40 and also checks the value (16.727).
+
+- **~21:15 AI mistake caught by self-review before running.** `ingest.record` stored `formatRuleWeb(nil)` — an empty string — as the `rule_web` meta value, so every run would have looked like a change. The rules were not in scope in that function.
+  - **Fix:** `SetMeta` moved into `RunOnce`, where the parsed rules are in scope; `record` only records the run.
