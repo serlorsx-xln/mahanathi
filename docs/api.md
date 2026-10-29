@@ -153,10 +153,17 @@ value divided by 100 is the percent of bank-full in that hour. `until` is
 A decoder (Go, from the tests; TypeScript will follow the same shape):
 
 ```go
+// stationCount is at offset 16; the ids start at 20.
+ids := make([]int64, stationCount)
 p := 20
-for each station {
+for i := range ids {
+    ids[i] = int64(binary.LittleEndian.Uint64(body[p:]))
+    p += 8
+}
+for _, id := range ids {
     bitmap := body[p : p+bitmapLen]; p += bitmapLen
     prev, inRun := 0, false
+    value := values[id] // one []uint16 of `hours`, per station
     for i := 0; i < hours; i++ {
         if bitmap[i/8]&(1<<(7-i%8)) == 0 { inRun = false; continue }
         v, n := binary.Uvarint(body[p:]); p += n
