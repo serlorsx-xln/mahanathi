@@ -140,8 +140,23 @@ func TestNowServesTheSnapshot(t *testing.T) {
 		t.Fatal("no ETag")
 	}
 
+	raw, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The wire shape docs/api.md promises: suspect is an array, never null,
+	// because clients index it without a null check.
+	for _, frag := range []string{`"suspect":[`, `"facts":[`} {
+		if !strings.Contains(string(raw), frag) {
+			t.Errorf("wire shape: %q not present in the body (a nil slice would render as null)", frag)
+		}
+	}
+	if strings.Contains(string(raw), `"suspect":null`) {
+		t.Error("wire shape: suspect serialized as null")
+	}
+
 	var body NowResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := json.Unmarshal(raw, &body); err != nil {
 		t.Fatal(err)
 	}
 	if len(body.Stations) != 37 {

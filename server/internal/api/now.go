@@ -173,6 +173,9 @@ func stationNow(st store.StationState, readings []domain.Reading, now time.Time)
 		prev = hourly[trendBuckets-2] // the bucket just before the latest's own
 	}
 	suspect := normalize.SuspectReasons(st.Station, latest, prev, now)
+	// An empty slice, not nil: the wire shape in docs/api.md is "suspect": [],
+	// and clients index it without a null check.
+	s.Suspect = make([]string, 0, len(suspect))
 	for _, r := range suspect {
 		s.Suspect = append(s.Suspect, r.String())
 	}
