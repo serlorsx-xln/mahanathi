@@ -81,7 +81,7 @@ embed-web:
 docker: ## Build the container image (mahanathi:dev)
 	git ls-files -z --cached --others --exclude-standard \
 	  | COPYFILE_DISABLE=1 tar --null --no-mac-metadata -T - -czf - \
-	  | docker build -t $(IMAGE) -
+	  | docker build --build-arg VERSION=$$(git describe --always --dirty) -t $(IMAGE) -
 
 clean: ## Remove build output
 	rm -rf web/dist $(GO_DIR)/bin e2e/test-results e2e/playwright-report
