@@ -16,7 +16,7 @@ concurrency:
 jobs:
   go:
     name: go (vet, gofmt, test -race)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: server
@@ -36,7 +36,7 @@ jobs:
 
   web:
     name: web (typecheck, lint, test, build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -55,7 +55,7 @@ jobs:
   e2e:
     name: e2e (Playwright smoke)
     needs: web
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
