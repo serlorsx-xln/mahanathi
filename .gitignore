@@ -34,3 +34,7 @@ process/.session-id
 .env
 .env.*
 !.env.example
+
+# Python bytecode from the research scripts
+__pycache__/
+*.pyc
