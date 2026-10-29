@@ -12,7 +12,7 @@ PRETTIER  := pnpm --dir web exec prettier --ignore-path ../.prettierignore
 BIN       := $(GO_DIR)/bin/mahanathi
 IMAGE     := mahanathi:dev
 
-.PHONY: help install dev dev-server dev-web test test-go test-web e2e lint lint-go lint-web fmt build build-web embed-web docker clean
+.PHONY: help install dev dev-server dev-web test test-go test-web e2e lint lint-go lint-web fmt build build-web embed-web docker docker-full clean
 
 help: ## List targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-12s %s\n", $$1, $$2}'
@@ -78,10 +78,15 @@ embed-web:
 # applies. COPYFILE_DISABLE stops tar from adding ._ entries of its own, and
 # gzip gives Docker an unambiguous archive header (it misreads a plain pax
 # stream from bsdtar as a Dockerfile).
-docker: ## Build the container image (mahanathi:dev)
+docker: ## Build the deploy image (mahanathi:dev; no front end, placeholder page)
 	git ls-files -z --cached --others --exclude-standard \
 	  | COPYFILE_DISABLE=1 tar --null --no-mac-metadata -T - -czf - \
-	  | docker build --build-arg VERSION=$$(git describe --always --dirty) -t $(IMAGE) -
+	  | docker build --target deploy --build-arg VERSION=$$(git describe --always --dirty) -t $(IMAGE) -
+
+docker-full: ## Build the full image with the web build embedded (mahanathi:full)
+	git ls-files -z --cached --others --exclude-standard \
+	  | COPYFILE_DISABLE=1 tar --null --no-mac-metadata -T - -czf - \
+	  | docker build --target full --build-arg VERSION=$$(git describe --always --dirty) -t $(IMAGE)-full -
 
 clean: ## Remove build output
 	rm -rf web/dist $(GO_DIR)/bin e2e/test-results e2e/playwright-report
