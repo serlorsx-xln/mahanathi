@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-30T00:00:00Z",
+  "title": "Design System: มหานที (Mahanathi)",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Night Slate Ground",
+        "canonical": "#0e161d",
+        "purpose": "The map-room dark; page background and WebGL clear colour. Never #000, never ultra-low-contrast grey."
+      },
+      "sea": {
+        "role": "neutral",
+        "displayName": "Calm Dark Sea",
+        "canonical": "#0d1a23",
+        "purpose": "Slightly bluer than the ground; the sea early-out in the terrain shader."
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Answer Panel",
+        "canonical": "#15202b",
+        "purpose": "Solid panel equivalent: buttons, error card, station label, dev chrome."
+      },
+      "panel-veil": {
+        "role": "neutral",
+        "displayName": "Panel Veil",
+        "canonical": "rgba(21, 32, 43, 0.88)",
+        "purpose": "The answer panel and station sheet over the relief, with the one functional blur(14px)."
+      },
+      "elevated": {
+        "role": "neutral",
+        "displayName": "Elevated Surface",
+        "canonical": "#1a2733",
+        "purpose": "Sheets, menus, the expanded legend (Phase 4).",
+        "tonalRamp": ["#030c17", "#182531", "#32404d", "#4e5d6b", "#6d7c8b", "#8c9cab", "#afbecc", "#d3e0ed"]
+      },
+      "hover": {
+        "role": "neutral",
+        "displayName": "Hover Step",
+        "canonical": "#1f2e3c",
+        "purpose": "Button and interactive hover background.",
+        "tonalRamp": ["#020c18", "#162532", "#30404f", "#4d5d6d", "#6b7c8d", "#8b9cae", "#adbece", "#d1e0ee"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Border",
+        "canonical": "#24313d",
+        "purpose": "1px separations that do the work shadows would do elsewhere.",
+        "tonalRamp": ["#030c16", "#182530", "#32404c", "#4f5d6a", "#6d7c8a", "#8d9cab", "#afbdcb", "#d3e0ec"]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Border",
+        "canonical": "#33434f",
+        "purpose": "Primary-action border, active chip border, the draped Thai border line, the scrollbar thumb."
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Primary Text",
+        "canonical": "#e6edf2",
+        "purpose": "Primary reading colour; 12.3:1 on the veil over the brightest terrain.",
+        "tonalRamp": ["#070c0f", "#1f2428", "#393f43", "#565c60", "#757b7f", "#959ba0", "#b6bcc1", "#d9dfe3"]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Text",
+        "canonical": "#a4b4bf",
+        "purpose": "Subordinate data and readouts.",
+        "tonalRamp": ["#030d14", "#18252e", "#334049", "#4f5d67", "#6d7c87", "#8d9da7", "#afbec8", "#d3e0e9"]
+      },
+      "text-faint": {
+        "role": "neutral",
+        "displayName": "Faint Text",
+        "canonical": "#8494a0",
+        "purpose": "Measured times, source credits, hollow stale dots in the legend; still AA on every surface."
+      },
+      "accent-water": {
+        "role": "primary",
+        "displayName": "Muted Water Teal",
+        "canonical": "#7fb5b0",
+        "purpose": "Rivers, links, focus ring, caret, range accent. The instrument's water colour - never neon.",
+        "tonalRamp": ["#001210", "#002c29", "#0e4844", "#316661", "#508581", "#70a6a1", "#96c7c2", "#bee8e4"]
+      },
+      "sediment": {
+        "role": "secondary",
+        "displayName": "Sediment Ochre",
+        "canonical": "#caa46a",
+        "purpose": "Chao Phraya floodwater ochre: text selection background, relief tint family.",
+        "tonalRamp": ["#1e0200", "#3a1b00", "#573600", "#765416", "#977339", "#b9935a", "#d8b682", "#f8d9ab"]
+      },
+      "selection-bg": {
+        "role": "neutral",
+        "displayName": "Selection Background",
+        "canonical": "#caa46a",
+        "purpose": "Text selection; the sediment ochre doing browser-surface duty."
+      },
+      "selection-text": {
+        "role": "neutral",
+        "displayName": "Selection Text",
+        "canonical": "#10161d",
+        "purpose": "On the ochre selection background."
+      },
+      "caret": {
+        "role": "neutral",
+        "displayName": "Caret",
+        "canonical": "#7fb5b0",
+        "purpose": "The water teal, on :root."
+      },
+      "focus-ring": {
+        "role": "neutral",
+        "displayName": "Focus Ring",
+        "canonical": "#7fb5b0",
+        "purpose": "2px solid, 2px offset, :focus-visible only."
+      },
+      "scrollbar": {
+        "role": "neutral",
+        "displayName": "Scrollbar Thumb",
+        "canonical": "#33434f",
+        "purpose": "Thin scrollbar on our slate, never the macOS default."
+      },
+      "scrollbar-track": {
+        "role": "neutral",
+        "displayName": "Scrollbar Track",
+        "canonical": "#0e161d",
+        "purpose": "The ground colour."
+      },
+      "gauge-steel": {
+        "role": "neutral",
+        "displayName": "Gauge Steel",
+        "canonical": "#aebac4",
+        "purpose": "The gauge pole and the bank-full cap; the stale hollow stroke is steel at 0.75.",
+        "tonalRamp": ["#050c13", "#1b252c", "#364048", "#525d65", "#707c85", "#909ca6", "#b2bdc6", "#d6dfe8"]
+      },
+      "gauge-track": {
+        "role": "neutral",
+        "displayName": "Gauge Track",
+        "canonical": "#2a3742",
+        "purpose": "The quiet slot above the water, below the cap.",
+        "tonalRamp": ["#030c15", "#18252f", "#32404b", "#4f5d69", "#6d7c89", "#8d9caa", "#afbeca", "#d3e0eb"]
+      },
+      "relief-albedo-low": {
+        "role": "neutral",
+        "displayName": "Paddy Plain Albedo",
+        "canonical": "#8f8a74",
+        "purpose": "Muted paddy green over warm silt; the central plain. Consumed by the 3D scene, not CSS.",
+        "tonalRamp": ["#0f0b00", "#282311", "#433e2b", "#605b47", "#7f7a65", "#a09b84", "#c1bca7", "#e3decc"]
+      },
+      "relief-albedo-high": {
+        "role": "neutral",
+        "displayName": "Range Albedo",
+        "canonical": "#a89e8c",
+        "purpose": "Plaster and rock, lighter; the hypsometric tint's high end.",
+        "tonalRamp": ["#110a01", "#2a2213", "#463d2d", "#635a49", "#827968", "#a39987", "#c4baaa", "#e5ddce"]
+      },
+      "relief-neighbour": {
+        "role": "neutral",
+        "displayName": "Neighbour Tone",
+        "canonical": "#4d5860",
+        "purpose": "Neighbours desaturated and cooled via the provinces mask; Thailand keeps its colour.",
+        "tonalRamp": ["#050c12", "#1b252c", "#354047", "#525d65", "#707c84", "#909ca5", "#b2bdc6", "#d6e0e7"]
+      },
+      "relief-fog": {
+        "role": "neutral",
+        "displayName": "Aerial Perspective",
+        "canonical": "#0d1a23",
+        "purpose": "The fog colour - the sea and the haze share the air. smoothstep(900, 2600) km, 85% at most."
+      },
+      "situation-1": {
+        "role": "tertiary",
+        "displayName": "Critically Low - Slate Blue",
+        "canonical": "#798fb4",
+        "purpose": "Drought arm of the scale; a different family from flood, carried by the blue axis that survives CVD simulation.",
+        "tonalRamp": ["#000924", "#112340", "#2b3e5e", "#475b7e", "#657b9f", "#859bc1", "#a8bde0", "#ccdfff"]
+      },
+      "situation-2": {
+        "role": "tertiary",
+        "displayName": "Low - Near Grey",
+        "canonical": "#8b8f80",
+        "purpose": "Near-grey so the quiet third of the scale stays quiet; separates from 4-5 by colorfulness under CVD.",
+        "tonalRamp": ["#0a0c03", "#222519", "#3d4033", "#595d4f", "#787c6d", "#989c8d", "#babeaf", "#dce0d3"]
+      },
+      "situation-3": {
+        "role": "tertiary",
+        "displayName": "Normal - Quiet Green",
+        "canonical": "#599c5b",
+        "purpose": "A quiet green; still muted.",
+        "tonalRamp": ["#001400", "#003000", "#004d0c", "#286c2d", "#498c4c", "#6aad6b", "#91ce91", "#b9efb9"]
+      },
+      "situation-4": {
+        "role": "tertiary",
+        "displayName": "High - Amber",
+        "canonical": "#e3a93f",
+        "purpose": "Where strong colour begins.",
+        "tonalRamp": ["#250000", "#441100", "#632f00", "#834e00", "#a56e00", "#c78e18", "#e6b258", "#ffd68b"]
+      },
+      "situation-5": {
+        "role": "tertiary",
+        "displayName": "Overflow - Red",
+        "canonical": "#ee5d58",
+        "purpose": "The alert colour: level 5 and the gauge fill above the bank-full cap.",
+        "tonalRamp": ["#3b0000", "#5f0000", "#840000", "#a9141f", "#cf403f", "#f5645e", "#ff8e85", "#ffb8ae"]
+      },
+      "situation-stale": {
+        "role": "tertiary",
+        "displayName": "Stale - Hollow Stroke",
+        "canonical": "#5b6a75",
+        "purpose": "A graphic stroke colour (3:1 on ground), never a fill and never a text colour.",
+        "tonalRamp": ["#030c15", "#18252e", "#32404a", "#4f5d68", "#6d7c88", "#8d9da8", "#afbec9", "#d3e0ea"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The scale's ceiling; caps at 4rem against the brief's 6rem maximum." },
+      "sentence": { "displayName": "The Human Sentence", "purpose": "Noto Serif Thai 400, the typographic centrepiece of the answer panel; text-wrap balance, leading 1.65 for stacked Thai marks." },
+      "title": { "displayName": "Title", "purpose": "Section heads on the evidence pages." },
+      "title-sm": { "displayName": "Title Small", "purpose": "Station names; the station sentence at small size." },
+      "body": { "displayName": "Body", "purpose": "Default reading; leading 1.6 because Plex's worst measured ink box uses 84% of it (ADR 0005)." },
+      "small": { "displayName": "Small", "purpose": "Subordinate readouts, primary-action label." },
+      "caption": { "displayName": "Caption", "purpose": "Measured times, source credits, meta lines, chips." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "มหานที in the serif; no icon logo." }
+    },
+    "shadows": [
+      {
+        "name": "panel",
+        "value": "0 4px 12px rgba(4, 8, 12, 0.4), 0 16px 48px rgba(4, 8, 12, 0.5)",
+        "purpose": "Reserved for Phase 4's elevated surfaces (menus, the expanded legend). Unused at the Phase 3 gate: the /lookdev panel separates by veil and border. No halos, no zero-blur blocks."
+      }
+    ],
+    "motion": [
+      { "name": "fast", "value": "160ms", "purpose": "Fast UI state transitions." },
+      { "name": "base", "value": "200ms", "purpose": "Default UI state transitions (button hover)." },
+      { "name": "slow", "value": "260ms", "purpose": "Slower UI transitions." },
+      { "name": "camera", "value": "1600ms", "purpose": "Camera flights: preset moves and the one ใกล้ฉัน flight, interruptible by any user input." },
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Exponential ease-out everywhere; the rig's easeOutExpo is its 3D mirror. Reduced motion cuts instead of flying." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px", "purpose": "The only breakpoint: below it the station sheet is a bottom sheet and the answer panel goes full-width; at or above it the sheet becomes a 22rem bottom-right card." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Answer Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The veil surface over the relief: sentence first, situation counts, measured time and source.",
+      "html": "<section class=\"ds-panel\">\n  <p class=\"ds-panel__sentence\">ตอนนี้ 22 สถานีน้ำล้นตลิ่ง ส่วนใหญ่อยู่ลุ่มเจ้าพระยาตอนล่างและภาคใต้ตอนบน</p>\n  <dl class=\"ds-panel__numbers\">\n    <div class=\"ds-panel__number\">\n      <dt><span class=\"ds-dot\" style=\"background:#ee5d58\"></span>น้ำล้นตลิ่ง</dt>\n      <dd>22</dd>\n    </div>\n    <div class=\"ds-panel__number\">\n      <dt><span class=\"ds-dot ds-dot--hollow\"></span>ยังไม่อัปเดต</dt>\n      <dd>15</dd>\n    </div>\n  </dl>\n  <p class=\"ds-panel__meta\">ภาพรวมเวลา 14:00 น. · แหล่งที่มา: ThaiWater (กรมชลประทาน)</p>\n</section>",
+      "css": ".ds-panel { background: var(--color-panel-veil, rgba(21, 32, 43, 0.88)); backdrop-filter: blur(14px); border: 1px solid var(--color-border, #24313d); border-radius: 8px; padding: 1.5rem; max-width: 24rem; color: var(--color-text-primary, #e6edf2); }\n.ds-panel__sentence { margin: 0; font-family: 'Noto Serif Thai', 'Trirong', serif; font-size: clamp(1.375rem, 1rem + 2vw, 2.125rem); line-height: 1.65; text-wrap: balance; }\n.ds-panel__numbers { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 1rem 0 0; }\n.ds-panel__numbers dt { display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; color: var(--color-text-faint, #8494a0); }\n.ds-panel__numbers dd { margin: 0; font-size: 0.875rem; color: var(--color-text-secondary, #a4b4bf); font-variant-numeric: tabular-nums lining-nums; }\n.ds-dot { width: 0.5rem; height: 0.5rem; border-radius: 999px; display: inline-block; }\n.ds-dot--hollow { background: transparent; border: 2px solid var(--color-text-faint, #8494a0); }\n.ds-panel__meta { margin: 1rem 0 0; font-size: 0.75rem; color: var(--color-text-faint, #8494a0); font-variant-numeric: tabular-nums lining-nums; }"
+    },
+    {
+      "name": "Primary Button (ใกล้ฉัน)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action: flies the camera to the visitor's river.",
+      "html": "<button type=\"button\" class=\"ds-btn-primary\">ใกล้ฉัน</button>",
+      "css": ".ds-btn-primary { font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary, #e6edf2); background: var(--color-panel, #15202b); border: 1px solid var(--color-border-strong, #33434f); border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; transition: background 200ms cubic-bezier(0.16, 1, 0.3, 1); }\n.ds-btn-primary:hover { background: var(--color-hover, #1f2e3c); }\n.ds-btn-primary:focus-visible { outline: 2px solid var(--color-focus-ring, #7fb5b0); outline-offset: 2px; }"
+    },
+    {
+      "name": "Station Sheet",
+      "kind": "card",
+      "refersTo": "station-sheet",
+      "description": "The selected station: bottom sheet on phones, 22rem card bottom-right at >=768px.",
+      "html": "<section class=\"ds-sheet\">\n  <h2 class=\"ds-sheet__name\">สองพี่น้อง</h2>\n  <p class=\"ds-sheet__sentence\">ระดับน้ำที่สถานีสองพี่น้องล้นตลิ่งแล้ว</p>\n  <dl class=\"ds-sheet__numbers\">\n    <div><dt>ระดับน้ำ</dt><dd>2.103 ม.รทก.</dd></div>\n    <div><dt>ระดับตลิ่ง</dt><dd>1.900 ม.รทก.</dd></div>\n    <div><dt>% ของตลิ่ง</dt><dd>110.68%</dd></div>\n    <div><dt>วัดเมื่อ</dt><dd>14:00 น.</dd></div>\n  </dl>\n</section>",
+      "css": ".ds-sheet { background: var(--color-panel-veil, rgba(21, 32, 43, 0.88)); backdrop-filter: blur(14px); border: 1px solid var(--color-border, #24313d); border-radius: 12px; padding: 1rem 1.5rem; color: var(--color-text-primary, #e6edf2); }\n.ds-sheet__name { margin: 0; font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 1.125rem; font-weight: 600; line-height: 1.5; }\n.ds-sheet__sentence { margin: 0.5rem 0 0; font-family: 'Noto Serif Thai', 'Trirong', serif; font-size: 1.125rem; line-height: 1.6; text-wrap: balance; }\n.ds-sheet__numbers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1.5rem; margin: 1rem 0 0; }\n.ds-sheet__numbers dt { font-size: 0.75rem; color: var(--color-text-faint, #8494a0); }\n.ds-sheet__numbers dd { margin: 0; font-size: 0.875rem; color: var(--color-text-primary, #e6edf2); font-variant-numeric: tabular-nums lining-nums; }"
+    },
+    {
+      "name": "Preset Chip",
+      "kind": "chip",
+      "refersTo": "chip-preset",
+      "description": "Camera preset selector (dev chrome on /lookdev; the pattern is the quiet pill for grouped small actions).",
+      "html": "<button type=\"button\" class=\"ds-chip\">ทั้งประเทศ</button>\n<button type=\"button\" class=\"ds-chip ds-chip--active\" aria-pressed=\"true\">ลุ่มเจ้าพระยา</button>",
+      "css": ".ds-chip { font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 0.75rem; color: var(--color-text-secondary, #a4b4bf); background: var(--color-panel, #15202b); border: 1px solid var(--color-border, #24313d); border-radius: 999px; padding: 0.25rem 0.75rem; cursor: pointer; transition: color 160ms cubic-bezier(0.16, 1, 0.3, 1), border-color 160ms cubic-bezier(0.16, 1, 0.3, 1); }\n.ds-chip:hover { color: var(--color-text-primary, #e6edf2); }\n.ds-chip:focus-visible { outline: 2px solid var(--color-focus-ring, #7fb5b0); outline-offset: 2px; }\n.ds-chip--active { color: var(--color-text-primary, #e6edf2); border-color: var(--color-border-strong, #33434f); }"
+    },
+    {
+      "name": "Error Card",
+      "kind": "custom",
+      "refersTo": "error-card",
+      "description": "The fetch-failed state: names the problem, offers a working retry. The only centred element.",
+      "html": "<section class=\"ds-error\">\n  <p>โหลดข้อมูลระดับน้ำไม่ได้ ตรวจการเชื่อมต่อแล้วลองใหม่ได้เลย</p>\n  <button type=\"button\">ลองใหม่</button>\n</section>",
+      "css": ".ds-error { display: flex; flex-direction: column; align-items: center; gap: 1rem; max-width: 24rem; padding: 1.5rem; text-align: center; background: var(--color-panel, #15202b); border: 1px solid var(--color-border, #24313d); border-radius: 8px; }\n.ds-error p { margin: 0; font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 0.875rem; line-height: 1.55; color: var(--color-text-primary, #e6edf2); text-wrap: balance; }\n.ds-error button { font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary, #e6edf2); background: var(--color-hover, #1f2e3c); border: 1px solid var(--color-border-strong, #33434f); border-radius: 4px; padding: 0.5rem 1.5rem; cursor: pointer; }\n.ds-error button:focus-visible { outline: 2px solid var(--color-focus-ring, #7fb5b0); outline-offset: 2px; }"
+    },
+    {
+      "name": "Station Label",
+      "kind": "custom",
+      "refersTo": "station-label",
+      "description": "DOM label projected from the selected gauge's 3D position - Thai never enters WebGL.",
+      "html": "<div class=\"ds-label\">สองพี่น้อง</div>",
+      "css": ".ds-label { font-family: 'Mahanathi Sans', 'Noto Sans Thai', sans-serif; font-size: 0.75rem; color: var(--color-text-primary, #e6edf2); background: var(--color-panel, #15202b); border: 1px solid var(--color-border, #24313d); border-radius: 4px; padding: 0.25rem 0.5rem; white-space: nowrap; pointer-events: none; }"
+    },
+    {
+      "name": "Loading Skeleton",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Full-bleed skeleton on the ground colour with a barely-there functional sweep and a screen-reader status; stops under reduced motion.",
+      "html": "<div class=\"ds-skeleton\" role=\"status\"></div>",
+      "css": ".ds-skeleton { position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.015) 50%, transparent 70%) var(--color-ground, #0e161d); background-size: 300% 100%; animation: ds-sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite; }\n@keyframes ds-sweep { from { background-position: 120% 0; } to { background-position: -120% 0; } }\n@media (prefers-reduced-motion: reduce) { .ds-skeleton { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night-Time Hydrographic Instrument",
+    "overview": "Picture the national survey's plaster relief model of Thailand in a dark map room, lit only where water is being measured right now. Everything visible is either geography, data, or the words that explain the data. The relief is the page: there is no landing page, no hero section, no feature cards, no footer - the first frame is the product. Chrome is nearly absent: a wordmark, one primary action, and quiet panels that float over the terrain.\n\nRestraint is the luxury. The palette comes from the subject - night slate (never #000), the ochre of Chao Phraya floodwater, muted paddy green, one disciplined alert family - and every colour lives in one TypeScript module that generates the CSS custom properties and is imported directly by the shaders. The 3D pipeline is deliberately flat so a token colour that survives lighting reaches the screen exactly. Type is Thai-first: Mahanathi Sans (IBM Plex Sans Thai, OFL-renamed) for the UI and numbers, Noto Serif Thai for the human sentence. Motion is exponential ease-out with one 1600 ms interruptible camera flight as the single authored moment; prefers-reduced-motion cuts instead of flying.\n\nThis system was proved on the dev surfaces /lookdev, /specimen and /color (Phase 3), gated item-by-item against the anti-slop checklist in docs/brief/01-DESIGN-DIRECTION.md §10 with screenshot evidence in docs/design/screens/phase-3/ and the scored pass in docs/design/GATE-phase-3.md. Phase 4 extends this world; it must not average it away.",
+    "keyCharacteristics": [
+      "Dark theme only; night slate ground (#0e161d), never pure black, never ultra-low-contrast greys.",
+      "The relief is the page; UI floats over it as veils with 1px borders, not cards with shadows.",
+      "Two disciplined accents: muted water teal and ochre sediment. Strong colour belongs to data levels 4-5 only.",
+      "The situation scale is ordered, CVD-searched (Machado deuteranopia/protanopia, pairwise ΔE >= ~15), and geometrically redundant.",
+      "Thai-first typography with generous leading, tabular lining figures on every number, no italic anywhere.",
+      "One functional backdrop-filter blur(14px) pair (answer panel, station sheet); zero box-shadow declarations in shipped route CSS.",
+      "Camera moves only on input, presets, or the one flight; the renderer idles (frameloop=\"demand\")."
+    ],
+    "rules": [
+      { "name": "The Single Source Rule", "body": "Every colour lives in web/src/design/tokens.ts. tokens.css is generated from it (pnpm tokens:css) and a test fails on drift; shaders import the module. A hard-coded colour in a component, stylesheet or shader does not ship.", "section": "colors" },
+      { "name": "The Flat Pipeline Rule", "body": "The Canvas runs NoToneMapping (flat) with an opaque framebuffer, and both custom fragments close with three's tonemapping_fragment / colorspace_fragment chunks, so token colours round-trip to the screen exactly. Any new material must include the output chunks or it renders dark.", "section": "colors" },
+      { "name": "The Quiet Third Rule", "body": "Only levels 4 and 5 get strong colour. Levels 1-3 stay muted - the scale's CVD separation is carried by lightness, colorfulness and the blue axis, not by making everything loud.", "section": "colors" },
+      { "name": "The Hollow Stale Rule", "body": "Stale is a stroke, never a fill, everywhere: the 3D gauge is a hollow cap stroke, the legend dot is a hollow ring. Stale must never read as a level.", "section": "colors" },
+      { "name": "The Tabular Numbers Rule", "body": "Every measurement, count and timestamp is set with font-variant-numeric: tabular-nums lining-nums - signed columns must align.", "section": "typography" },
+      { "name": "The Thai Stays in the DOM Rule", "body": "Thai text never enters WebGL; labels over the relief are DOM elements projected from 3D positions, so stacked tone marks and vowels are shaped by the browser.", "section": "typography" },
+      { "name": "The One Blur Rule", "body": "backdrop-filter: blur(14px) exists on exactly two surfaces - the answer panel and the station sheet - both for legibility over terrain. Glass is never decoration.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do take every colour from tokens.ts (or its generated CSS variables) - including shaders, which import the module.",
+      "Do include tonemapping_fragment / colorspace_fragment in any new custom fragment, and keep the Canvas flat.",
+      "Do put measured time and source on every data surface, in caption text-faint, with tabular lining figures.",
+      "Do keep the answer sentence in Noto Serif Thai with text-wrap: balance and 1.65 leading.",
+      "Do keep gauge encoding geometric first (cap at 0.78, fill inside, overflow above the cap, hollow stale) so colour is redundant, never load-bearing.",
+      "Do use 160-260ms exponential ease-out (cubic-bezier(0.16, 1, 0.3, 1)) for UI state, 1.2-2.0s for camera flights, and cut instead of flying under prefers-reduced-motion.",
+      "Do theme browser surfaces (selection, focus ring, caret, scrollbar, underline offset, color-scheme: dark) - they are part of the design.",
+      "Do keep every surface that floats over the relief on the veil + 1px border recipe, and verify its text contrast over the brightest terrain."
+    ],
+    "donts": [
+      "Don't add a hero section, card grids, section numbers, nested cards, a navbar of links or a marketing footer - the relief is the page.",
+      "Don't use purple, indigo or violet gradients, neon cyan on dark, gradient text, glowing borders, radial glow halos or spotlights, or cream/beige \"un-slop\" defaults.",
+      "Don't use glassmorphism beyond the two functional blurs, box-shadow in shipped chrome (the one reserved shadow is Phase 4's), or extreme border radii.",
+      "Don't use Inter, Geist, Roboto, Arial or the system UI font as the voice, or italic in any face, or crushed tracking (zero letter-spacing declarations exist).",
+      "Don't auto-rotate, wobble, starfield, particle, arc or bloom the 3D scene; the camera moves only on input, presets, or the one flight.",
+      "Don't put Thai text into WebGL, or let an unbounded orbit lose the horizon.",
+      "Don't give stale data a fill, or levels 1-3 strong colour, or the scale a sixth stop without re-running the CVD search.",
+      "Don't say ปลอดภัย, จะท่วม, ไม่ท่วม or anything that predicts or reassures; never claim safety. (Test-enforced.)"
+    ]
+  }
+}
