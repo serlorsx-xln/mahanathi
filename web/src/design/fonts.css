@@ -1,8 +1,9 @@
-/* Self-hosted WOFF2 subsets (see geodata-style provenance in
-   docs/adr/0005-typography.md and the OFL.txt files beside the fonts).
-   UI faces keep hinting; the large sentence serifs drop it. The IBM
-   Plex Sans Thai subsets are renamed "Mahanathi Sans" because the OFL
-   forbids the Reserved Font Name on modified versions. */
+/* Self-hosted WOFF2 subsets, chosen by the specimen (ADR 0005). The
+   IBM Plex Sans Thai subsets are renamed "Mahanathi Sans" because the
+   OFL forbids the Reserved Font Name on modified versions; the OFL
+   texts ship beside the files. The /specimen route also loads the
+   rejected candidates for comparison - restore them with
+   scripts/research/promote_fonts.py (no arguments) and reload. */
 
 @font-face {
   font-family: 'Mahanathi Sans';
@@ -19,50 +20,8 @@
   font-display: swap;
 }
 @font-face {
-  font-family: 'Anuphan';
-  src: url('/fonts/anuphan-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Anuphan';
-  src: url('/fonts/anuphan-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Noto Sans Thai';
-  src: url('/fonts/noto-sans-thai-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Noto Sans Thai';
-  src: url('/fonts/noto-sans-thai-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
   font-family: 'Noto Serif Thai';
   src: url('/fonts/noto-serif-thai-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Pridi';
-  src: url('/fonts/pridi-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Trirong';
-  src: url('/fonts/trirong-400.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

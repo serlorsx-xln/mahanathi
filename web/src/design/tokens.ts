@@ -84,13 +84,14 @@ export const stale = { key: 'stale', label: 'ยังไม่อัปเด�
 export type Situation = (typeof situations)[number];
 
 /**
- * Type. The families are the specimen's opening position (pairing A);
- * ADR 0005 records the final choice and updates these. Thai needs the
- * leading: body 1.6, the sentence more.
+ * Type. The pairing is the specimen's decision (ADR 0005): IBM Plex
+ * Sans Thai for the UI, renamed "Mahanathi Sans" in the subsets as the
+ * OFL requires, and Noto Serif Thai for the human sentence. Thai needs
+ * the leading: body 1.6, the sentence more.
  */
 export const type = {
-  uiStack: "'IBM Plex Sans Thai', 'Anuphan', 'Noto Sans Thai', sans-serif",
-  sentenceStack: "'Noto Serif Thai', 'Trirong', 'Taviraj', serif",
+  uiStack: "'Mahanathi Sans', 'Noto Sans Thai', sans-serif",
+  sentenceStack: "'Noto Serif Thai', 'Trirong', serif",
   scale: {
     caption: { size: '0.75rem', lineHeight: 1.5 },
     small: { size: '0.875rem', lineHeight: 1.55 },

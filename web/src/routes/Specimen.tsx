@@ -71,6 +71,11 @@ export function Specimen() {
           หน้าพัฒนาสำหรับเลือกฟอนต์ ข้อความทุกบรรทัดเป็นผลลัพธ์จริงของขั้นที่ 2 จากภาพรวมเวลา 21:53
           น. วันที่ 29 ตุลาคม 2026
         </p>
+        <p className="specimen__note">
+          ตัดสินแล้วตาม ADR 0005 (IBM Plex Sans Thai + Noto Serif Thai)
+          หลังจากนี้หน้านี้คงไว้เป็นหลักฐาน ฟอนต์ที่ไม่ถูกเลือกถูกลบออกจาก build
+          ถ้าต้องการเปิดเปรียบเทียบสด ให้รัน scripts/research/promote_fonts.py แล้วรีเฟรชหน้านี้
+        </p>
       </header>
 
       {PAIRINGS.map((p) => (

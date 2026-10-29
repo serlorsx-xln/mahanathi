@@ -1,0 +1,207 @@
+{
+  "fontsLoaded": {
+    "Mahanathi Sans (IBM Plex Sans Thai)": {
+      "400": true,
+      "600": true
+    },
+    "Anuphan": {
+      "400": true,
+      "600": true
+    },
+    "Noto Sans Thai": {
+      "400": true,
+      "600": true
+    }
+  },
+  "ink": {
+    "Mahanathi Sans (IBM Plex Sans Thai)": {
+      "น้ำล้นตลิ่ง": {
+        "ascentPct": 1.083,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.684
+      },
+      "ผู้ใหญ่บ้าน": {
+        "ascentPct": 0.873,
+        "descentPct": 0.35,
+        "lineHeight16Use": 0.764
+      },
+      "ปิ่นเกล้า": {
+        "ascentPct": 0.967,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.612
+      },
+      "ปั๊มน้ำ": {
+        "ascentPct": 1.083,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.684
+      },
+      "ญี่ปุ่น": {
+        "ascentPct": 1.007,
+        "descentPct": 0.344,
+        "lineHeight16Use": 0.844
+      }
+    },
+    "Anuphan": {
+      "น้ำล้นตลิ่ง": {
+        "ascentPct": 1.081,
+        "descentPct": 0.008,
+        "lineHeight16Use": 0.681
+      },
+      "ผู้ใหญ่บ้าน": {
+        "ascentPct": 0.944,
+        "descentPct": 0.26,
+        "lineHeight16Use": 0.753
+      },
+      "ปิ่นเกล้า": {
+        "ascentPct": 1.059,
+        "descentPct": 0.009,
+        "lineHeight16Use": 0.667
+      },
+      "ปั๊มน้ำ": {
+        "ascentPct": 1.14,
+        "descentPct": 0.009,
+        "lineHeight16Use": 0.718
+      },
+      "ญี่ปุ่น": {
+        "ascentPct": 1.11,
+        "descentPct": 0.276,
+        "lineHeight16Use": 0.866
+      }
+    },
+    "Noto Sans Thai": {
+      "น้ำล้นตลิ่ง": {
+        "ascentPct": 1.009,
+        "descentPct": 0.01,
+        "lineHeight16Use": 0.637
+      },
+      "ผู้ใหญ่บ้าน": {
+        "ascentPct": 0.846,
+        "descentPct": 0.265,
+        "lineHeight16Use": 0.694
+      },
+      "ปิ่นเกล้า": {
+        "ascentPct": 0.95,
+        "descentPct": 0.01,
+        "lineHeight16Use": 0.6
+      },
+      "ปั๊มน้ำ": {
+        "ascentPct": 1.009,
+        "descentPct": 0.01,
+        "lineHeight16Use": 0.637
+      },
+      "ญี่ปุ่น": {
+        "ascentPct": 1.009,
+        "descentPct": 0.261,
+        "lineHeight16Use": 0.794
+      }
+    }
+  },
+  "sentence": {
+    "Mahanathi Sans (IBM Plex Sans Thai) / sans 600": {
+      "widthEm": 31.129
+    },
+    "Mahanathi Sans (IBM Plex Sans Thai) / Noto Serif Thai": {
+      "widthEm": 31.014
+    },
+    "Mahanathi Sans (IBM Plex Sans Thai) / Pridi": {
+      "widthEm": 30.115
+    },
+    "Mahanathi Sans (IBM Plex Sans Thai) / Trirong": {
+      "widthEm": 30.115
+    },
+    "Anuphan / sans 600": {
+      "widthEm": 30.357
+    },
+    "Anuphan / Noto Serif Thai": {
+      "widthEm": 31.014
+    },
+    "Anuphan / Pridi": {
+      "widthEm": 30.115
+    },
+    "Anuphan / Trirong": {
+      "widthEm": 30.115
+    },
+    "Noto Sans Thai / sans 600": {
+      "widthEm": 30.992
+    },
+    "Noto Sans Thai / Noto Serif Thai": {
+      "widthEm": 31.014
+    },
+    "Noto Sans Thai / Pridi": {
+      "widthEm": 30.115
+    },
+    "Noto Sans Thai / Trirong": {
+      "widthEm": 30.115
+    }
+  },
+  "figures": {
+    "Mahanathi Sans (IBM Plex Sans Thai)": {
+      "digit": 60,
+      "digitsDiffer": [
+        0.6,
+        0.6,
+        0.6,
+        0.6,
+        2.692,
+        2.072,
+        2.672,
+        2.672
+      ]
+    },
+    "Anuphan": {
+      "digit": 55.615234375,
+      "digitsDiffer": [
+        0.556,
+        0.556,
+        0.556,
+        0.556,
+        2.502,
+        1.946,
+        2.53,
+        2.53
+      ]
+    },
+    "Noto Sans Thai": {
+      "digit": 55.615234375,
+      "digitsDiffer": [
+        0.556,
+        0.556,
+        0.556,
+        0.556,
+        2.502,
+        1.946,
+        2.53,
+        2.53
+      ]
+    }
+  },
+  "dom": [
+    {
+      "label": "ก. IBM Plex Sans Thai",
+      "stackClipped": [
+        {
+          "scrollOverflowPx": 0,
+          "clientHeight": 27
+        }
+      ]
+    },
+    {
+      "label": "ข. Anuphan",
+      "stackClipped": [
+        {
+          "scrollOverflowPx": 0,
+          "clientHeight": 22
+        }
+      ]
+    },
+    {
+      "label": "ค. Noto Sans Thai",
+      "stackClipped": [
+        {
+          "scrollOverflowPx": 0,
+          "clientHeight": 24
+        }
+      ]
+    }
+  ]
+}
