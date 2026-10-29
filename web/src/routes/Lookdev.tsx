@@ -27,6 +27,15 @@ interface Fixture {
 
 const SOURCE_LINE = 'แหล่งที่มา: ThaiWater (กรมชลประทาน)';
 
+/** The relief needs WebGL. Without it the page keeps its shell and the
+ *  sentence, and says so plainly (the product's 2D map fallback is a
+ *  later phase; this is the look-dev prototype's honest floor). */
+function webglAvailable(): boolean {
+  if (typeof window === 'undefined') return true; // the SSR render
+  const c = document.createElement('canvas');
+  return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
+}
+
 function formatTime(iso: string): string {
   const d = new Date(iso);
   return (
@@ -54,27 +63,44 @@ export function Lookdev() {
   // before the lazy scene chunk has rendered its first frame, and the
   // e2e evidence must not screenshot an empty canvas.
   const [sceneReady, setSceneReady] = useState(false);
+  const [webgl] = useState(webglAvailable);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
+    let cancelled = false;
+    const markFailed = () => {
+      if (!cancelled) setFailed(true);
+    };
     void (async () => {
-      const get = (url: string) => fetch(url, { signal: controller.signal }).then((r) => r.json());
-      const [fixture, heightfield, borders, rivers, provinces] = (await Promise.all([
-        get('/fixture/now-2026-10-29.json'),
-        get('/geodata/provinces.topo.json').then((provinces: unknown) =>
-          import('../scene/heightfield').then(({ loadHeightfield }) =>
-            loadHeightfield('/geodata/heightmap.png', provinces),
+      try {
+        const get = (url: string) => fetch(url, { signal: controller.signal }).then((r) => r.json());
+        const [fixture, heightfield, borders, rivers, provinces] = (await Promise.all([
+          get('/fixture/now-2026-10-29.json'),
+          get('/geodata/provinces.topo.json').then((provinces: unknown) =>
+            import('../scene/heightfield').then(({ loadHeightfield }) =>
+              loadHeightfield('/geodata/heightmap.png', provinces),
+            ),
           ),
-        ),
-        get('/geodata/borders.topo.json'),
-        get('/geodata/rivers.geojson'),
-      ])) as unknown as [Fixture, unknown, unknown, GeoJSON.FeatureCollection, unknown];
-      if (!controller.signal.aborted) setData({ fixture, heightfield, borders, rivers, provinces });
+          get('/geodata/borders.topo.json'),
+          get('/geodata/rivers.geojson'),
+        ])) as unknown as [Fixture, unknown, unknown, GeoJSON.FeatureCollection, unknown];
+        if (!controller.signal.aborted) {
+          setData({ fixture, heightfield, borders, rivers, provinces });
+          setFailed(false);
+        }
+      } catch (e) {
+        if (!controller.signal.aborted && !(e instanceof DOMException && e.name === 'AbortError')) {
+          markFailed();
+        }
+      }
     })();
     return () => {
+      cancelled = true;
       controller.abort();
     };
-  }, []);
+  }, [attempt]);
 
   const selected = useMemo(() => {
     if (!data || preset.station === undefined) return null;
@@ -85,9 +111,12 @@ export function Lookdev() {
 
   return (
     <main className="lookdev" data-scene-ready={sceneReady ? '1' : undefined}>
-      <div className="lookdev__canvas">
-        {data ? (
-          <Suspense fallback={<div className="lookdev__skeleton" />}>
+      <div
+        className="lookdev__canvas"
+        role="img"
+        aria-label="แผนที่ภูมิประเทศประเทศไทย แสดงเกจวัดระดับน้ำทุกสถานี"
+      >
+        {data && webgl ? (          <Suspense fallback={<div className="lookdev__skeleton" />}>
             <LookdevScene
               heightfield={data.heightfield as never}
               bordersTopo={data.borders}
@@ -105,10 +134,32 @@ export function Lookdev() {
               }}
             />
           </Suspense>
-        ) : (
-          <div className="lookdev__skeleton" />
-        )}
+        ) : !failed ? (
+          <div className="lookdev__skeleton" role="status">
+            <span className="lookdev__sr">กำลังโหลดแผนที่และข้อมูลระดับน้ำ</span>
+          </div>
+        ) : null}
       </div>
+
+      {failed && (
+        <section className="lookdev__error" aria-label="โหลดข้อมูลไม่สำเร็จ">
+          <p>โหลดข้อมูลระดับน้ำไม่ได้ ตรวจการเชื่อมต่อแล้วลองใหม่ได้เลย</p>
+          <button
+            type="button"
+            onClick={() => {
+              setAttempt((n) => n + 1);
+            }}
+          >
+            ลองใหม่
+          </button>
+        </section>
+      )}
+
+      {!webgl && (
+        <p className="lookdev__nogl" role="status">
+          อุปกรณ์นี้ไม่รองรับกราฟิก 3D จึงแสดงเฉพาะข้อความสรุป ข้อมูลระดับน้ำยังอ่านได้ตามปกติ
+        </p>
+      )}
 
       <header className="lookdev__chrome lookdev__chrome--top">
         <div className="lookdev__wordmark">มหานที</div>
@@ -121,7 +172,7 @@ export function Lookdev() {
             setFlightRequest((n) => n + 1);
           }}
         >
-          ใกล้ฉัน
+          ใกล้ฉัน<span className="lookdev__nearme-note">· ตัวอย่างสถานี</span>
         </button>
       </header>
 
@@ -200,7 +251,11 @@ export function Lookdev() {
             }}
           />
         </label>
-        {flightDone ? null : <span className="lookdev__flying">กำลังบิน…</span>}
+        {flightDone ? null : (
+          <span className="lookdev__flying" role="status">
+            กำลังบิน…
+          </span>
+        )}
       </footer>
     </main>
   );

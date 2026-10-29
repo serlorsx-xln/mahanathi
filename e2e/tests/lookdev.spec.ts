@@ -81,7 +81,7 @@ test.describe('lookdev relief', () => {
       void cdp.send('Page.screencastFrameAck', { sessionId: ev.sessionId }).catch(() => undefined);
     });
     await cdp.send('Page.startScreencast', { format: 'png', everyNthFrame: 1 });
-    await page.getByRole('button', { name: 'ใกล้ฉัน' }).click();
+    await page.getByRole('button', { name: /ใกล้ฉัน/ }).click();
     await page.waitForTimeout(1000); // inside the 1.6 s flight
     await cdp.send('Page.stopScreencast');
     // Motion is part of the deliverable: the frames during the flight

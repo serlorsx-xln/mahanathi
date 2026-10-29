@@ -40,6 +40,7 @@
   margin-top: var(--space-1);
   font-size: var(--type-caption-size);
   color: var(--color-text-faint);
+  max-width: 60ch;
 }
 
 .specimen__sentences {

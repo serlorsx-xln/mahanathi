@@ -38,6 +38,9 @@ function levelColour(level: number | null): THREE.Color {
   return new THREE.Color(s ? s.hex : staleToken.hex);
 }
 
+/** The overflow level (5), by name rather than array index. */
+const [, , , , OVERFLOW] = situations;
+
 const VERT = /* glsl */ `
   attribute float aFill;      // fraction of the ground-to-bank span that is water
   attribute float aOverflow;  // 1 when the water is above bank-full
@@ -161,7 +164,7 @@ export function Gauges({
     () => ({
       uSteel: { value: new THREE.Color(colors.gaugeSteel) },
       uTrack: { value: new THREE.Color(colors.gaugeTrack) },
-      uAlert: { value: new THREE.Color(situations[4].hex) },
+      uAlert: { value: new THREE.Color(OVERFLOW.hex) },
     }),
     [],
   );

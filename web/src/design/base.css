@@ -31,6 +31,21 @@ body {
   outline-offset: 2px;
 }
 
+a {
+  color: var(--color-accent-water);
+  text-underline-offset: 0.2em;
+}
+
+:root {
+  caret-color: var(--color-caret);
+  color-scheme: dark;
+}
+
+/* The quiet scrollbar: thin, on our slate, never the macOS default. */
+* {
+  scrollbar-color: var(--color-scrollbar) var(--color-scrollbar-track);
+}
+
 h1,
 h2,
 h3,

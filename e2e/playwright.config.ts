@@ -25,6 +25,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } },
     },
     { name: 'mobile', use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } } },
+    // The gate's third viewport (design brief, section 10). Chromium,
+    // like the others: the flight spec needs CDP screencast.
+    {
+      name: 'tablet',
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 } },
+    },
   ],
   webServer: {
     command: `pnpm --dir ../web build && pnpm --dir ../web exec vite preview --host 127.0.0.1 --port ${port} --strictPort`,

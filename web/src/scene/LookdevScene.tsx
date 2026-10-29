@@ -22,6 +22,30 @@ function v(x: number, y: number, z: number): THREE.Vector3 {
   return new THREE.Vector3(x, y, z);
 }
 
+// The brief: "target bounded to Thailand". Panning past the country
+// leaves the visitor staring at fog; the target (and the camera with
+// it, so the view direction is preserved) is pulled back inside.
+const TARGET_BOUNDS = (() => {
+  const nw = lonLatToWorld(97.3, 20.6);
+  const se = lonLatToWorld(105.8, 5.5);
+  return { minX: nw.x, maxX: se.x, minZ: se.z, maxZ: nw.z };
+})();
+
+function clampTarget(c: CameraControlsImpl, camera: THREE.Camera): void {
+  const t = c.getTarget(new THREE.Vector3());
+  const x = Math.min(Math.max(t.x, TARGET_BOUNDS.minX), TARGET_BOUNDS.maxX);
+  const z = Math.min(Math.max(t.z, TARGET_BOUNDS.minZ), TARGET_BOUNDS.maxZ);
+  if (x === t.x && z === t.z) return;
+  void c.setLookAt(
+    camera.position.x + (x - t.x),
+    camera.position.y,
+    camera.position.z + (z - t.z),
+    x,
+    t.y,
+    z,
+  );
+}
+
 interface Flight {
   from: { pos: THREE.Vector3; target: THREE.Vector3 };
   to: { pos: THREE.Vector3; target: THREE.Vector3 };
@@ -42,6 +66,12 @@ function Rig({
   const controls = useRef<CameraControlsImpl | null>(null);
   const flight = useRef<Flight | null>(null);
   const { camera, invalidate } = useThree();
+  // The brief: reduced motion cuts instead of flying.
+  const reduced = useMemo(
+    () =>
+      typeof window === 'undefined' ? false : window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    [],
+  );
 
   useEffect(() => {
     const c = controls.current;
@@ -64,6 +94,12 @@ function Rig({
     if (!c) return;
     const pos = v(positionFor(preset).x, positionFor(preset).y, positionFor(preset).z);
     const target = v(targetFor(preset).x, targetFor(preset).y, targetFor(preset).z);
+    if (reduced) {
+      flight.current = null;
+      void c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z);
+      invalidate();
+      return;
+    }
     flight.current = {
       from: { pos: camera.position.clone(), target: c.getTarget(new THREE.Vector3()) },
       to: { pos, target },
@@ -86,6 +122,20 @@ function Rig({
       targetFor(NATIONAL).y,
       targetFor(NATIONAL).z,
     );
+    if (reduced) {
+      // Cut straight to the station: snap, no flight, no glide.
+      void c.setLookAt(
+        positionFor(STATION).x,
+        positionFor(STATION).y,
+        positionFor(STATION).z,
+        targetFor(STATION).x,
+        targetFor(STATION).y,
+        targetFor(STATION).z,
+      );
+      onFlightDone();
+      invalidate();
+      return;
+    }
     // Let the snap land, then fly to the station.
     flight.current = {
       from: {
@@ -106,7 +156,11 @@ function Rig({
   useFrame(() => {
     const f = flight.current;
     const c = controls.current;
-    if (!f || !c) return;
+    if (!c) return;
+    if (!f) {
+      clampTarget(c, camera);
+      return;
+    }
     const t = (performance.now() - f.start) / f.duration;
     if (t < 0) {
       invalidate();
