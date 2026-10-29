@@ -1,5 +1,17 @@
 # Phase 3 report: Look-dev (the visual world, before the product)
 
+> **Correction, 2026-10-30 ~02:30 (Phase 3b Step 0).** The
+> `specimen-measurements.json` this report cites was corrupted at
+> commit time: a post-trim e2e re-run had measured the system fallback
+> for the deleted candidate fonts (Anuphan and Noto Sans Thai rows were
+> bit-identical fallback numbers). The ADR's values were correct and
+> are now re-verified on a fresh, load-verified measurement; the
+> committed JSON is the verified one and the spec guards against
+> recurrence. The claim in §"The deliverables" item 3 stands on the
+> corrected evidence. Separately, the relief this report shipped was
+> rejected visually by the owner and is replaced per ADR 0007; the
+> relief-specific sections below are history.
+
 - **Implementer:** the same session as Phase 2 (GLM-5.3 via the owner's router; quality gates unchanged and, if anything, leaned on harder).
 - **Phase window:** 2026-10-29 ~22:36 ICT (Step 0 fixes, `000b801`) to 2026-10-30 ~01:20 ICT.
 - **Tree at report time:** clean at `900c020` (the report itself is `8a6ed5c`; `900c020` after it is only the Prettier pass over the phase's edits, no behaviour change).

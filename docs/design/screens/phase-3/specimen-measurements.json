@@ -43,29 +43,29 @@
     },
     "Anuphan": {
       "น้ำล้นตลิ่ง": {
-        "ascentPct": 1.081,
-        "descentPct": 0.008,
-        "lineHeight16Use": 0.681
+        "ascentPct": 1.066,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.674
       },
       "ผู้ใหญ่บ้าน": {
-        "ascentPct": 0.944,
-        "descentPct": 0.26,
-        "lineHeight16Use": 0.753
+        "ascentPct": 0.922,
+        "descentPct": 0.267,
+        "lineHeight16Use": 0.743
       },
       "ปิ่นเกล้า": {
-        "ascentPct": 1.059,
-        "descentPct": 0.009,
-        "lineHeight16Use": 0.667
+        "ascentPct": 0.906,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.574
       },
       "ปั๊มน้ำ": {
-        "ascentPct": 1.14,
-        "descentPct": 0.009,
-        "lineHeight16Use": 0.718
+        "ascentPct": 1.066,
+        "descentPct": 0.012,
+        "lineHeight16Use": 0.674
       },
       "ญี่ปุ่น": {
-        "ascentPct": 1.11,
-        "descentPct": 0.276,
-        "lineHeight16Use": 0.866
+        "ascentPct": 0.997,
+        "descentPct": 0.267,
+        "lineHeight16Use": 0.79
       }
     },
     "Noto Sans Thai": {
@@ -104,34 +104,34 @@
       "widthEm": 31.014
     },
     "Mahanathi Sans (IBM Plex Sans Thai) / Pridi": {
-      "widthEm": 30.115
+      "widthEm": 28.983
     },
     "Mahanathi Sans (IBM Plex Sans Thai) / Trirong": {
-      "widthEm": 30.115
+      "widthEm": 29.212
     },
     "Anuphan / sans 600": {
-      "widthEm": 30.357
+      "widthEm": 30.873
     },
     "Anuphan / Noto Serif Thai": {
       "widthEm": 31.014
     },
     "Anuphan / Pridi": {
-      "widthEm": 30.115
+      "widthEm": 28.983
     },
     "Anuphan / Trirong": {
-      "widthEm": 30.115
+      "widthEm": 29.212
     },
     "Noto Sans Thai / sans 600": {
-      "widthEm": 30.992
+      "widthEm": 30.493
     },
     "Noto Sans Thai / Noto Serif Thai": {
       "widthEm": 31.014
     },
     "Noto Sans Thai / Pridi": {
-      "widthEm": 30.115
+      "widthEm": 28.983
     },
     "Noto Sans Thai / Trirong": {
-      "widthEm": 30.115
+      "widthEm": 29.212
     }
   },
   "figures": {
@@ -149,29 +149,29 @@
       ]
     },
     "Anuphan": {
-      "digit": 55.615234375,
+      "digit": 60,
       "digitsDiffer": [
-        0.556,
-        0.556,
-        0.556,
-        0.556,
-        2.502,
-        1.946,
-        2.53,
-        2.53
+        0.6,
+        0.6,
+        0.6,
+        0.6,
+        2.692,
+        2.072,
+        2.672,
+        2.672
       ]
     },
     "Noto Sans Thai": {
-      "digit": 55.615234375,
+      "digit": 57.19999694824219,
       "digitsDiffer": [
-        0.556,
-        0.556,
-        0.556,
-        0.556,
-        2.502,
-        1.946,
-        2.53,
-        2.53
+        0.572,
+        0.572,
+        0.572,
+        0.572,
+        2.556,
+        1.984,
+        2.306,
+        2.556
       ]
     }
   },

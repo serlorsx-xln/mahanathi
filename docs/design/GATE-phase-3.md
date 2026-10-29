@@ -1,5 +1,17 @@
 # Gate: Phase 3 — look-dev
 
+> **SUPERSEDED, 2026-10-30 (Phase 3b).** The relief this gate scored
+> was rejected visually by the owner (ยังไม่สวยเลย) and is replaced by
+> the MapLibre base per **ADR 0007**; the relief-specific items below
+> describe code that now lives only in git history. The successor gate
+> is **`docs/design/GATE-phase-3b.md`**. One evidence correction from
+> the Phase 3b Step 0 review, applying to the typography items below:
+> the `specimen-measurements.json` cited here was corrupted at commit
+> time (a post-trim re-run measured the system fallback for the deleted
+> candidates); the ADR 0005 values were correct and are re-verified —
+> see the ADR's evidence-integrity note. The typography, token and
+> colour decisions carry forward unchanged into the rebuild.
+
 - **Date:** 2026-10-30
 - **Method:** two full iterations of `/impeccable critique` (dual-agent: a design-review assessment and an isolated detector + browser assessment), root-cause fixes between and after each, re-shoots of every screenshot, detector re-scan clean on all three served routes. Evidence: the screenshots and JSON in `docs/design/screens/phase-3/`, the e2e suite (22 passed, 8 project-skips by design), the web unit tests (51 passed), and the computed numbers cited below.
 - **This session cannot view images** (DEVLOG 2026-10-29 23:25). Every visual claim below is grounded in a computed measurement, a test, or source; the lead's visual pass on real hardware is the named remaining step, as the workflow already requires.

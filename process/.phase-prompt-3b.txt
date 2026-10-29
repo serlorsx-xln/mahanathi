@@ -1,0 +1,38 @@
+# Phase 3b: Relief rebuild (MapLibre base, our gauge layer)
+
+The owner rejected the Phase 3 relief visually and chose Option A from the lead's research: **adopt MapLibre GL JS as the terrain/basemap engine and keep our gauge data layer.** Your complete brief is `docs/brief/04-REBUILD-RELIEF.md` — read it first, then the lead notes below. The execution order there is binding: base frame tonight, gauges tomorrow morning, discs behind a flag in parallel, interaction port, re-gate, stop.
+
+## Step 0 before any MapLibre work (from the lead's Phase 3 review)
+1. **Correct ADR 0005 from the committed truth.** Its measurement table and deciding bullets contradict `specimen-measurements.json` (the JSON says Noto Sans Thai's minus equals its plus, 2.53 = 2.53). Rewrite the figure rows and bullets with the JSON's actual values; if the decision still holds, say so honestly on the corrected evidence; if it flips, flip it (re-run the specimen if needed). The false claim propagated into `docs/design/GATE-phase-3.md`, `process/reports/phase-3.md` and `web/DESIGN.md` — correct every copy.
+2. **Make critique artifacts real.** Iteration 2's "fresh 31/40 re-score" has no dated artifact. If a copy exists, commit it under `web/.impeccable/critique/` with a real timestamp; otherwise run a fresh assessment when you re-gate in step 4 and commit that as the artifact.
+3. **Fix the sidecar timestamp** in `web/.impeccable/design.json` (a real instant, not a round placeholder).
+4. **Mark the old gate superseded** — GATE-phase-3.md gets a header note that the relief it scored was replaced by ADR 0007 and the new gate is GATE-phase-3b.md. Do not silently edit history documents.
+5. **Record the plan change** in the DEVLOG: the owner's visual rejection, the lead's research, and ADR 0007 (write it: decision, alternatives from the brief's table, consequences — including that the hand-built relief remains in git history only, and the lead's own record that a remediation round was announced at ~01:24 but never launched; that was a lead process error, corrected here).
+
+## Engine notes (from the lead's research; verify versions yourself)
+- MapLibre GL JS: verify the current major version and its licence on npm before pinning. Check whether **globe projection** exists in the version you pin; prefer it for the national view, record the choice.
+- DEM: re-encode our existing heightmap to terrarium256 with a committed script under `geodata/scripts/` (one-off, byte-reproducible in spirit). AWS terrain tiles are the fallback. No paid APIs, no tokens.
+- Basemap: Protomaps PMTiles dark style with `name:th` labels, self-hosted or fetched from their open bucket per their docs; credit ODbL/OpenStreetMap and Protomaps in the about page and `geodata/SOURCES.md`.
+- Contours: maplibre-contour if it earns its place in under 2 hours, else cut it without ceremony.
+- Gauges: a MapLibre custom layer rendering instanced thin boxes from the recorded fixture (804), with the cap+fill bank-full encoding, fog, a ground-contact base ring, and the encoding fixes from brief §"The 15 bugs" (items 5, 6, 7, 9, 10). The disc fallback is a circle-layer behind `?gauges=discs` — build it in parallel, not after.
+- Code-split MapLibre behind the same lazy chunk boundary as the old 3D; check the bundle budget and record the real numbers.
+- Remove the hand-built relief route and scene files from `src/` once the new base renders (git history keeps them); do not leave dead routes.
+
+## Gates
+- Same anti-slop checklist, same evidence discipline (computed + committed), fresh screenshots at the three viewports plus reduced-motion and no-WebGL (MapLibre's raster fallback) variants.
+- **Stop for the lead review after the gate.** The owner's eyes are the final authority and the lead must approve before Phase 4 opens on the new base.
+
+The interview is 2026-10-31 16:00. The owner needs rehearsal time on the real URL tonight-to-morning; speed matters, but a wrong-looking frame matters more.
+
+
+---
+
+## Lead notes from the previous review
+
+## Lead preamble (2026-10-30 ~02:05)
+
+This phase opens on the SAME session, which is required to continue to the end of the project. You were cut several times by the owner's router earlier tonight; `process/retry-phase.sh` now resumes you automatically with a short prompt after each cut. Re-orient from `docs/PROGRESS.md`, the DEVLOG tail, and `git log --oneline -12`, then work the plan.
+
+**One record to correct about the lead, not you:** at ~01:24 the lead reported launching a remediation round that was in fact never launched (no prompt was written, nothing entered the session). That was a lead process error; it is recorded here and in the DEVLOG entry you will write for the plan change. The project's honesty standard applies to the lead too.
+
+**Timeline reality:** it is ~02:00 on 2026-10-30. The interview is 2026-10-31 16:00. The owner needs the live URL early enough to rehearse. The base frame (step 1 of the brief) should exist before you are next cut off for long; if the router is unstable, prioritise commits that each leave the repo in a shippable state.

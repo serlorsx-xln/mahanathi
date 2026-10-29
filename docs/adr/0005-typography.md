@@ -1,10 +1,29 @@
 # ADR 0005: Typography — IBM Plex Sans Thai + Noto Serif Thai
 
-- **Status:** accepted (Phase 3, look-dev)
-- **Date:** 2026-10-29
+- **Status:** accepted (Phase 3, look-dev); evidence re-verified 2026-10-30 after the corruption incident below
+- **Date:** 2026-10-29 (decision), 2026-10-30 (evidence correction, Phase 3b Step 0)
 - **Deciders:** implementing agent, from the specimen (`/specimen`) and the
   measurements in `docs/design/screens/phase-3/specimen-measurements.json`;
-  the lead confirms at the Phase 3 review.
+  the lead confirms at the review.
+
+## Evidence integrity note (2026-10-30)
+
+The version of `specimen-measurements.json` committed with the original
+decision had been silently corrupted: the e2e re-run that produced it
+happened **after** the rejected candidates had been trimmed from the
+build, so its Anuphan and Noto Sans Thai rows measured the system
+fallback font (the tell: two different families with bit-identical
+floats, `digit: 55.615234375` for both). `document.fonts.check`
+reported them "loaded" anyway, because an unknown family resolves to
+the already-loaded default. The ADR's own numbers had been measured
+before the trim and were correct, so the ADR and its committed
+evidence contradicted each other — the lead's review rightly flagged
+this. The re-verification (fonts restored with
+`scripts/research/promote_fonts.py`, all families proven loaded by
+`document.fonts.load`, then trimmed back) confirms every original
+value; the committed JSON is now the verified one, and
+`e2e/tests/measure.spec.ts` refuses to write a partial or
+fallback-collapsed measurement ever again.
 
 ## Context
 
@@ -31,8 +50,8 @@ workflow already requires.
 
 ## Measured evidence
 
-From `specimen-measurements.json` (canvas TextMetrics at 100 px, Chrome,
-via `e2e/tests/measure.spec.ts`):
+From the re-verified `specimen-measurements.json` (canvas TextMetrics
+at 100 px, Chrome, via `e2e/tests/measure.spec.ts`):
 
 | Question | IBM Plex Sans Thai | Anuphan | Noto Sans Thai |
 |---|---|---|---|
@@ -46,11 +65,13 @@ via `e2e/tests/measure.spec.ts`):
 - Signed columns align in Plex and Anuphan (minus equals the digit and
   the plus); **Noto Sans Thai's minus is 0.25 em narrower than its
   plus**, so signed measurement columns would misalign — a data-adjacent
-  flaw.
-- Anuphan's ink rises above its own ascender, confirming the research:
-  in any container that clips to the content box (chips, ellipsis,
-  `line-clamp`) its tall stacks can be cut. No DOM overflow was observed
-  at line-height 1.6 in any face.
+  flaw. Anuphan matches Plex here because its Latin *is* Plex's Latin
+  (`docs/research/typography.md`), which is also why A vs B is almost
+  purely a Thai-drawing comparison.
+- Anuphan's ink rises above its own ascender (research: 41 units above
+  hhea 1025), so in any container that clips to the content box (chips,
+  ellipsis, `line-clamp`) its tall stacks can be cut. No DOM overflow
+  was observed at line-height 1.6 in any face.
 - The national sentence sets 31.1 em in Plex 600, 30.9 in Anuphan,
   30.5 in Noto Sans Thai, 31.0 in Noto Serif Thai, 29.2 in Trirong,
   29.0 in Pridi.
@@ -58,9 +79,8 @@ via `e2e/tests/measure.spec.ts`):
 From the research: Plex has the most complete coverage (Latin-1 96/96,
 dotted circle U+25CC present), one team drew its Thai and Latin
 together, and it is the only face needing the RFN rename. Anuphan is
-unmaintained since 2024 and its Latin is Plex's Latin, so A vs B is
-almost purely a Thai-drawing comparison. Noto Sans Thai's Latin is the
-generic one the brief's control was there to expose.
+unmaintained since 2024. Noto Sans Thai's Latin is the generic one the
+brief's control was there to expose.
 
 ## Decision
 
