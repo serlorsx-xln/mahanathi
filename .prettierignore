@@ -11,3 +11,5 @@ server/
 geodata/
 process/
 docs/
+test-results/
+playwright-report/
