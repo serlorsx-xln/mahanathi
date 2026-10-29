@@ -156,3 +156,19 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
   - The PNG is 1815 px wide and 2048 px tall. A Phase 3 loader that trusted the ADR would have built the texture transposed.
   - **Caught by:** a spot-check of the cached heightmap with Pillow, run to verify the sizes before writing the report's evidence.
   - **Fix:** both documents now state width and height explicitly (`7c166aa`).
+
+## 2026-10-29, Phase 2 (data core)
+
+- **~19:37 CI.** The first push by the lead did not start CI. `gh` shows the GitHub account is locked for billing, so no job ran. A commit cannot fix that; it is reported in the Phase 2 report. Runners were pinned to `ubuntu-24.04` anyway (`5ac3cd4`), so the first real run is reproducible.
+
+- **19:43 to 19:51 Commits.** The module path became `github.com/serlorsx-xln/mahanathi/server` (`840dd69`). The front end is embedded with a tracked `.gitkeep`, so a fresh clone builds and serves a notice page (`ceda0be`). The ThaiWater client landed with fixture tests and no live network (`8128bc7`).
+
+- **19:52 Data.** Recorded two history responses, for URTU09 (3441) and BSP002 (12479), for the normalize oracle (`f84463c`). These were two requests, one at a time.
+
+- **~19:55 AI mistake caught by a test.** `normalize.ResolveRefs` compared references without rounding them to the millimetre first. A 4-decimal ground level would have been kept at full precision on one path and rounded on the other.
+  - **Caught by:** `TestResolveRefs/"values rounded to mm"`, written before the code was finished.
+  - **Fix:** `ResolveRefs` rounds its inputs itself (`258ca3d`).
+
+- **~20:10 AI mistake caught by review.** `domain.Level` (`39be5ae`) compared float64 percents with the thresholds. With ground −1.356, bank 5.044 and wl 3.124, an exact 70 % computes as 70.000000000000014 % and became level 4, though rule_web says "<=70" is level 3. 104.375 % computed as 104.37499999999999.
+  - **Caught by:** working out the expected percent for a humanize test by hand (8.35 / 8 = 104.375, so 104.38), then a scratch search that found the 70 % cases.
+  - **Fix:** levels, percents and distances are computed in whole millimetres (`96084d6`). The oracle still agrees on all 37 fixture rows.
