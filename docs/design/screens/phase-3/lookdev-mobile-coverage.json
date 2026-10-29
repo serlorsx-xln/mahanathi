@@ -1,0 +1,18 @@
+{
+  "viewport": 844,
+  "panel": {
+    "top": 72,
+    "bottom": 366,
+    "heightPct": 34.8
+  },
+  "chromeTop": {
+    "top": 0,
+    "bottom": 72,
+    "heightPct": 8.6
+  },
+  "chromeBottom": {
+    "top": 737,
+    "bottom": 844,
+    "heightPct": 12.7
+  }
+}

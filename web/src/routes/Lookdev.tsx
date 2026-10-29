@@ -4,7 +4,7 @@
 // action ใกล้ฉัน flies to the selected river. Dev controls (presets,
 // exaggeration) sit at the bottom and do not ship with the product.
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
-import { situations } from '../design/tokens';
+import { situations, stale } from '../design/tokens';
 import type { StationState } from '../scene/Gauges';
 import { NATIONAL, PRESETS, STATION, type Preset } from '../scene/presets';
 import './lookdev.css';
@@ -134,7 +134,7 @@ export function Lookdev() {
               }}
             />
           </Suspense>
-        ) : !failed ? (
+        ) : !data && !failed ? (
           <div className="lookdev__skeleton" role="status">
             <span className="lookdev__sr">กำลังโหลดแผนที่และข้อมูลระดับน้ำ</span>
           </div>
@@ -147,6 +147,7 @@ export function Lookdev() {
           <button
             type="button"
             onClick={() => {
+              setFailed(false); // back to the loading status while it retries
               setAttempt((n) => n + 1);
             }}
           >
@@ -189,6 +190,13 @@ export function Lookdev() {
                 <dd>{summary.levels[i] ?? 0}</dd>
               </div>
             ))}
+            <div className="lookdev__number">
+              <dt>
+                <span className="lookdev__dot lookdev__dot--hollow" />
+                {stale.label}
+              </dt>
+              <dd>{summary.staleCount}</dd>
+            </div>
           </dl>
           <p className="lookdev__meta">
             ภาพรวมเวลา {formatTime(data.fixture.generatedAt)} · {SOURCE_LINE}
@@ -203,15 +211,15 @@ export function Lookdev() {
           <dl className="lookdev__numbers lookdev__numbers--station">
             <div>
               <dt>ระดับน้ำ</dt>
-              <dd>{selected.wl?.toFixed(3)} ม.รทก.</dd>
+              <dd>{selected.wl !== null ? `${selected.wl.toFixed(3)} ม.รทก.` : '·'}</dd>
             </div>
             <div>
               <dt>ระดับตลิ่ง</dt>
               <dd>{selected.bankFull !== null ? `${selected.bankFull.toFixed(3)} ม.รทก.` : '·'}</dd>
             </div>
             <div>
-              <dt>สัดส่วนตลิ่ง</dt>
-              <dd>{selected.pct?.toFixed(2)}%</dd>
+              <dt>% ของตลิ่ง</dt>
+              <dd>{selected.pct !== null ? `${selected.pct.toFixed(2)}%` : '·'}</dd>
             </div>
             <div>
               <dt>วัดเมื่อ</dt>
@@ -227,6 +235,7 @@ export function Lookdev() {
             <button
               key={p.key}
               type="button"
+              aria-pressed={preset.key === p.key}
               className={
                 preset.key === p.key ? 'lookdev__preset lookdev__preset--active' : 'lookdev__preset'
               }

@@ -29,10 +29,29 @@ const TEXT_ROLES = [
   ['สีน้ำ (ลิงก์ โฟกัส)', colors.accentWater],
 ] as const;
 
-function Swatch({ hex, label, sub }: { hex: string; label: string; sub: string }) {
+function Swatch({
+  hex,
+  label,
+  sub,
+  hollow = false,
+}: {
+  hex: string;
+  label: string;
+  sub: string;
+  /** Stale is hollow by design: a stroke, never a fill, so it cannot
+   *  be confused with the near-grey level 2 on any vision. */
+  hollow?: boolean;
+}) {
   return (
     <div className="color__swatch">
-      <span className="color__chip" style={{ background: hex }} />
+      <span
+        className={hollow ? 'color__chip color__chip--hollow' : 'color__chip'}
+        style={
+          hollow
+            ? { background: 'transparent', border: `2px solid ${hex}` }
+            : { background: hex }
+        }
+      />
       <span className="color__name">{label}</span>
       <span className="color__sub">{sub}</span>
     </div>
@@ -67,7 +86,7 @@ export function ColorEvidence() {
           {situations.map((s) => (
             <Swatch key={s.level} hex={s.hex} label={s.label} sub={`ระดับ ${s.level}`} />
           ))}
-          <Swatch hex={stale.hex} label={stale.label} sub="เส้นว่าง ไม่มีสีเต็ม" />
+          <Swatch hex={stale.hex} label={stale.label} sub="วงกลมว่าง เส้นขอบอย่างเดียว" hollow />
         </div>
       </section>
 

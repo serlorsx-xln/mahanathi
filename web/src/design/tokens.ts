@@ -150,7 +150,9 @@ export const z = {
   toast: 50,
 } as const;
 
-/** One soft, offset panel shadow. No halos, no zero-blur blocks. */
+/** One soft, offset shadow for Phase 4's elevated surfaces (menus, the
+ *  expanded legend). No halos, no zero-blur blocks. Unused as of the
+ *  look-dev gate: the /lookdev panel separates by veil and border. */
 export const shadow = {
   panel: '0 4px 12px rgba(4, 8, 12, 0.4), 0 16px 48px rgba(4, 8, 12, 0.5)',
 } as const;

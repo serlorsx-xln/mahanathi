@@ -220,6 +220,13 @@
   display: inline-block;
 }
 
+/* Stale is hollow everywhere, matching the 3D gauges: a stroke, never
+   a fill, so it cannot read as a level. */
+.lookdev__dot--hollow {
+  background: transparent;
+  border: 2px solid var(--color-text-faint);
+}
+
 .lookdev__meta {
   margin-top: var(--space-4);
   font-size: var(--type-caption-size);

@@ -35,6 +35,9 @@ test.describe('gate variants', () => {
     await page.goto('/lookdev');
     await page.getByLabel('สรุปสถานการณ์น้ำ').waitFor({ timeout: 60_000 });
     await expect(page.locator('.lookdev__nogl')).toContainText('ไม่รองรับกราฟิก 3D');
+    // The loading status must resolve: once the data is in, no
+    // skeleton may remain announcing "กำลังโหลด" forever.
+    await expect(page.locator('.lookdev__skeleton')).toHaveCount(0);
     await page.screenshot({ path: `${OUT}/lookdev-no-webgl-${test.info().project.name}.png` });
   });
 
