@@ -1,6 +1,6 @@
 # Data quality: bank-full, ground and the percent ThaiWater publishes
 
-**Status: interim (Phase 1).** It is built from one full snapshot: `waterlevel_load` fetched 2026-10-29 17:54 ICT, 804 stations. Phase 2 finishes the investigation on further snapshots and records the product behaviour as implemented.
+**Status: final for Phase 2.** Built from three full snapshots: 17:54 and 19:05 ICT (Phase 1) and a night snapshot at 21:49 ICT, all 2026-10-29, all 804 stations. The product behaviour below is now the implemented behaviour, with the code that implements it named.
 
 **Method:**
 - `scripts/research/dq_scan.py` (stdlib Python, no dependencies) recomputes every derived field from the station references and counts agreements.
@@ -172,29 +172,54 @@ The same script was re-run on a `waterlevel_load` fetched at 19:05 ICT, 71 minut
 
 The formula, the datum split and the zero codes held across the two snapshots. That is still only 71 minutes of evidence, so the night snapshot in Phase 2 remains on the list.
 
-## Product behaviour per case (proposed, finalised in Phase 2)
+### Stability: a night snapshot at 21:49
 
-| Case | Detected by | Percent and level | Sentence | Gauge glyph |
-|---|---|---|---|---|
-| Both references usable (789 stations) | `ground` present, `min_bank > ground` | ours = official formula | distance to bank from `wl − min_bank`, signed by us | fill vs cap |
-| RID shifted left/right (282) | always: we never read left/right | unaffected, uses `min_bank` | unaffected | unaffected |
-| Zero-coded references (6) | `min_bank == 0 && ground == 0` | none | "สถานีนี้ยังไม่มีข้อมูลระดับตลิ่ง" + the measured level, no overflow claim | hollow "no reference" mark |
-| `ground_level` absent (9) | key absent | none (no lower reference) | see open question 1 | hollow "no reference" mark |
-| Water below `ground_level` (18) | `wl < ground` | percent clamps to 0 for drawing; the level stays the official 1 | distance below the bank, as normal | empty fill |
-| Stale (> 3 h, 27) | `now − measuredAt > 3 h` (injected clock) | kept for history, excluded from "now" counts | leads with the age: "ข้อมูลล่าสุดเมื่อ …" | hollow, quiet |
-| Suspect (0 today) | brief's rules on hourly history | excluded from "now" counts | says plainly that the value looks wrong | marked, not filled |
+A third `waterlevel_load` fetched at 21:49 ICT, 9 minutes before the nightly quiet, while the loggers were mostly on their 21:30 reading.
 
-### Open question 1
+| Check | 17:54 | 19:05 | 21:49 |
+|---|---|---|---|
+| A′ exact (±0.06 pp) / within 1 pp | 738 / 789 | 746 / 789 | 751 / 789 |
+| A′ misses, max implied level difference | 0.63 cm | 0.62 cm | 0.54 cm |
+| `situation_level` = `rule_web(storage_percent)` | 789 / 789 | 789 / 789 | 789 / 789 |
+| `\|wl − min_bank\|` = `diff_wl_bank` | 751 / 804 | 752 / 804 | 751 / 804 |
+| Side banks consistent / 1 cm–2 m off / ≥ 2 m off | 522 / 54 / 228 | unchanged | 522 / 54 / 228 |
+| Zero-coded / ground absent | 6 / 9 | unchanged | 6 / 9 |
+| Levels flipped by 2-decimal `min_bank` | 1 (URTU09) | 1 (URTU09) | 1 (URTU09) |
+| Older than 3 h (of which with a level) | 27 (25) | 28 (27) | 119 (116) |
+| Level 5 count | 20 | 19 | 18 |
 
-When `ground_level` is absent but `min_bank` is present (9 stations), the distance to bank-full is still well defined. ThaiWater itself publishes it in `diff_wl_bank`.
+The night is where staleness shows its real shape: 119 stations are older than 3 h, and 116 of them still carry a `situation_level`, so thaiwater.net shows "now" numbers that are up to seven days old (the oldest reading in this snapshot is 2026-10-22). The 3 h rule and the stale count in `/api/v1/now` exist for exactly this. RID's 21:00 readings had not appeared at 21:49 (the 405 readings on :30 are HII's), which matches the Phase 1 finding that RID publishes its hour late; a poll at :07 stores the previous hour for RID stations.
 
-- **The humanize spec says** "missing bank-full or ground: make no distance claim".
-- **I propose** making the distance claim in this one case, because ground is needed only for the percent, not for the distance.
-- **Reversible default if the lead disagrees:** follow the spec and make no distance claim.
+Everything else is unchanged. The formula, the datum split, the zero codes and the level rule are stable across four hours including the nightly quiet.
 
-## What Phase 2 must still do
+## Product behaviour per case (implemented)
 
-1. Re-run the scan on at least two more snapshots, including one at night, and confirm the formula and the RID pattern are stable over time. A second daytime snapshot (19:05) already agrees; see Stability.
-2. Check whether `min_bank` and `ground_level` from `waterlevel_graph` differ from the load values beyond rounding, for every backfilled station. If they do, decide which one wins and record it in ADR 0003.
-3. Measure how many stations a full 72 h backfill marks suspect under the jump rule, and look at each one by hand.
-4. Put the final counts per case and the implemented behaviour into this file.
+The lead answered open question 1 (Phase 1 report): state the distance, but no percent and no level. Everything below is what `internal/normalize`, `internal/domain` and `internal/humanize` now do; the counts are from the 21:49 snapshot.
+
+| Case | Detected by | Percent and level | Sentence (implemented) |
+|---|---|---|---|
+| Both references usable (789 stations) | `RefsComplete` (ADR 0003) | ours = official formula, in mm arithmetic | distance to bank from `wl − min_bank`, signed by us; percent and level when complete |
+| RID shifted left/right (282) | always: we never read left/right | unaffected, uses `min_bank` | unaffected |
+| Zero-coded references (6) | `RefsZeroCoded` | none | "สถานีนี้ยังไม่มีข้อมูลระดับตลิ่ง ระดับน้ำ 49.65 ม.รทก." |
+| `ground_level` absent (9) | `RefsBankOnly` | distance only, no percent, no level | "ต่ำกว่าตลิ่ง … เมตร" with no level claim |
+| Water below `ground_level` (18) | `wl < ground` | percent negative but served as computed; the level is ours | distance below the bank, as normal |
+| Stale (> 3 h, 119 at night) | `now − measuredAt > 3 h` (injected clock) | kept for history, excluded from "now" counts, `staleCount` in the summary | leads with the age: "ข้อมูลล่าสุดเมื่อ 18:40 น. (ยังไม่อัปเดต) ตอนนั้น…" |
+| Suspect | `SuspectReasons` on the hourly history | served with flags; excluded from level counts | "ค่าที่รายงานล่าสุดผิดปกติ (…) จึงไม่นำมาแสดงเป็นระดับน้ำปัจจุบัน" |
+
+### The suspect rule on live data (Phase 2, hand-checked)
+
+The first live run (2026-10-29 21:53 ICT, 804 stations) marked exactly two stations suspect, both `jump`. Both were checked against the raw `waterlevel_graph` responses by hand:
+
+- **MKSND01 เขื่อนท่าทุ่งนา (EGAT, กาญจนบุรี)**, id 700551. The series alternates between ~59.2 m and ~49.65 m, 9.55 m apart, for days (25 Oct: 59.23 → 49.65 → 59.22 within three hours; the same two values recur on 23, 24, 27, 28 Oct). The station's references are zero-coded, so the 49.65 that appeared at 21:00 was the wrong datum of the two the logger sends, not a 9.55 m drop in an hour. Suspect is the right call: the value is real telemetry, but it is not a water level change.
+- **BKK005 คลองภาษีเจริญ เพชรเกษม 69 (HII, กรุงเทพมหานคร)**, id 10. The 10-minute series oscillates between ~−2.95 m and ~−6.05 m, 3.1 m apart, every hour or so (21:20 −2.945, 21:30 −6.053→ our bucket kept the last of the hour, −6.045). The canal sits below mean sea level (ground −6.605, bank 1.415), so both values are plausible telemetry; the pair looks like two datums again. The jump flag fires on the hourly bucket, which is the designed behaviour.
+
+No station was wrongly let through: the oracle (our level vs `situation_level`) matched 789/789 on this run. The remaining two suspects in a live run are the expected steady state, and the count is in every run record (`oracle_mismatches`, `history_failed`) for monitoring.
+
+## What Phase 2 did
+
+1. Re-ran the scan on the night snapshot (21:49, above): the formula, the datum split, the zero codes and the level rule are stable across four hours including the nightly quiet.
+2. Compared the graph and load references for every backfilled station: they agree within the load's 2-decimal rounding except where they do not (BKC004's 0.905 vs 0.91), and the graph values at full precision are the ones that reproduce ThaiWater's own percent — this is ADR 0003's rule, now applied by `normalize.ResolveRefs`, with a 5 mm tolerance and a once-a-day refetch on disagreement (`ingest`).
+3. The full 72 h backfill marked 2 stations suspect; both were hand-checked above.
+4. The counts per case and the implemented behaviour are the table above; the live counts live in every run record and `/api/v1/now`'s summary.
+
+Nothing remains open from Phase 1's list. The one thing worth watching in production is the suspect pair above: if a third station joins them, that is a new upstream pattern, not a code change.
