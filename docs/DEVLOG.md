@@ -114,3 +114,24 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 - **~18:40 Sub-agent housekeeping.** While cleaning up, the same sub-agent also deleted other files' AppleDouble `._*` files. They are gitignored metadata that macOS recreates, so nothing was lost.
 
 - **18:41 Commit.** `typography.md` committed with its scripts and pinned tool versions (`786fdbb`).
+
+- **18:53 Verification.** Every check passed at HEAD:
+  - `make lint`, `make test` and `make build`.
+  - `make e2e`, with 2 passed.
+  - The output is saved in the gitignored `.cache/verify-phase1.txt` and `.cache/verify-e2e.txt`.
+
+- **~18:55 Surprise.** `git count-objects` reported "garbage found" for 316 AppleDouble `._*` files inside `.git/objects/`, which macOS writes on exFAT.
+  - Git ignores files whose names are not valid objects, so this is noise.
+  - Reported to the lead because `git gc` and `fsck` will warn about them.
+
+- **18:58 Verification.** The container check was re-run, so the report would not rest on an earlier, less complete check:
+  - `docker run` answered `/healthz` with `ok`.
+  - The user is `nonroot:nonroot`.
+  - `docker stop` exited 0 after logging `shutting down` and `stopped`.
+
+- **19:00 Decision.** Added `__pycache__/` to `.gitignore` (`0bb28db`). The geodata research scripts import each other, so Python writes bytecode next to them even under `-I`.
+
+- **19:05 and 19:10 Data.** Two more `waterlevel_load` fetches, to measure publication lag.
+  - None of RID's 19:00 readings was out by 19:10, while 217 of 315 17:00 readings had been out by 17:54. A poll at :07 therefore stores the previous hour for hourly stations.
+  - A re-run of `dq_scan.py` on the 19:05 snapshot reproduced every Phase 1 finding.
+  - Committed as `6efc1e7`.
