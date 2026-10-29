@@ -73,10 +73,11 @@ const (
 	FactSuspect    FactKey = "suspect"    // why the value is not shown
 )
 
-// Fact is one number behind the sentence, already formatted in Thai.
+// Fact is one number behind the sentence, already formatted in Thai. The
+// json tags are for the API, which serves facts as they are.
 type Fact struct {
-	Key  FactKey
-	Text string
+	Key  FactKey `json:"key"`
+	Text string  `json:"text"`
 }
 
 // Output is the sentence and everything a client needs to show its working.
