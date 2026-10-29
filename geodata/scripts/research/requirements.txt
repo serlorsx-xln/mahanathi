@@ -1,0 +1,11 @@
+# Pinned versions used for docs/research/geodata-sources.md (2026-10-29).
+# Install into the gitignored research venv:
+#   python3 -m venv .cache/venv && .cache/venv/bin/python -m pip install -r geodata/scripts/research/requirements.txt
+# borders_sizes.sh also needs mapshaper 0.7.101 (npm), passed to it as a path.
+numpy==2.0.2
+pillow==11.3.0
+pyshp==3.1.6
+shapely==2.0.7
+pyoxipng==9.1.1
+zstandard==0.25.0
+brotli==1.2.1
