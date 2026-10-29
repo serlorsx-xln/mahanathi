@@ -53,16 +53,6 @@ func SuspectReasons(st domain.Station, r domain.Reading, prev domain.Point, now 
 	return out
 }
 
-// HourEnd is the end of the hourly bucket that contains t: buckets are
-// (HH−1:00, HH:00], so 10:00 belongs to the 10:00 bucket and 10:10 to 11:00.
-func HourEnd(t time.Time) time.Time {
-	h := t.Truncate(time.Hour)
-	if h.Equal(t) {
-		return h
-	}
-	return h.Add(time.Hour)
-}
-
 // Hourly buckets readings into `hours` consecutive hourly points ending at
 // `end` (truncated to the hour). Each point holds the last reading in
 // (At − 1 h, At]; hours without one have OK false. This is how 10-minute HII
@@ -80,7 +70,7 @@ func Hourly(readings []domain.Reading, end time.Time, hours int) []domain.Point 
 	}
 	best := make([]time.Time, hours)
 	for _, r := range readings {
-		i := int(HourEnd(r.At).Sub(first) / time.Hour)
+		i := int(domain.HourEnd(r.At).Sub(first) / time.Hour)
 		if i < 0 || i >= hours {
 			continue
 		}

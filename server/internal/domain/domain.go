@@ -179,6 +179,18 @@ type Point struct {
 	OK bool
 }
 
+// HourEnd is the end of the hourly bucket that contains t: buckets are
+// (HH−1:00, HH:00], so 10:00 belongs to the 10:00 bucket and 10:10 to 11:00.
+// Every hourly series in the product (history, timeline, the 6 h trend) uses
+// this one rule (lead's answer to Phase 1 question 4).
+func HourEnd(t time.Time) time.Time {
+	h := t.Truncate(time.Hour)
+	if h.Equal(t) {
+		return h
+	}
+	return h.Add(time.Hour)
+}
+
 // SuspectReason is why a reading is not believable as a current value.
 type SuspectReason int
 

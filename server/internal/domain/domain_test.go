@@ -3,6 +3,7 @@ package domain
 import (
 	"math"
 	"testing"
+	"time"
 )
 
 func TestLevelForPctMatchesRuleWeb(t *testing.T) {
@@ -102,6 +103,22 @@ func TestSuspectReasonNames(t *testing.T) {
 	for r, w := range map[SuspectReason]string{SuspectBelowGround: "below-ground", SuspectImplausiblePct: "implausible-percent", SuspectJump: "jump", SuspectFuture: "future-time", 0: "unknown"} {
 		if r.String() != w {
 			t.Errorf("SuspectReason(%d).String() = %q, want %q", r, r.String(), w)
+		}
+	}
+}
+
+func TestHourEnd(t *testing.T) {
+	at := func(h, m int) time.Time { return time.Date(2026, 10, 29, h, m, 0, 0, time.UTC) }
+	cases := []struct{ in, want time.Time }{
+		{at(10, 0), at(10, 0)},
+		{at(10, 10), at(11, 0)},
+		{at(10, 59), at(11, 0)},
+		{at(23, 30), time.Date(2026, 10, 30, 0, 0, 0, 0, time.UTC)},
+		{at(10, 0).Add(time.Second), at(11, 0)},
+	}
+	for _, c := range cases {
+		if got := HourEnd(c.in); !got.Equal(c.want) {
+			t.Errorf("HourEnd(%v) = %v, want %v", c.in, got, c.want)
 		}
 	}
 }
