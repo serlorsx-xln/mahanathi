@@ -18,14 +18,52 @@ const (
 	cacheRevalidate = "no-cache"
 )
 
-// notice is served at every app route when no front-end build is embedded,
-// as on a fresh clone. It is plain on purpose: it is a developer message.
-const notice = `<!doctype html>
-<html lang="en">
+// placeholder is served at every app route when no front-end build is
+// embedded, as on a fresh clone or the pre-Phase-3 deployment: it proves the
+// pipeline is live by reading the national sentence and the five most severe
+// stations from /api/v1/now. It is plain semantic HTML on purpose — Phase 3
+// owns every styling decision — and it doubles as the developer notice.
+const placeholder = `<!doctype html>
+<html lang="th">
 <meta charset="utf-8">
-<title>mahanathi: web build not embedded</title>
-<h1>Web build not embedded</h1>
-<p>This binary was built without the front end. Run <code>make build</code> from the repository root, which builds <code>web/</code> and copies it into <code>server/web/dist</code> before compiling. The API under <code>/api/v1/</code> works either way.</p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>มหานที</title>
+<header>
+<h1>มหานที</h1>
+<p>ระดับน้ำทั่วประเทศ ภาษาเดียวที่อ่านง่าย</p>
+</header>
+<main>
+<p id="national">กำลังอ่านข้อมูลจากสถานีวัดระดับน้ำ…</p>
+<ol id="severe"></ol>
+</main>
+<footer>
+<p>ข้อมูลจากสถาบันสารสนเทศทรัพยากรน้ำ (HII) ผ่าน ThaiWater หน้านี้เป็นหน้าชั่วคราวก่อนเว็บเต็มรูปแบบ ตัวเซิร์ฟเวอร์นี้ยังไม่มี web build (run <code>make build</code>) API อยู่ที่ <code>/api/v1/</code></p>
+</footer>
+<script>
+fetch('/api/v1/now').then(function (r) {
+  if (!r.ok) { throw new Error(r.status); }
+  return r.json();
+}).then(function (d) {
+  document.getElementById('national').textContent = d.summary.national;
+  var list = document.getElementById('severe');
+  d.stations
+    .filter(function (s) { return !s.stale && s.suspect.length === 0 && s.level !== null; })
+    .sort(function (a, b) { return b.level - a.level || (b.pct || 0) - (a.pct || 0); })
+    .slice(0, 5)
+    .forEach(function (s) {
+      var li = document.createElement('li');
+      var where = document.createElement('p');
+      where.textContent = s.name + ' — ' + s.province;
+      var sentence = document.createElement('p');
+      sentence.textContent = s.sentence;
+      li.appendChild(where);
+      li.appendChild(sentence);
+      list.appendChild(li);
+    });
+}).catch(function () {
+  document.getElementById('national').textContent = 'ยังไม่มีข้อมูล ลองใหม่อีกครั้ง';
+});
+</script>
 `
 
 // Handler serves the embedded front end from memory.
@@ -97,7 +135,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.WriteHeader(http.StatusOK)
 		if r.Method != http.MethodHead {
-			_, _ = fmt.Fprint(w, notice)
+			_, _ = fmt.Fprint(w, placeholder)
 		}
 		return
 	}

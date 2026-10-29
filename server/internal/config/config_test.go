@@ -30,7 +30,9 @@ func TestFromEnvOverrides(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := Config{Addr: "127.0.0.1:9000", LogLevel: slog.LevelDebug, LogFormat: "text", ShutdownTimeout: 3 * time.Second}
+	want := with(Defaults(), func(c *Config) {
+		c.Addr, c.LogLevel, c.LogFormat, c.ShutdownTimeout = "127.0.0.1:9000", slog.LevelDebug, "text", 3*time.Second
+	})
 	if got != want {
 		t.Fatalf("got %+v, want %+v", got, want)
 	}
@@ -48,4 +50,51 @@ func TestFromEnvRejectsBadValues(t *testing.T) {
 			t.Errorf("%s=%q: want error, got nil", tc.key, tc.val)
 		}
 	}
+}
+
+func TestPortAddrAndDataDirFromEnv(t *testing.T) {
+	cases := []struct {
+		name   string
+		env    map[string]string
+		want   Config
+		expErr bool
+	}{
+		{name: "defaults", env: map[string]string{}, want: Defaults()},
+		{name: "port only", env: map[string]string{"PORT": "8081"},
+			want: with(Defaults(), func(c *Config) { c.Addr = ":8081" })},
+		{name: "addr beats port", env: map[string]string{"PORT": "8081", "MAHANATHI_ADDR": "127.0.0.1:9000"},
+			want: with(Defaults(), func(c *Config) { c.Addr = "127.0.0.1:9000" })},
+		{name: "bad port", env: map[string]string{"PORT": "http"}, expErr: true},
+		{name: "port out of range", env: map[string]string{"PORT": "70000"}, expErr: true},
+		{name: "data dir", env: map[string]string{"MAHANATHI_DATA_DIR": "/data"},
+			want: with(Defaults(), func(c *Config) { c.DataDir = "/data" })},
+		{name: "poll schedule", env: map[string]string{"MAHANATHI_POLL_EVERY": "30m", "MAHANATHI_POLL_OFFSET": "3m"},
+			want: with(Defaults(), func(c *Config) { c.PollEvery, c.PollOffset = 30*time.Minute, 3*time.Minute })},
+		{name: "poll too fast", env: map[string]string{"MAHANATHI_POLL_EVERY": "30s"}, expErr: true},
+		{name: "offset at every", env: map[string]string{"MAHANATHI_POLL_EVERY": "1h", "MAHANATHI_POLL_OFFSET": "1h"}, expErr: true},
+		{name: "negative offset", env: map[string]string{"MAHANATHI_POLL_OFFSET": "-1m"}, expErr: true},
+		{name: "bad duration", env: map[string]string{"MAHANATHI_POLL_EVERY": "hourly"}, expErr: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := FromEnv(func(k string) string { return tc.env[k] })
+			if tc.expErr {
+				if err == nil {
+					t.Fatalf("accepted %v", tc.env)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != tc.want {
+				t.Errorf("got %+v\nwant %+v", got, tc.want)
+			}
+		})
+	}
+}
+
+func with(c Config, f func(*Config)) Config {
+	f(&c)
+	return c
 }

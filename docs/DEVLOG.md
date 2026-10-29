@@ -202,3 +202,5 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
   - **Fix:** parentheses, and a check that the fix applied.
 
 - **~21:55 Design note (not a mistake, a discovery).** 800 × 72 hourly percents as JSON numbers are 96 KB compressed on the smoothest synthetic water and 120 KB on wild water, over the 80 KB budget however the JSON is shaped. The timeline is therefore a binary body: presence bitmap plus zigzag-varint deltas, precision kept at 0.01 % to agree with /now to the digit. Measured 61 KB compressed on rivers wilder than any real one. Documented in `docs/api.md` with a decoder.
+
+- **~22:10 Flaky tests under load, not code.** `TestPerAttemptTimeoutIsRetried` and `TestBodyLimit` in the thaiwater package failed once during a full-module run (the machine was running every package's tests at once) and passed in isolation and in the next full run. Both are timing tests around per-attempt timeouts. Recorded here in case CI sees it; no code was changed.

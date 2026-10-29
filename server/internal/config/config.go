@@ -8,14 +8,26 @@ package config
 import (
 	"fmt"
 	"log/slog"
+	"strconv"
 	"strings"
 	"time"
 )
 
 // Config is the validated server configuration.
 type Config struct {
-	// Addr is the TCP address the HTTP server listens on (MAHANATHI_ADDR).
+	// Addr is the TCP address the HTTP server listens on. MAHANATHI_ADDR
+	// wins when set; otherwise PORT (the variable Coolify passes) sets the
+	// port; the default is ":8080".
 	Addr string
+	// DataDir is where the SQLite database lives (MAHANATHI_DATA_DIR). The
+	// container sets it to /data.
+	DataDir string
+	// PollEvery and PollOffset schedule the ingest: every PollEvery, at
+	// PollOffset past (MAHANATHI_POLL_EVERY / MAHANATHI_POLL_OFFSET, Go
+	// durations). The default polls hourly at :07, after the hourly
+	// stations have published.
+	PollEvery  time.Duration
+	PollOffset time.Duration
 	// LogLevel is the minimum slog level that is written (MAHANATHI_LOG_LEVEL:
 	// debug, info, warn or error).
 	LogLevel slog.Level
@@ -31,6 +43,9 @@ type Config struct {
 func Defaults() Config {
 	return Config{
 		Addr:            ":8080",
+		DataDir:         "data",
+		PollEvery:       time.Hour,
+		PollOffset:      7 * time.Minute,
 		LogLevel:        slog.LevelInfo,
 		LogFormat:       "json",
 		ShutdownTimeout: 10 * time.Second,
@@ -44,6 +59,32 @@ func FromEnv(getenv func(string) string) (Config, error) {
 
 	if v := getenv("MAHANATHI_ADDR"); v != "" {
 		c.Addr = v
+	} else if v := getenv("PORT"); v != "" {
+		port, err := strconv.Atoi(v)
+		if err != nil || port < 1 || port > 65535 {
+			return Config{}, fmt.Errorf("PORT: %q is not a port number from 1 to 65535", v)
+		}
+		c.Addr = ":" + v
+	}
+
+	if v := getenv("MAHANATHI_DATA_DIR"); v != "" {
+		c.DataDir = v
+	}
+
+	if v := getenv("MAHANATHI_POLL_EVERY"); v != "" {
+		d, err := time.ParseDuration(v)
+		if err != nil || d < time.Minute {
+			return Config{}, fmt.Errorf("MAHANATHI_POLL_EVERY: %q is not a duration of a minute or more, such as 1h", v)
+		}
+		c.PollEvery = d
+	}
+
+	if v := getenv("MAHANATHI_POLL_OFFSET"); v != "" {
+		d, err := time.ParseDuration(v)
+		if err != nil || d < 0 || d >= c.PollEvery {
+			return Config{}, fmt.Errorf("MAHANATHI_POLL_OFFSET: %q is not a duration from 0 to just under MAHANATHI_POLL_EVERY", v)
+		}
+		c.PollOffset = d
 	}
 
 	if v := getenv("MAHANATHI_LOG_LEVEL"); v != "" {
