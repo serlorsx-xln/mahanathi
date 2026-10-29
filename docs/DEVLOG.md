@@ -197,13 +197,13 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 - **~21:40 AI mistake caught by running the tests.** The timeline test expected the first bucket at 18:00 UTC; 13:00 minus 71 hours is 14:00. The expectation was written by mental arithmetic without checking.
   - **Fix:** the test now derives the expectation the way the code does and pins 14:00.
 
+- **~21:44 Flaky tests under load, not code.** `TestPerAttemptTimeoutIsRetried` and `TestBodyLimit` in the thaiwater package failed once during a full-module run (the machine was running every package's tests at once) and passed in isolation and in the next full run, right before `e448700` (21:45). Both are timing tests around per-attempt timeouts. Recorded here in case CI sees it; no code was changed. (Entry was first logged at the end of the phase as "~22:10", out of order; moved and re-timed in Step 0 of Phase 3 per the lead's finding 5.)
+
 - **~21:55 AI mistake found by debugging a failing round trip.** The test-side timeline decoder wrote `prev + v>>1 ^ -(v&1)` without parentheses, which Go parses as `(prev + v>>1) ^ -(v&1)`: every odd delta decoded as its bitwise complement. The encoder was correct; only the test decoder was wrong. An earlier fix for exactly this did not apply, because gofmt's spacing did not match the string it searched for.
   - **Caught by:** a hexdump of the encoded stream traced against the decoder, after hand-made round-trip data passed but real data failed.
   - **Fix:** parentheses, and a check that the fix applied.
 
 - **~21:55 Design note (not a mistake, a discovery).** 800 × 72 hourly percents as JSON numbers are 96 KB compressed on the smoothest synthetic water and 120 KB on wild water, over the 80 KB budget however the JSON is shaped. The timeline is therefore a binary body: presence bitmap plus zigzag-varint deltas, precision kept at 0.01 % to agree with /now to the digit. Measured 61 KB compressed on rivers wilder than any real one. Documented in `docs/api.md` with a decoder.
-
-- **~21:44 Flaky tests under load, not code.** `TestPerAttemptTimeoutIsRetried` and `TestBodyLimit` in the thaiwater package failed once during a full-module run (the machine was running every package's tests at once) and passed in isolation and in the next full run, right before `e448700` (21:45). Both are timing tests around per-attempt timeouts. Recorded here in case CI sees it; no code was changed. (Entry was first logged at the end of the phase as "~22:10", out of order; moved and re-timed in Step 0 of Phase 3 per the lead's finding 5.)
 
 - **~21:55 AI mistake caught by reading the running container's logs.** The Dockerfile declared `ARG VERSION` before the first FROM only, which scopes it to FROM lines; the build stage saw an empty version, so the User-Agent said `mahanathi/`. **Fix:** re-declare `ARG VERSION` inside the stage (`2df17fb`).
 
