@@ -50,7 +50,7 @@ Two caveats on these numbers:
 
 | Asset | Source and licence | Shape | Bytes on the wire |
 |---|---|---|---|
-| Heightmap | AWS Terrain Tiles, Terrarium z8 (224 tiles, 22,449,608 B fetched); public domain with requested credit | 2048 × 1815 equirectangular, 92–111°E by 3–24°N, about 1.13 km per pixel; 16-bit grey PNG of sqrt-11-bit codes; sea is code 0 (no bathymetry); full precision inside a 75 km band around Thailand, neighbours blurred at r = 2 | **1,269,496** (1,454,568 with r = 1) |
+| Heightmap | AWS Terrain Tiles, Terrarium z8 (224 tiles, 22,449,608 B fetched); public domain with requested credit | 1815 px wide by 2048 px tall (the research doc writes this "2048 × 1815", rows first), equirectangular, 92–111°E by 3–24°N, about 1.13 km per pixel; 16-bit grey PNG of sqrt-11-bit codes; sea is code 0 (no bathymetry); full precision inside a 75 km band around Thailand, neighbours blurred at r = 2 | **1,269,496** (1,454,568 with r = 1) |
 | Provinces | Natural Earth 10m admin-1 v5.1.1; names from a curated Wikidata table, because 6 of NE's 77 `name_local` values are wrong | TopoJSON, simplified to 500 m | 26,580 (brotli) |
 | International lines | Natural Earth 10m boundary lines (land) v5.1.0 | TopoJSON, 500 m; no maritime lines | 13,796 (brotli) |
 | Rivers | OpenStreetMap relations, ODbL 1.0 | 13 rivers, Douglas–Peucker 0.005° (half a DEM pixel) | 11,923 (brotli) |
@@ -62,7 +62,7 @@ What these facts mean for the renderer:
 - **Decoding needs no canvas.** A worker inflates the PNG with `DecompressionStream('deflate')` (Chrome 80, Firefox 113, Safari 16.4). The CPU keeps the `Uint16` codes (7.4 MB) and a lookup table; the GPU gets an `R16F` texture (7.4 MB). That `R16F` filters linearly in core WebGL2 is from the ES 3.0 format table, not a browser test, so the Phase 3 probe confirms it.
 - **Rivers come from OSM, not Natural Earth.** NE has only 8 of the 13 rivers, labels the Nan as the Yom, and its "Chao Phraya" follows the Tha Chin. OSM's Ping and Tapi centre lines have gaps of 7.1 km and 5.1 km that the pipeline must bridge. HydroRIVERS is not shipped, because its licence limits redistribution.
 - **One line style at every border.** The Thailand–Cambodia line is drawn like every other land border, with no labels at the disputed temples. The about page says the lines are approximate, from Natural Earth, and take no position on sovereignty.
-- **A simpler fallback exists.** If the priority mask causes trouble, a uniform 1536 × 1361 (1.51 km per pixel) sqrt-11 PNG is 1,300,913 B, with the same plain error.
+- **A simpler fallback exists.** If the priority mask causes trouble, a uniform sqrt-11 PNG 1361 px wide by 1536 tall (1.51 km per pixel) is 1,300,913 B, with the same plain error.
 
 ## Options
 
@@ -94,7 +94,7 @@ Map libraries pay off when a scene streams tiles across zoom levels, projects on
 **Option 1: a custom R3F scene.** The intended shape is below. The parameters are tuned in Phase 3 and recorded in ADR 0006.
 
 **Terrain:**
-- **Mesh.** One terrain mesh in the projection above, shared with the geodata pipeline. Its heights come from the 2048 × 1815 heightmap as an `R16F` texture, and the vertex shader applies the exaggeration. The mesh can have fewer vertices than the heightmap has pixels; Phase 3 measures the trade.
+- **Mesh.** One terrain mesh in the projection above, shared with the geodata pipeline. Its heights come from the 1815 × 2048 (width × height) heightmap as an `R16F` texture, and the vertex shader applies the exaggeration. The mesh can have fewer vertices than the heightmap has pixels; Phase 3 measures the trade.
 - **CPU copy.** The same `Uint16` codes are sampled bilinearly on the CPU to drape the border and rivers, to seat the gauge bases, and to keep the camera above the terrain during flights.
 
 **Shading:**

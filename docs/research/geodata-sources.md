@@ -10,6 +10,7 @@ Every number comes from a script in `geodata/scripts/research/` run on files dow
 - **Grid:** a regular lon/lat (equirectangular) grid.
   - Extent 92 to 111°E and 3 to 24°N, with pixels made square at 13°N.
   - **2048 × 1815 px, about 1.13 km per pixel.**
+  - Grid sizes in this document are written **rows × columns**. As an image, the 2048 × 1815 grid is 1815 px wide and 2048 px tall, and 1536 × 1361 is 1361 wide and 1536 tall. (Implementer's review note: checked with Pillow on the cached candidates.)
   - Stations map into it linearly from lat/lon. No Web Mercator reaches the client.
 - **Heightmap encoding:** heights on a square-root curve with 11 bits. The sea is a reserved code 0 and is drawn flat and dark, with no bathymetry.
   - Thailand plus a fade band keeps full precision. The neighbours are smoothed, so they cost fewer bytes.
@@ -24,7 +25,7 @@ Every number comes from a script in `geodata/scripts/research/` run on files dow
 - **Rivers:** OpenStreetMap (ODbL) for all 13 named rivers. The relations were found by their Thai names, and all 13 carry Wikidata IDs whose Thai labels match the OSM Thai names exactly. The simplified file is 11.9 KB brotli.
   - Natural Earth has only 8 of the 13, and labels two of those wrongly.
   - HydroRIVERS is positionally good but has no names. Its WWF licence restricts redistribution, which is a risk for a public web app.
-- **Total initial geodata transfer** is about 1.35 MB, almost all of it the heightmap.
+- **Total initial geodata transfer** is about 1.32 MB (section 6), almost all of it the heightmap.
 
 ## 1. Elevation (DEM)
 
