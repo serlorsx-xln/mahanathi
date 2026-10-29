@@ -1,4 +1,0 @@
-Your previous run was cut off by a transient error in the owner's model router. Nothing is lost; this is the same session, and the git history is intact. Continue the current phase exactly where you left off:
-1. `git status`, `git log --oneline -8`, then re-read `docs/PROGRESS.md` and the tail of `docs/DEVLOG.md`.
-2. If mid-verification, re-read your own last phase report's unfinished sections.
-3. Continue the remaining work. Do not repeat completed steps, do not rewrite committed work, and do not re-read the full phase prompt.

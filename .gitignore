@@ -42,3 +42,6 @@ process/.session-id
 # Python bytecode from the research scripts
 __pycache__/
 *.pyc
+# The retry harness's working prompts (canonical prompts live in process/prompts/)
+process/.phase-prompt*
+process/.retry-prompt*
