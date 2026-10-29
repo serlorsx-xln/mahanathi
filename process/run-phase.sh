@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Runs one phase of the build with the implementing Claude session.
 # Usage: process/run-phase.sh <phase-number>
+#        FRESH=1 process/run-phase.sh <phase-number>   (start a new session)
 # The prompt is process/prompts/phase-N.md plus the lead's review notes from
 # process/lead-notes/phase-N.md, if that file exists. Every phase after the
 # first resumes the same session, so the implementer keeps its context.
+# FRESH=1 starts a new session instead; the next phase resumes that one.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -28,7 +30,7 @@ args=(-p
   --output-format stream-json
   --verbose
   --name mahanathi)
-if [[ -s "$session_file" ]]; then
+if [[ -s "$session_file" && "${FRESH:-0}" != 1 ]]; then
   args+=(--resume "$(cat "$session_file")")
 fi
 
