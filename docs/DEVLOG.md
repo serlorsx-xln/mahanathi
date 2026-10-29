@@ -5,7 +5,7 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 **Authorship:**
 - The implementing agent is a Claude Code session (Claude Opus 5.5). It wrote everything from commit `36fdd33` on.
 - Those commits use this checkout's configured git identity as author, and each one ends with a `Co-Authored-By: Claude Opus 5.5` trailer. No human wrote that code.
-- The lead's commits are `b85c01f` and `69b1357`.
+- The lead's commits are `b85c01f`, `69b1357` and `f4b131f`.
 - Three research documents were drafted by sub-agents that the implementing agent started (also Claude): `references.md`, `typography.md` and `geodata-sources.md`. The implementing agent reviewed each one before committing it. Those sub-agents' mistakes are logged here like any other.
 
 **Entry tags:**
@@ -135,3 +135,24 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
   - None of RID's 19:00 readings was out by 19:10, while 217 of 315 17:00 readings had been out by 17:54. A poll at :07 therefore stores the previous hour for hourly stations.
   - A re-run of `dq_scan.py` on the 19:05 snapshot reproduced every Phase 1 finding.
   - Committed as `6efc1e7`.
+
+- **~19:17 Process mistake.** The agent ended its turn while the geodata sub-agent was still running.
+  - The session runs headless, so ending the turn ended Phase 1.
+  - It left `geodata-sources.md`, its scripts, ADR 0004, the report and `PROGRESS.md` uncommitted, and the report still had four placeholders.
+  - The sub-agent's last file write was at 19:17:44 (`osm_rivers_report.txt`).
+  - **Caught by:** the lead's review (`f4b131f`, 19:28), which added the headless rule to `CLAUDE.md`.
+  - **Fix:** Phase 1 was closed in Step 0 of Phase 2, before any Phase 2 work. From now on, sub-agents run in the foreground or are waited for.
+
+- **19:28 Process.** The lead reviewed Phase 1 (`f4b131f`): brief corrections, answers to questions 1–12 and the Phase 2 notes.
+
+## 2026-10-29, Phase 1 close-out (Step 0 of Phase 2)
+
+- **19:30 Commit.** The geodata research and its scripts (`fa8a9fb`), after review.
+  - The review fixed three references to "Phase 2" that meant the Phase 3 pipeline, removed a note about a stray `__pycache__` (now deleted), and pinned the scripts' Python packages in `requirements.txt`.
+
+- **19:32 Commit.** ADR 0004 with the geodata facts folded in (`97629df`).
+
+- **~19:34 AI mistake (sub-agent, copied by the agent).** The geodata research writes grid sizes rows first ("2048 × 1815"). The agent copied that into ADR 0004 as if it were width × height.
+  - The PNG is 1815 px wide and 2048 px tall. A Phase 3 loader that trusted the ADR would have built the texture transposed.
+  - **Caught by:** a spot-check of the cached heightmap with Pillow, run to verify the sizes before writing the report's evidence.
+  - **Fix:** both documents now state width and height explicitly (`7c166aa`).
