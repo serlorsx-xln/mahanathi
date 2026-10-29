@@ -1,0 +1,13 @@
+# Prettier formats front-end source only. Docs, briefs and generated files
+# are left exactly as written.
+*.md
+# macOS AppleDouble side files on exFAT
+._*
+pnpm-lock.yaml
+dist/
+coverage/
+node_modules/
+server/
+geodata/
+process/
+docs/
