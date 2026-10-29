@@ -5,9 +5,20 @@
 // distance to the bank, and the level thresholds) because those three
 // formulas are the product's core claims and must exist exactly once. It has
 // no dependencies and does no I/O.
+//
+// The claims are computed in whole millimetres, the finest unit ThaiWater
+// publishes, so that they are exact. In float64 an exact 70 % can come out
+// as 70.000000000000014 and cross the "> 70" threshold, and 104.375 % can
+// come out as 104.37499999999999 and round the wrong way.
 package domain
 
-import "time"
+import (
+	"math"
+	"time"
+)
+
+// MM converts metres to the nearest whole millimetre.
+func MM(m float64) int64 { return int64(math.Round(m * 1000)) }
 
 // Level is ThaiWater's five-step situation scale, computed by us from the
 // percent of bank-full. LevelUnknown means the station's references do not
@@ -41,9 +52,11 @@ var Thresholds = []Threshold{
 	{10, LevelLow},
 }
 
-// LevelForPct applies the thresholds. Everything at or below 10 % (including
-// negative percents, where the water is under the ground reference) is
-// LevelCriticallyLow.
+// LevelForPct applies the thresholds to a percent that is already known,
+// such as ThaiWater's published storage_percent. Everything at or below 10 %
+// (including negative percents, where the water is under the ground
+// reference) is LevelCriticallyLow. Station.Level does the same comparison
+// exactly, without forming the percent.
 func LevelForPct(pct float64) Level {
 	for _, t := range Thresholds {
 		if pct > t.Above {
@@ -136,32 +149,76 @@ func (s Station) HasBankFull() bool { return s.Refs == RefsComplete || s.Refs ==
 // HasGround reports whether the ground reference can be used.
 func (s Station) HasGround() bool { return s.Refs == RefsComplete }
 
-// Pct is the percent of bank-full, (wl − ground)/(bankFull − ground) × 100,
-// unrounded and possibly negative or above 100.
-func (s Station) Pct(wl float64) (float64, bool) {
+// Fill is how far up the bank the water stands, as an exact fraction in
+// whole millimetres: the percent of bank-full is 100 × above / height, where
+// above is wl − ground and height is bankFull − ground (always positive).
+func (s Station) Fill(wl float64) (above, height int64, ok bool) {
 	if s.Refs != RefsComplete {
+		return 0, 0, false
+	}
+	g := MM(s.Ground)
+	above, height = MM(wl)-g, MM(s.BankFull)-g
+	if height <= 0 {
+		return 0, 0, false
+	}
+	return above, height, true
+}
+
+// Pct is the percent of bank-full, (wl − ground)/(bankFull − ground) × 100,
+// unrounded and possibly negative or above 100. It is for display and
+// sorting; levels and served percents come from Level and PctHundredths.
+func (s Station) Pct(wl float64) (float64, bool) {
+	above, height, ok := s.Fill(wl)
+	if !ok {
 		return 0, false
 	}
-	return (wl - s.Ground) / (s.BankFull - s.Ground) * 100, true
+	return float64(above) / float64(height) * 100, true
+}
+
+// PctHundredths is the percent of bank-full in hundredths of a percent,
+// rounded half away from zero: 10438 is 104.38 %. It is what the API serves
+// and what humanize prints, so the two agree to the digit.
+func (s Station) PctHundredths(wl float64) (int64, bool) {
+	above, height, ok := s.Fill(wl)
+	if !ok {
+		return 0, false
+	}
+	return divRound(above*10000, height), true
 }
 
 // Level is the level for a water level, or LevelUnknown without a percent.
+// "pct > t" is tested as 100 × above > t × height, which is exact for the
+// whole-number thresholds of rule_web (ingest stops trusting them if
+// ThaiWater changes them).
 func (s Station) Level(wl float64) Level {
-	pct, ok := s.Pct(wl)
+	above, height, ok := s.Fill(wl)
 	if !ok {
 		return LevelUnknown
 	}
-	return LevelForPct(pct)
+	for _, t := range Thresholds {
+		if float64(above*100) > t.Above*float64(height) {
+			return t.Level
+		}
+	}
+	return LevelCriticallyLow
 }
 
-// Distance is the signed distance from bank-full in metres: positive means
-// the water is above the bank. We compute it ourselves because ThaiWater's
-// diff_wl_bank is unsigned.
-func (s Station) Distance(wl float64) (float64, bool) {
+// Distance is the signed distance from bank-full in millimetres: positive
+// means the water is above the bank. We compute it ourselves because
+// ThaiWater's diff_wl_bank is unsigned.
+func (s Station) Distance(wl float64) (int64, bool) {
 	if !s.HasBankFull() {
 		return 0, false
 	}
-	return wl - s.BankFull, true
+	return MM(wl) - MM(s.BankFull), true
+}
+
+// divRound is n / d rounded half away from zero, for d > 0.
+func divRound(n, d int64) int64 {
+	if n < 0 {
+		return -((-2*n + d) / (2 * d))
+	}
+	return (2*n + d) / (2 * d)
 }
 
 // Reading is one measured water level.

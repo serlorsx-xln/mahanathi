@@ -141,8 +141,8 @@ func TestLoadFixtureCases(t *testing.T) {
 			d, hasD := s.Distance(o.Reading.WL)
 			if math.IsNaN(c.distance) == hasD {
 				t.Errorf("has distance = %v, want %v", hasD, !math.IsNaN(c.distance))
-			} else if hasD && !near(d, c.distance, 1e-9) {
-				t.Errorf("distance = %v, want %v", d, c.distance)
+			} else if hasD && d != domain.MM(c.distance) {
+				t.Errorf("distance = %d mm, want %v m", d, c.distance)
 			}
 			if got := o.Reading.At.Format(time.RFC3339); got != c.measuredAt {
 				t.Errorf("measuredAt = %s, want %s", got, c.measuredAt)

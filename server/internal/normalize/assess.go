@@ -1,7 +1,6 @@
 package normalize
 
 import (
-	"math"
 	"time"
 
 	"github.com/serlorsx-xln/mahanathi/server/internal/domain"
@@ -32,9 +31,9 @@ func IsStale(at, now time.Time) bool { return now.Sub(at) > StaleAfter }
 // when it is unknown, and the jump check is skipped.
 func SuspectReasons(st domain.Station, r domain.Reading, prev domain.Point, now time.Time) []domain.SuspectReason {
 	var out []domain.SuspectReason
-	wl := toMM(r.WL)
+	wl := domain.MM(r.WL)
 	if st.HasGround() {
-		ground, bank := toMM(st.Ground), toMM(st.BankFull)
+		ground, bank := domain.MM(st.Ground), domain.MM(st.BankFull)
 		if wl < ground-maxBelowGroundMM {
 			out = append(out, domain.SuspectBelowGround)
 		}
@@ -43,7 +42,7 @@ func SuspectReasons(st domain.Station, r domain.Reading, prev domain.Point, now 
 		}
 	}
 	if prev.OK {
-		if d := wl - toMM(prev.WL); d > maxJumpMM || d < -maxJumpMM {
+		if d := wl - domain.MM(prev.WL); d > maxJumpMM || d < -maxJumpMM {
 			out = append(out, domain.SuspectJump)
 		}
 	}
@@ -81,5 +80,3 @@ func Hourly(readings []domain.Reading, end time.Time, hours int) []domain.Point 
 	}
 	return pts
 }
-
-func toMM(v float64) int64 { return int64(math.Round(v * 1000)) }
