@@ -27,10 +27,17 @@ const (
 	minLat, maxLat = 3.0, 24.0
 )
 
-// refMismatchTolerance is how far the graph and load references may differ
-// before it is more than rounding: the load gives 2 decimals, so up to
-// 0.005 m is expected.
-const refMismatchTolerance = 0.005
+// refMismatchToleranceMM is how far, in whole millimetres, the graph and
+// load references may differ before it is more than rounding: the load gives
+// 2 decimals, so up to 5 mm is expected. Comparing metres as floats instead
+// flags 0.905 against 0.91, whose difference is 0.0050000000000000044.
+const refMismatchToleranceMM = 5
+
+// refsDiffer reports whether two references differ by more than rounding.
+func refsDiffer(a, b float64) bool {
+	d := domain.MM(a) - domain.MM(b)
+	return d > refMismatchToleranceMM || d < -refMismatchToleranceMM
+}
 
 // WarningKind classifies a data problem found while normalising.
 type WarningKind string
@@ -211,13 +218,13 @@ func ResolveRefs(load LoadRefs, graph *GraphRefs) (refs domain.Refs, bankFull, g
 	if graph != nil {
 		var diffs []string
 		if gb := mmOf(graph.BankFull); gb != nil {
-			if bank != nil && math.Abs(*gb-*bank) > refMismatchTolerance {
+			if bank != nil && refsDiffer(*gb, *bank) {
 				diffs = append(diffs, fmt.Sprintf("min_bank graph %.3f load %.3f", *gb, *bank))
 			}
 			bank = gb
 		}
 		if gg := mmOf(graph.Ground); gg != nil {
-			if gnd != nil && math.Abs(*gg-*gnd) > refMismatchTolerance {
+			if gnd != nil && refsDiffer(*gg, *gnd) {
 				diffs = append(diffs, fmt.Sprintf("ground_level graph %.3f load %.3f", *gg, *gnd))
 			}
 			gnd = gg

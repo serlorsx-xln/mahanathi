@@ -172,3 +172,17 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 - **~20:10 AI mistake caught by review.** `domain.Level` (`39be5ae`) compared float64 percents with the thresholds. With ground −1.356, bank 5.044 and wl 3.124, an exact 70 % computes as 70.000000000000014 % and became level 4, though rule_web says "<=70" is level 3. 104.375 % computed as 104.37499999999999.
   - **Caught by:** working out the expected percent for a humanize test by hand (8.35 / 8 = 104.375, so 104.38), then a scratch search that found the 70 % cases.
   - **Fix:** levels, percents and distances are computed in whole millimetres (`96084d6`). The oracle still agrees on all 37 fixture rows.
+
+- **~20:20 AI mistake caught while writing the store tests.** `go get modernc.org/sqlite@latest` resolved to v1.61.0, whose module requires Go 1.26. The local toolchain is Go 1.25.6, so the build broke the moment the dependency landed.
+  - **Caught by:** `go build ./...` immediately after the `go get`.
+  - **Fix:** pinned v1.59.0, the newest version that builds on Go 1.25, as part of `9cd5506`. Recorded late (21:07); the entry was planned before the outage and lost with it.
+
+- **~20:30 AI mistake caught while preparing the ingest tests.** `normalize.ResolveRefs` compared the load and graph references as float64 metres with `math.Abs(a-b) > 0.005`. For BKC004 the load's 0.91 and the graph's 0.905 differ by 0.0050000000000000044 in float64, so a value that is exactly the expected rounding was flagged as a disagreement.
+  - **Caught by:** a table case for the ingest oracle that expected zero ref-mismatch warnings on the recorded fixtures.
+  - **Fix:** the tolerance is now whole millimetres (`refsDiffer`, 5 mm), consistent with the mm arithmetic everywhere else (`96084d6`). Committed after the outage as `8438de1`-to-be; the edit itself was written before 20:31 and survived on disk.
+
+- **20:32 Outage.** The machine lost power while Phase 2 was running; the implementer ran headless under the lead's orchestration session, so the run died mid-ingest. Uncommitted work survived on disk (the normalize fix above and the new `ingest_test.go`). No implementer process was left running. The lead verified the repo (`git fsck` clean apart from exFAT `._*` noise, build ok) and resumed this session.
+
+- **Correction of a commit message (not history).** `5b86a32` says "51 table cases". The tables in `humanize_test.go` hold 46 `Describe` cases and 20 `National` cases. Per the lead's answer 11 the commit stays as written; this entry is the correction of record.
+
+- **21:07 Model switch, recorded per the lead's continuation note.** From this resume the implementing session runs on **GLM-5.3** through the owner's router. The owner chose this after the Anthropic subscription was blocked for past-due payment. Everything through `fc26478` (Phases 1 and the first half of Phase 2) was written by Claude Opus 5.5 at effort xhigh; from here the DEVLOG is the source of truth for which model wrote what. Same session id, context intact. The briefs, test discipline and gates are unchanged.

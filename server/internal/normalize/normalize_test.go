@@ -227,6 +227,11 @@ func TestResolveRefs(t *testing.T) {
 		{"load only", LoadRefs{f(40.6), f(37.72)}, nil, domain.RefsComplete, 40.6, 37.72, false},
 		{"graph wins at full precision", LoadRefs{f(225.39), f(221.824)}, &GraphRefs{f(225.386), f(221.824)}, domain.RefsComplete, 225.386, 221.824, false},
 		{"graph wins and a real difference warns", LoadRefs{f(2.0), f(-2.065)}, &GraphRefs{f(2.139), f(-2.065)}, domain.RefsComplete, 2.139, -2.065, true},
+		// BKC004 in the fixture: 0.91 - 0.905 is 0.0050000000000000044 in
+		// float64, which once looked like more than rounding.
+		{"exactly 5 mm is rounding", LoadRefs{f(0.91), f(-1.27)}, &GraphRefs{f(0.905), f(-1.265)}, domain.RefsComplete, 0.905, -1.265, false},
+		{"6 mm on the bank warns", LoadRefs{f(0.91), f(-1.27)}, &GraphRefs{f(0.904), f(-1.27)}, domain.RefsComplete, 0.904, -1.27, true},
+		{"6 mm on the ground warns", LoadRefs{f(0.91), f(-1.27)}, &GraphRefs{f(0.91), f(-1.276)}, domain.RefsComplete, 0.91, -1.276, true},
 		{"graph fills an absent load ground", LoadRefs{f(10.9), nil}, &GraphRefs{f(10.9), f(8.0)}, domain.RefsComplete, 10.9, 8.0, false},
 		{"graph without refs keeps load", LoadRefs{f(10.9), nil}, &GraphRefs{nil, nil}, domain.RefsBankOnly, 10.9, 0, false},
 		{"ground absent", LoadRefs{f(10.9), nil}, nil, domain.RefsBankOnly, 10.9, 0, false},
