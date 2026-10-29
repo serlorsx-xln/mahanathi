@@ -7,31 +7,26 @@ Updated at the end of every phase. The detail lives in `process/reports/phase-N.
 | # | Phase | Status | Gate | Report |
 |---|---|---|---|---|
 | 1 | Discovery and foundation | **done**, reviewed by the lead, closed out in Phase 2's Step 0 | research with sources ✓, ADRs for stack, storage and data reference ✓ (plus rendering), scaffold builds and tests pass ✓, CI defined ✓ | `process/reports/phase-1.md` |
-| 2 | Data core (TDD) | **in progress** | | |
+| 2 | Data core (TDD) | **done**, awaiting the lead's review | pipeline live-verified on 804 stations ✓, oracle 789/789 ✓, timeline within budget (46 KB gzipped of 80) ✓, humanize coverage 100 % ✓, deploy image builds and self-healthchecks ✓ | `process/reports/phase-2.md` |
 | 3 | Look-dev | not started | | |
 | 4 | Product build | not started | | |
 | 5 | Polish and hardening | not started | | |
 | 6 | Ship docs and handover | not started | | |
 
-## Current state (start of Phase 2, 2026-10-29)
+## Current state (end of Phase 2, 2026-10-29)
 
 **What exists:**
-- **Server:** `cmd/mahanathi` serves only `/healthz`, with env config, slog and graceful shutdown. The internal packages exist as documented empty shells.
-- **Web:** a blank page with the wordmark. The 3D libraries are installed but not imported.
-- **E2E:** a Playwright smoke test.
-- **Build:** a Makefile, a Dockerfile (a 14.1 MB distroless image) and a CI workflow.
+- **Server:** the whole data pipeline runs from one binary. `thaiwater` (client with fixtures), `normalize` (ADR 0003 arithmetic, mm-exact), `domain` (levels, percents, distances), `humanize` (the Thai sentence, 100 % coverage), `store` (SQLite WAL, migrations, retention), `ingest` (hourly at :07, 72 h backfill, oracle), `api` (`/now`, `/history`, `/timeline`, `/readyz`) and `main` wiring with env config and a `healthcheck` subcommand.
+- **Web:** the placeholder page the lead asked for — the national sentence and the five most severe stations from `/api/v1/now`, plain semantic HTML, no styling decisions. The real UI is Phase 3.
+- **Build:** `make docker` builds the 21.4 MB deploy image (distroless, `/data` for 65532, self-healthcheck); `make docker-full` is the whole pipeline once Phase 3 ships.
 
-**Data findings:**
-- ThaiWater is understood, with recorded fixtures in `server/internal/thaiwater/testdata/` and the evidence in `docs/research/data-quality.md`.
-- Bank-full is `min_bank` and ground is `ground_level`; `left_bank` and `right_bank` are never read (ADR 0003).
+**Live evidence (21:57 ICT):** first ingest in 33 s — 804 rows, 251,624 readings, 804/804 histories, oracle 789/789. `/now` 85 KB gzipped; the binary timeline body 46 KB gzipped against the 80 KB budget. Details and the five hand-checked sentences: `process/reports/phase-2.md`.
 
-**Decisions:**
-- ADR 0001: one binary that embeds the web build.
-- ADR 0002: SQLite through modernc.
-- ADR 0003: the bank-full reference.
-- ADR 0004: custom R3F relief, with a fallback ladder and the geodata facts it depends on.
+**Data findings:** finalised in `docs/research/data-quality.md` — three snapshots agree (17:54, 19:05, 21:49 night), the two live suspects are hand-checked logger datum alternation.
 
-**Answered by the lead** (`process/lead-notes/phase-2.md`): questions 1–12 of the Phase 1 report. Questions 13–17, added at the close-out, are still open.
+**Decisions:** ADR 0001–0004 as before. The timeline wire format (binary MNTL, delta varints) is documented in `docs/api.md`, the contract for Phase 4.
+
+**Model note:** from `23a869f` the implementing session runs on GLM-5.3 (the owner's decision, recorded in the DEVLOG and `process/README.md`); everything before is Opus 5.5 at xhigh.
 
 ## How to check the current state
 
