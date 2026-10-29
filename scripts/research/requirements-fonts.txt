@@ -1,0 +1,6 @@
+# Pinned versions used for docs/research/typography.md (2026-10-29).
+# Install into the gitignored research venv:
+#   python3 -m venv .cache/venv && .cache/venv/bin/python -m pip install -r scripts/research/requirements-fonts.txt
+fonttools==4.60.2
+uharfbuzz==0.51.7
+brotli==1.2.1
