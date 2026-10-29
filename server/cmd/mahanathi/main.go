@@ -20,7 +20,7 @@ import (
 	"syscall"
 	"time"
 
-	"mahanathi/internal/config"
+	"github.com/serlorsx-xln/mahanathi/server/internal/config"
 )
 
 func main() {
