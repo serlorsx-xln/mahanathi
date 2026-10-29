@@ -16,7 +16,8 @@ for line in open(sys.argv[1], encoding="utf-8"):
         pass
 done = next((e for e in reversed(events) if e.get("type") == "result"), None)
 if done:
-    print("status: finished", "(error)" if done.get("is_error") else "", f"turns={done.get(\"num_turns\")}", f"cost=${done.get(\"total_cost_usd\", 0):.2f}")
+    flag = "(error)" if done.get("is_error") else ""
+    print("status: finished", flag, "turns=%s" % done.get("num_turns"), "cost=$%.2f" % (done.get("total_cost_usd") or 0))
 else:
     print("status: running")
 steps = []
@@ -27,7 +28,7 @@ for e in events:
         if c.get("type") == "tool_use":
             inp = c.get("input", {})
             what = inp.get("description") or inp.get("file_path") or inp.get("command") or inp.get("pattern") or ""
-            steps.append(f"{c.get(\"name\")}: {str(what)[:110]}")
+            steps.append("%s: %s" % (c.get("name"), str(what)[:110]))
 print("recent steps:")
 for s in steps[-12:]:
     print("  -", s)
