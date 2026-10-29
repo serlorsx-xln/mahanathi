@@ -179,7 +179,7 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 
 - **~20:30 AI mistake caught while preparing the ingest tests.** `normalize.ResolveRefs` compared the load and graph references as float64 metres with `math.Abs(a-b) > 0.005`. For BKC004 the load's 0.91 and the graph's 0.905 differ by 0.0050000000000000044 in float64, so a value that is exactly the expected rounding was flagged as a disagreement.
   - **Caught by:** a table case for the ingest oracle that expected zero ref-mismatch warnings on the recorded fixtures.
-  - **Fix:** the tolerance is now whole millimetres (`refsDiffer`, 5 mm), consistent with the mm arithmetic everywhere else (`96084d6`). Committed after the outage as `8438de1`-to-be; the edit itself was written before 20:31 and survived on disk.
+  - **Fix:** the tolerance is now whole millimetres (`refsDiffer`, 5 mm), consistent with the mm arithmetic everywhere else (`96084d6`). Committed after the outage as `23a869f`; the edit itself was written before 20:31 and survived on disk.
 
 - **20:32 Outage.** The machine lost power while Phase 2 was running; the implementer ran headless under the lead's orchestration session, so the run died mid-ingest. Uncommitted work survived on disk (the normalize fix above and the new `ingest_test.go`). No implementer process was left running. The lead verified the repo (`git fsck` clean apart from exFAT `._*` noise, build ok) and resumed this session.
 
