@@ -16,6 +16,8 @@ RUN pnpm --filter @mahanathi/web build
 ARG VERSION=dev
 
 FROM golang:1.25-alpine AS server
+# Re-declare so the stage sees the global VERSION (or its default, "dev").
+ARG VERSION
 WORKDIR /src/server
 COPY server/go.mod server/go.sum ./
 RUN go mod download
