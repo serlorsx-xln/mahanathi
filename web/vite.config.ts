@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
+import { configDefaults } from 'vitest/config';
 
 // The Go server serves the built files and the API on one origin in
 // production. In development, Vite proxies /api to the Go server so the
@@ -21,5 +22,12 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+  },
+  test: {
+    // Pure logic (formatters, search, nearest station, timeline decoding)
+    // runs in Node. Component tests can opt into a DOM per file later.
+    environment: 'node',
+    include: ['src/**/*.test.{ts,tsx}'],
+    exclude: [...configDefaults.exclude, '**/._*'],
   },
 });
