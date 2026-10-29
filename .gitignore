@@ -1,0 +1,27 @@
+# macOS and exFAT side files
+.DS_Store
+._*
+
+# dependencies and builds
+node_modules/
+dist/
+server/web/dist/
+coverage/
+
+# runtime data
+/data/
+*.db
+*.db-wal
+*.db-shm
+
+# geodata download cache
+geodata/.cache/
+
+# agent orchestration (local only)
+process/logs/
+process/.session-id
+
+# env
+.env
+.env.*
+!.env.example
