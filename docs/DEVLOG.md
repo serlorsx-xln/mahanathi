@@ -210,3 +210,9 @@ This log records real events only. Times are ICT (UTC+7). Exact times come from 
 - **~21:58 AI mistake caught by looking at the served page.** The deploy image served a real web build, not the placeholder the lead asked for: the single server stage copied the web dist unconditionally, and a build from 18:55 was lying around. **Fix:** the Dockerfile now has a `deploy` target (server only, placeholder page) and a `full` target with the web build; `make docker` builds deploy, `make docker-full` builds full (`f6038ef`).
 
 - **21:57 Live verification.** The deploy image (21.4 MB, distroless, healthcheck healthy, 0 warnings in the log) ran its first ingest in 33 s: 804 rows, 804 observations, 251,624 readings upserted, 804/804 histories fetched, oracle 789/789 levels in agreement. `/api/v1/now` (765 KB raw, 85 KB gzipped) served the national sentence "ตอนนี้ 18 สถานีน้ำล้นตลิ่ง ส่วนใหญ่อยู่ที่นครปฐม กาญจนบุรี และสุพรรณบุรี"; the timeline body is 74 KB raw, 46 KB gzipped. The two suspect stations (MKSND01, BKK005) were hand-checked against the raw graph responses; both are datum alternation in the logger (details in data-quality.md). The live container and its volume were removed after the checks; the image is on the local daemon.
+
+## 2026-10-29, Phase 3 (look-dev)
+
+- **22:36 Step 0.** The five findings from the lead's Phase 2 review were fixed, each in its own commit: the `suspect` wire shape (`dd30cf9`), the timeline decoder doc (`23ede73`), the 429 security headers (`4f370c9`), the Phase 2 report's rate-limit record (`c10b3c3`), and the DEVLOG ordering above (`000b801`).
+
+- **22:36 Process mistake.** While reordering the DEVLOG entry, a commit command was mistyped and an empty-message commit `7cdc970` ("amend") landed with the reorder diff in it, and the intended message never did. The file content is correct; only the commit message is wrong. Recorded here rather than rewritten (the lead's answer 11: no history rewrites).
