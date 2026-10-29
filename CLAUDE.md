@@ -19,6 +19,7 @@ You are the implementing engineer on this project. A tech lead reviews your work
 - **Decisions:** any choice that is hard to reverse gets an ADR in `docs/adr/NNNN-title.md` (context, options, decision, consequences).
 - **Design gate:** no UI work is "done" until it passes the anti-slop checklist in the design brief, with screenshot evidence in `docs/design/screens/`. Use the `impeccable` skill (`/impeccable critique`, `/impeccable audit`, `/impeccable polish`) at the points the workflow names.
 - **When blocked:** pick the reversible option, write the reasoning in the phase report under "Open questions", and keep going.
+- **You run headless: ending your turn ends the phase.** Never end your turn while a sub-agent or background command is still running, because its result will be lost. Run sub-agents in the foreground or wait for them, then integrate, commit and finish the report. The report must have no unfilled placeholders when you stop.
 
 ## Environment facts
 - The project lives on an **exFAT** volume. Symlinks work but hardlinks do not. Keep `package-import-method=copy` in `.npmrc` and set `git config core.fileMode false`. Ignore `._*` and `.DS_Store`.

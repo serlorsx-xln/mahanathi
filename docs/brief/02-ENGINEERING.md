@@ -29,6 +29,8 @@
 
 - Snapshot at 14:00: level counts were 5→22, 4→145, 3→348, 2→211, 1→63 and null→15. Timestamps were mostly from the current or previous hour, with a few rows hours old, so **stale rows exist**.
 
+> **Correction (lead, after the Phase 1 review):** `diff_wl_bank` is **unsigned** (`|wl − min_bank|`). The direction lives only in `diff_wl_bank_text`. Our code computes the signed difference itself and never reads the sign of this field. The thresholds are in `scale.data.rule_web`; `scale.data.scale` holds labels and colours. See ADR 0003 and `docs/research/data-quality.md`, which supersede the observation below.
+
 ### Data-quality observation (a lead, not a fact; verify across all stations)
 Sample station Gt.11 บ้านช้างแรก (Prachuap Khiri Khan):
 - `left_bank` 84.71, `right_bank` 84.34, `min_bank` 40.60, `ground_level` 37.72, `waterlevel_msl` 41.93
@@ -42,7 +44,7 @@ So `left_bank` and `right_bank` look inconsistent with `min_bank` for this stati
 
 ### History (for backfill and the 72-hour timeline)
 `GET https://api-v3.thaiwater.net/api/v1/thaiwater30/public/waterlevel_graph?station_type=tele_waterlevel&station_id={station.id}&start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`
-- Returns `{result:"OK", data:{graph_data:[{datetime, value, value_out, discharge}]}}` with hourly values that can be null.
+- Returns `{result:"OK", data:{graph_data:[{datetime, value, value_out, discharge}]}}` with values that can be null. Values are every 10 minutes for HII stations and hourly for RID stations (corrected after Phase 1), so bucket them to hours (the last non-null reading in each hour).
 - Use it to backfill 72 hours on first start and for newly seen stations.
 - Concurrency must stay at 4 or lower, with exponential backoff and jitter.
 
