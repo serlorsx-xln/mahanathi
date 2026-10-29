@@ -14,9 +14,9 @@ This project is built in phases by an AI coding agent. The owner (ชานน) 
 Each loop goes: prompt → plan → small commits with tests → verification (with screenshots for UI) → report → lead review → next prompt.
 
 ## Session history
-| 3 (look-dev) | NEW session (fresh), 2026-10-29 ~22:32 | Resuming the 0d3d17b5 session sends a payload the owner's router rejects (two proxy "network error" failures). Phases now start fresh by default — the briefs, lead notes, PROGRESS and DEVLOG are the memory — so FRESH=1 is used for every phase from here on |
 | Phase | Session | Why |
 |---|---|---|
 | 1–2 | `0d3d17b5` (resumed every phase) | The implementing session keeps its context across phases |
 | 2 | interrupted once, 2026-10-29 ~20:32 | The lead's orchestration session ended while Phase 2 was running; the implementer process was killed mid-ingest. Phase 2 was resumed from the same session id afterwards |
 | 2 (resume) | model switched Opus 5.5 → GLM-5.3, 2026-10-29 ~21:10 | The owner's Anthropic subscription was blocked for past-due payment and the owner's router serves no Claude models. The owner chose to continue on GLM-5.3. Recorded in the DEVLOG; same session id |
+| 3 (look-dev) | `0d3d17b5` continues | Two resume attempts at ~22:27/22:28 hit the router's request-size limit (~90 s "network error"); a stray fresh-session start at 22:30:47 was aborted within a minute and is not part of the build. The owner requires the same session to carry through, so the lead retries the same session |
