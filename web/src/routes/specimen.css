@@ -1,0 +1,108 @@
+/* /specimen - a dev evidence page, quiet by design: one column, ruled
+   sections, no cards. The pairings stack so each can be read at full
+   width and judged against the others on scroll. */
+
+.specimen {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5) var(--space-8);
+}
+
+.specimen__head {
+  margin-bottom: var(--space-7);
+}
+
+.specimen__head h1 {
+  font-size: var(--type-title-size);
+  font-weight: var(--type-weight-semibold);
+  line-height: 1.4;
+}
+
+.specimen__head p {
+  margin-top: var(--space-2);
+  font-size: var(--type-small-size);
+  line-height: var(--type-small-line-height);
+  color: var(--color-text-secondary);
+}
+
+.specimen__pairing {
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.specimen__pairing h2 {
+  font-size: var(--type-title-sm-size);
+  font-weight: var(--type-weight-semibold);
+  line-height: 1.5;
+}
+
+.specimen__note {
+  margin-top: var(--space-1);
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+}
+
+.specimen__sentences {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.specimen__sentence figcaption {
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-1);
+}
+
+.specimen__sentence blockquote {
+  margin: 0;
+  font-size: var(--type-sentence-size);
+  line-height: var(--type-sentence-line-height);
+  font-weight: var(--type-weight-regular);
+  text-wrap: balance;
+}
+
+.specimen__body {
+  margin-top: var(--space-6);
+  display: grid;
+  gap: var(--space-2);
+  font-size: var(--type-body-size);
+}
+
+.specimen__stack {
+  overflow: hidden; /* the clipping risk the research flags for Anuphan */
+  color: var(--color-text-secondary);
+}
+
+.specimen__province {
+  font-size: var(--type-title-size);
+  font-weight: var(--type-weight-semibold);
+  line-height: 1.5;
+}
+
+.specimen__readout {
+  margin-top: var(--space-6);
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--type-small-size);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.specimen__readout th {
+  text-align: left;
+  font-weight: var(--type-weight-regular);
+  color: var(--color-text-faint);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border-strong);
+}
+
+.specimen__readout td {
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.specimen__readout th:not(:first-child),
+.specimen__readout td:not(:first-child) {
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+}

@@ -1,0 +1,44 @@
+/* Element defaults for every route, product and dev pages alike. The
+   tokens above carry the values; this file only applies them. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-ground);
+  color: var(--color-text-primary);
+  font-family: var(--font-ui);
+  line-height: var(--type-body-line-height);
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Browser surfaces are part of the design, not defaults to inherit. */
+::selection {
+  background: var(--color-selection-bg);
+  color: var(--color-selection-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}

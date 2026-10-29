@@ -51,20 +51,27 @@ export const relief = {
 
 /**
  * The situation scale, redesigned (ThaiWater's five colours were neither
- * ordered nor harmonious). Saturation and lightness rise with danger;
- * only levels 4 and 5 get strong colour; level 1 is a drought concern in
- * a muted umber, a different family from the flood reds. Every entry
- * passes WCAG AA as small text on ground, panel and elevated (tested in
- * tokens.test.ts), and under deuteranopia and protanopia the two
- * actionable levels sit at the lightness extremes (level 4 lightest,
- * level 5 darkest) - see the /lookdev colour evidence.
+ * ordered nor harmonious). Only levels 4 and 5 get strong colour; level 1
+ * is a drought concern in a muted slate blue, a different family from
+ * the flood arm entirely. Level 2 is near-grey, level 3 a quiet green,
+ * so the quiet third of the scale stays quiet. Every entry passes WCAG
+ * AA as small text on ground, panel and elevated (tested in
+ * tokens.test.ts).
+ *
+ * The scale was chosen by constrained search (scripts/research/
+ * cvd_scale_search, recorded in the Phase 3 look-dev evidence) so that
+ * under Machado deuteranopia and protanopia simulation every pair of
+ * levels stays at least ~15 delta-E apart: reds and greens both collapse
+ * toward olive, so the separation is carried by lightness, by
+ * colorfulness (the grey level 2 against the saturated 4 and 5), and by
+ * the blue axis, which survives both simulations and carries level 1.
  */
 export const situations = [
-  { level: 1, key: 'critically-low', label: 'น้ำน้อยวิกฤติ', hex: '#b08a63' },
-  { level: 2, key: 'low', label: 'น้ำน้อย', hex: '#9aa590' },
-  { level: 3, key: 'normal', label: 'น้ำปกติ', hex: '#5c9e72' },
+  { level: 1, key: 'critically-low', label: 'น้ำน้อยวิกฤติ', hex: '#798fb4' },
+  { level: 2, key: 'low', label: 'น้ำน้อย', hex: '#8b8f80' },
+  { level: 3, key: 'normal', label: 'น้ำปกติ', hex: '#599c5b' },
   { level: 4, key: 'high', label: 'น้ำมาก', hex: '#e3a93f' },
-  { level: 5, key: 'overflow', label: 'น้ำล้นตลิ่ง', hex: '#ea6d5c' },
+  { level: 5, key: 'overflow', label: 'น้ำล้นตลิ่ง', hex: '#ee5d58' },
 ] as const;
 
 /**
