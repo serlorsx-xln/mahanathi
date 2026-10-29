@@ -5,7 +5,11 @@
 # dependencies and builds
 node_modules/
 dist/
-server/web/dist/
+# server/web/dist holds the copied web build for go:embed. Only the
+# .gitkeep is tracked, so a fresh clone still compiles.
+!server/web/dist/
+server/web/dist/*
+!server/web/dist/.gitkeep
 server/bin/
 coverage/
 *.tsbuildinfo

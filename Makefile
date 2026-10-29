@@ -65,10 +65,11 @@ build-web:
 	$(WEB) build
 
 # go:embed cannot reach outside the module, so the build copies web/dist
-# into server/web/dist (gitignored) for the server package to embed.
+# into server/web/dist for the server package to embed. The tracked
+# .gitkeep stays, so `git status` stays clean and a fresh clone compiles.
 embed-web:
-	rm -rf $(GO_DIR)/web/dist
-	cp -R web/dist $(GO_DIR)/web/dist
+	find $(GO_DIR)/web/dist -mindepth 1 ! -name .gitkeep -delete
+	cp -R web/dist/. $(GO_DIR)/web/dist/
 	find $(GO_DIR)/web/dist -name '._*' -delete
 
 # The context is streamed as a tar of the files git knows about (tracked plus
@@ -83,4 +84,5 @@ docker: ## Build the container image (mahanathi:dev)
 	  | docker build -t $(IMAGE) -
 
 clean: ## Remove build output
-	rm -rf web/dist $(GO_DIR)/web/dist $(GO_DIR)/bin e2e/test-results e2e/playwright-report
+	rm -rf web/dist $(GO_DIR)/bin e2e/test-results e2e/playwright-report
+	find $(GO_DIR)/web/dist -mindepth 1 ! -name .gitkeep -delete

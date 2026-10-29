@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/serlorsx-xln/mahanathi/server/web"
 )
 
 // TestServeHealthzAndGracefulShutdown starts the real server on a free port,
@@ -22,7 +24,11 @@ func TestServeHealthzAndGracefulShutdown(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
-	go func() { done <- serve(ctx, newServer(logger), ln, logger, 2*time.Second) }()
+	site, err := web.NewHandler(web.Dist())
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() { done <- serve(ctx, newServer(logger, site), ln, logger, 2*time.Second) }()
 
 	resp, err := http.Get("http://" + ln.Addr().String() + "/healthz")
 	if err != nil {
@@ -32,6 +38,16 @@ func TestServeHealthzAndGracefulShutdown(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusOK || string(body) != "ok\n" {
 		t.Fatalf("GET /healthz = %d %q, want 200 \"ok\\n\"", resp.StatusCode, body)
+	}
+
+	// Whether or not a front-end build is embedded, / answers with HTML.
+	resp, err = http.Get("http://" + ln.Addr().String() + "/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET / = %d, want 200", resp.StatusCode)
 	}
 
 	cancel()

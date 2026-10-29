@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/serlorsx-xln/mahanathi/server/internal/config"
+	"github.com/serlorsx-xln/mahanathi/server/web"
 )
 
 func main() {
@@ -39,7 +40,15 @@ func main() {
 		logger.Error("listen failed", "addr", cfg.Addr, "err", err)
 		os.Exit(1)
 	}
-	if err := serve(ctx, newServer(logger), ln, logger, cfg.ShutdownTimeout); err != nil {
+	site, err := web.NewHandler(web.Dist())
+	if err != nil {
+		logger.Error("embedded web build unreadable", "err", err)
+		os.Exit(1)
+	}
+	if !site.Built() {
+		logger.Warn("no web build embedded; / serves a notice (run make build)")
+	}
+	if err := serve(ctx, newServer(logger, site), ln, logger, cfg.ShutdownTimeout); err != nil {
 		logger.Error("server stopped with error", "err", err)
 		os.Exit(1)
 	}
@@ -53,10 +62,11 @@ func newLogger(cfg config.Config, w io.Writer) *slog.Logger {
 	return slog.New(slog.NewJSONHandler(w, opts))
 }
 
-// newServer wires the HTTP routes. For now there is only the liveness probe;
-// the API and the embedded web app arrive in later phases.
-func newServer(logger *slog.Logger) *http.Server {
+// newServer wires the HTTP routes: the liveness probe and the embedded web
+// app at every other path.
+func newServer(logger *slog.Logger, site http.Handler) *http.Server {
 	mux := http.NewServeMux()
+	mux.Handle("/", site)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		_, _ = io.WriteString(w, "ok\n")
