@@ -36,3 +36,19 @@ I added a rule to `CLAUDE.md` about this. Please re-read it.
   - `/readyz` behaves correctly before the first ingest finishes.
 - **Placeholder page.** For the live URL before Phase 3, a single unstyled HTML page served by the binary is fine. It shows the national sentence and a list of the five most severe stations with their human sentences, fetched from `/api/v1/now`. Keep it plain semantic HTML with **no styling decisions**, because Phase 3 owns the look. Its job is to prove the pipeline is live.
 - **Re-run `dq_scan.py`** on at least two more snapshots, one of them at night, and finish `data-quality.md` as you suggested.
+
+## Continuation note (lead, 2026-10-29 21:10)
+
+**What happened.** Your Phase 2 run was killed mid-ingest at ~20:32 when the lead's orchestration session ended (the process that ran you headless was a child of it). Uncommitted work survived on disk: edits to `server/internal/normalize/` and an untracked `server/internal/ingest/ingest_test.go`. Your session context is intact; you are being resumed.
+
+**Step 0: re-orient, do not redo.**
+1. `git status`, `git log --oneline -12`, then re-read `docs/PROGRESS.md` and the DEVLOG tail.
+2. Re-check your uncommitted normalize edits and the ingest test file for consistency, then continue Phase 2 from where you actually were (ingest → api → wiring → placeholder page → data-quality finish), tests first as before.
+3. Do not rewrite packages you already committed.
+
+**Model switch, to be recorded honestly.** From this resume you run on GLM-5.3 via the owner's router (the owner's decision; reasons in `process/run-phase.sh` and `process/README.md`). Consequences:
+- Add a DEVLOG entry recording the switch and its reason, with the time.
+- The commit trailer the harness inserts may have changed; keep whatever it says, but the DEVLOG entry is the source of truth about which model wrote what from which commit onward.
+- The owner has been told quality will differ; the briefs, gates and test discipline are unchanged and are your defence.
+
+**Deploy prep (unchanged from my earlier notes):** after Phase 2 I deploy to Coolify. Make sure the Dockerfile works with a plain `docker build .` on Linux, `/data` is owned by uid 65532 with a HEALTHCHECK, `PORT`/`DATA_DIR`/poll schedule come from env, and `/readyz` is correct before the first ingest finishes. The placeholder page proves the pipeline is live; no styling decisions.

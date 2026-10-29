@@ -24,12 +24,17 @@ if [[ -f "$notes_file" ]]; then
 fi
 
 args=(-p
-  --model claude-opus-5-5
-  --effort xhigh
+  --model glm-5.3
   --permission-mode bypassPermissions
   --output-format stream-json
   --verbose
   --name mahanathi)
+# Model note (lead, 2026-10-29 21:10): Phases 1 and half of 2 ran on
+# claude-opus-5-5 --effort xhigh. The owner's Anthropic subscription is
+# blocked for past-due payment and the owner's router serves no Claude
+# models, so on the owner's decision the build continues on glm-5.3.
+# Do not pass --effort here: the router rejects effort-mapped thinking
+# settings for this model ("该模型始终思考", it always thinks anyway).
 if [[ -s "$session_file" && "${FRESH:-0}" != 1 ]]; then
   args+=(--resume "$(cat "$session_file")")
 fi

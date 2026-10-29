@@ -18,3 +18,4 @@ Each loop goes: prompt → plan → small commits with tests → verification (w
 |---|---|---|
 | 1–2 | `0d3d17b5` (resumed every phase) | The implementing session keeps its context across phases |
 | 2 | interrupted once, 2026-10-29 ~20:32 | The lead's orchestration session ended while Phase 2 was running; the implementer process was killed mid-ingest. Phase 2 was resumed from the same session id afterwards |
+| 2 (resume) | model switched Opus 5.5 → GLM-5.3, 2026-10-29 ~21:10 | The owner's Anthropic subscription was blocked for past-due payment and the owner's router serves no Claude models. The owner chose to continue on GLM-5.3. Recorded in the DEVLOG; same session id |

@@ -24,4 +24,4 @@ You are the implementing engineer on this project. A tech lead reviews your work
 ## Environment facts
 - The project lives on an **exFAT** volume. Symlinks work but hardlinks do not. Keep `package-import-method=copy` in `.npmrc` and set `git config core.fileMode false`. Ignore `._*` and `.DS_Store`.
 - Toolchain: Node 24, pnpm, Go 1.25, bun, docker. The internal disk has little free space, so do not download large datasets there.
-- Model and effort for this session were set by the lead (Opus 5.5, xhigh). Take the time to do it right.
+- **Model history:** Phases 1 and half of Phase 2 were built by Claude Opus 5.5 at effort xhigh. From the Phase 2 resume (2026-10-29 ~21:10) the implementing session runs on GLM-5.3 via the owner's router — the owner decided this after the Anthropic subscription was blocked for past-due payment. Quality gates are unchanged; if anything, lean harder on tests, the design gate and the DEVLOG.
