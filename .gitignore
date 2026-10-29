@@ -6,7 +6,15 @@
 node_modules/
 dist/
 server/web/dist/
+server/bin/
 coverage/
+*.tsbuildinfo
+.eslintcache
+
+# test output
+test-results/
+playwright-report/
+blob-report/
 
 # runtime data
 /data/
@@ -14,7 +22,8 @@ coverage/
 *.db-wal
 *.db-shm
 
-# geodata download cache
+# download caches (DEM tiles, fonts, raw API responses); large and reproducible
+.cache/
 geodata/.cache/
 
 # agent orchestration (local only)
