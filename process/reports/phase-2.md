@@ -61,7 +61,7 @@ The humanize spec's coverage bar (90 %+) is met by the package itself at 100 %. 
 
 - **Payload sizes:** `/now` 765 KB raw / 85 KB gzipped; `/timeline` 74 KB raw / **46 KB gzipped** against the 80 KB budget (800 × 72 synthetic worst case measured at 61 KB in tests).
 - **Placeholder page** (`/`, 1,952 bytes): the national sentence and the five most severe stations, fetched from `/api/v1/now`; plain semantic HTML, no styling. Verified served, and the API it reads verified by curl.
-- **Rate limit:** a burst of 38 requests from one address answered 200 through the 30th and 429 with `Retry-After` from the 31st.
+- **Rate limit:** one warm-up request, then a burst of 40 from one address (41 total). The first 38 answers were 200 (the burst of 30 plus the ~8 tokens the warm-up gap had refilled at the default 200 ms cadence), and 429 with `Retry-After` arrived from the 39th, as the recorded curl output shows: thirty-eight `200`s, then `429 429`. Corrected in Step 0 of Phase 3 from the earlier misstatement that the 200s ran only to the 30th.
 - The container and volume were removed after the checks; the image remains on the local daemon for the lead's deploy.
 
 ### Five real sentences, hand-checked against the raw numbers
