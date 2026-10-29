@@ -1,20 +1,22 @@
-// /lookdev - the Phase 3 relief prototype: the committed world rendered
-// at full fidelity from real data. The relief fills the frame; the
-// national sentence and the answer panel float over it; the primary
-// action ใกล้ฉัน flies to the selected river. Dev controls (presets,
-// exaggeration) sit at the bottom and do not ship with the product.
+// /lookdev - the Phase 3b relief on MapLibre (ADR 0007): the terrain,
+// hillshade, basemap and fog come from the engine; our data (borders,
+// rivers, and from tomorrow the gauges) renders on top. The relief
+// fills the frame; the national sentence and the answer panel float
+// over it; the primary action ใกล้ฉัน flies to the selected river. Dev
+// controls (presets, exaggeration) sit at the bottom and do not ship
+// with the product.
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { situations, stale } from '../design/tokens';
-import type { StationState } from '../scene/Gauges';
-import { NATIONAL, PRESETS, STATION, type Preset } from '../scene/presets';
+import type { StationState } from '../map/stations';
+import { NATIONAL, PRESETS, STATION, type Preset } from '../map/presets';
 import './lookdev.css';
 
-const LookdevScene = lazy(async () => {
-  const m = await import('../scene/LookdevScene');
-  return { default: m.LookdevScene };
+const LookdevMap = lazy(async () => {
+  const m = await import('../map/LookdevMap');
+  return { default: m.LookdevMap };
 });
 
-interface Fixture {
+export interface Fixture {
   generatedAt: string;
   summary: {
     national: string;
@@ -25,7 +27,7 @@ interface Fixture {
   stations: StationState[];
 }
 
-const SOURCE_LINE = 'แหล่งที่มา: ThaiWater (กรมชลประทาน)';
+const SOURCE_LINE = 'แหล่งที่มา: ThaiWater (กรมชลประทาน) · แผนที่ฐาน: OpenStreetMap (ODbL) · Protomaps';
 
 /** The relief needs WebGL. Without it the page keeps its shell and the
  *  sentence, and says so plainly (the product's 2D map fallback is a
@@ -50,13 +52,11 @@ function formatTime(iso: string): string {
 export function Lookdev() {
   const [data, setData] = useState<{
     fixture: Fixture;
-    heightfield: unknown;
     borders: unknown;
     rivers: GeoJSON.FeatureCollection;
-    provinces: unknown;
   } | null>(null);
   const [preset, setPreset] = useState<Preset>(NATIONAL);
-  const [exaggeration, setExaggeration] = useState(12);
+  const [exaggeration, setExaggeration] = useState(1.5);
   const [flightRequest, setFlightRequest] = useState(0);
   const [flightDone, setFlightDone] = useState(true);
   // Surfaced as data-scene-ready on the <main>: the panel can appear
@@ -77,18 +77,13 @@ export function Lookdev() {
       try {
         const get = (url: string) =>
           fetch(url, { signal: controller.signal }).then((r) => r.json());
-        const [fixture, heightfield, borders, rivers, provinces] = (await Promise.all([
+        const [fixture, borders, rivers] = (await Promise.all([
           get('/fixture/now-2026-10-29.json'),
-          get('/geodata/provinces.topo.json').then((provinces: unknown) =>
-            import('../scene/heightfield').then(({ loadHeightfield }) =>
-              loadHeightfield('/geodata/heightmap.png', provinces),
-            ),
-          ),
           get('/geodata/borders.topo.json'),
           get('/geodata/rivers.geojson'),
-        ])) as unknown as [Fixture, unknown, unknown, GeoJSON.FeatureCollection, unknown];
+        ])) as unknown as [Fixture, unknown, GeoJSON.FeatureCollection];
         if (!controller.signal.aborted) {
-          setData({ fixture, heightfield, borders, rivers, provinces });
+          setData({ fixture, borders, rivers });
           setFailed(false);
         }
       } catch (e) {
@@ -119,18 +114,15 @@ export function Lookdev() {
       >
         {data && webgl ? (
           <Suspense fallback={<div className="lookdev__skeleton" />}>
-            <LookdevScene
-              heightfield={data.heightfield as never}
+            <LookdevMap
               bordersTopo={data.borders}
               riversGeo={data.rivers}
-              stations={data.fixture.stations}
-              selected={selected}
               preset={preset}
+              exaggeration={exaggeration}
               flightRequest={flightRequest}
               onFlightDone={() => {
                 setFlightDone(true);
               }}
-              exaggeration={exaggeration}
               onReady={() => {
                 setSceneReady(true);
               }}
@@ -253,9 +245,9 @@ export function Lookdev() {
           อัตรายกสูง {exaggeration}×
           <input
             type="range"
-            min={4}
+            min={1}
             max={40}
-            step={1}
+            step={0.5}
             value={exaggeration}
             onChange={(e) => {
               setExaggeration(Number(e.target.value));

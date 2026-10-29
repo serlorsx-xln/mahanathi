@@ -14,6 +14,16 @@
   inset: 0;
 }
 
+/* MapLibre's mount: the relief itself, edge to edge. */
+.lookdev__map {
+  position: absolute;
+  inset: 0;
+}
+
+.lookdev__map .maplibregl-canvas {
+  outline: none;
+}
+
 .lookdev__canvas canvas {
   display: block;
 }

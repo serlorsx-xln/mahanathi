@@ -15,12 +15,11 @@
     "tokens:css": "node scripts/build-tokens.mjs"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.9",
-    "@react-three/fiber": "^9.8.2",
-    "camera-controls": "^3.1.2",
+    "maplibre-gl": "^6.16.0",
+    "pmtiles": "^4.5.0",
+    "protomaps-themes-base": "^4.5.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "three": "^0.186.1",
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {
