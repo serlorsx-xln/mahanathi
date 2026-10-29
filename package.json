@@ -1,0 +1,9 @@
+{
+  "name": "mahanathi",
+  "private": true,
+  "description": "Every river gauge in Thailand, live, on a 3D relief of the country.",
+  "packageManager": "pnpm@10.29.3",
+  "engines": {
+    "node": ">=24"
+  }
+}
