@@ -257,9 +257,13 @@ func TestBackfillBookkeeping(t *testing.T) {
 		t.Errorf("graph refs = %+v", refs)
 	}
 	// A refresh is requested by forgetting the history mark, as ingest does
-	// when the load's references stop agreeing with the graph's.
-	if err := s.ForgetHistory(ctx, 2); err != nil {
-		t.Fatal(err)
+	// when the load's references stop agreeing with the graph's, but not
+	// more than once in the cut-off.
+	if marked, err := s.ForgetHistory(ctx, 2, t0); err != nil || marked {
+		t.Fatalf("ForgetHistory inside the cut-off: marked %v, %v", marked, err)
+	}
+	if marked, err := s.ForgetHistory(ctx, 2, t0.Add(time.Second)); err != nil || !marked {
+		t.Fatalf("ForgetHistory after the cut-off: marked %v, %v", marked, err)
 	}
 	need, _ = s.NeedsHistory(ctx)
 	if len(need) != 3 {
@@ -341,6 +345,15 @@ func TestRetentionDropsOldReadings(t *testing.T) {
 	if got := count(t, s, "readings"); got != 2 {
 		t.Errorf("readings left = %d, want 2", got)
 	}
+	// A snapshot that still carries a dead station's month-old reading
+	// updates the station but stores nothing to prune again.
+	dead := obs(2, t0.Add(-Retention-time.Hour), 3)
+	if n, err := s.SaveObservations(ctx, []normalize.Observation{dead}, t0); err != nil || n != 0 {
+		t.Errorf("saving a reading older than retention changed %d, %v", n, err)
+	}
+	if st, ok, _ := s.Station(ctx, 2); !ok || st.Latest != nil {
+		t.Errorf("dead station: ok %v, latest %+v", ok, st.Latest)
+	}
 }
 
 func TestRunsAreRecorded(t *testing.T) {
@@ -360,6 +373,9 @@ func TestRunsAreRecorded(t *testing.T) {
 	r2.Started, r2.Finished, r2.Err, r2.RuleWebOK = t0.Add(time.Hour), t0.Add(time.Hour+time.Second), "load: 503", false
 	if err := s.RecordRun(ctx, r2); err != nil {
 		t.Fatal(err)
+	}
+	if n, err := s.RunCount(ctx); err != nil || n != 2 {
+		t.Errorf("RunCount = %d %v", n, err)
 	}
 	got, ok, err := s.LastRun(ctx)
 	if err != nil || !ok {
@@ -446,9 +462,10 @@ func TestClosedStoreErrors(t *testing.T) {
 	_, checks["ReadingsSince"] = s.ReadingsSince(ctx, t0)
 	_, checks["NeedsHistory"] = s.NeedsHistory(ctx)
 	_, checks["GraphRefs"] = s.GraphRefs(ctx)
-	checks["ForgetHistory"] = s.ForgetHistory(ctx, 1)
+	_, checks["ForgetHistory"] = s.ForgetHistory(ctx, 1, t0)
 	_, checks["Prune"] = s.Prune(ctx, t0)
 	checks["RecordRun"] = s.RecordRun(ctx, Run{Started: t0})
+	_, checks["RunCount"] = s.RunCount(ctx)
 	_, _, checks["LastRun"] = s.LastRun(ctx)
 	_, _, checks["LastGoodRun"] = s.LastGoodRun(ctx)
 	_, _, checks["Meta"] = s.Meta(ctx, "k")

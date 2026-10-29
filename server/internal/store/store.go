@@ -168,7 +168,10 @@ WHERE excluded.source >= readings.source
 
 // SaveObservations upserts the stations and readings of one snapshot, seen
 // at `seen`, in one transaction. It returns how many readings were inserted
-// or changed, so a repeated snapshot reports 0.
+// or changed, so a repeated snapshot reports 0. A reading older than
+// Retention is not stored: the load keeps publishing the last reading of a
+// dead station, and storing it only for Prune to delete it would count as a
+// change every hour.
 func (s *Store) SaveObservations(ctx context.Context, obs []normalize.Observation, seen time.Time) (int, error) {
 	tx, err := s.w.BeginTx(ctx, nil)
 	if err != nil {
@@ -190,6 +193,9 @@ func (s *Store) SaveObservations(ctx context.Context, obs []normalize.Observatio
 			x.Tumbon, x.Basin, x.River, x.Agency, int(x.Refs), x.BankFull, x.Ground,
 			o.LoadRefs.BankFull, o.LoadRefs.Ground, seen.Unix(), seen.Unix()); err != nil {
 			return 0, fmt.Errorf("store: station %d: %w", x.ID, err)
+		}
+		if o.Reading.At.Before(seen.Add(-Retention)) {
+			continue
 		}
 		n, err := affected(rd.ExecContext(ctx, x.ID, o.Reading.At.Unix(), domain.MM(o.Reading.WL), sourceLoad))
 		if err != nil {
@@ -260,10 +266,14 @@ func (s *Store) NeedsHistory(ctx context.Context) ([]int64, error) {
 }
 
 // ForgetHistory asks for a station's history and references to be fetched
-// again on the next run. The current references stay in use until then.
-func (s *Store) ForgetHistory(ctx context.Context, id int64) error {
-	_, err := s.w.ExecContext(ctx, `UPDATE stations SET history_at = NULL WHERE id = ?`, id)
-	return err
+// again on the next run, if they were last fetched before `before`. The
+// cut-off stops a lasting disagreement between ThaiWater's endpoints from
+// costing a request every hour. The current references stay in use until
+// the refetch. It reports whether the station was marked.
+func (s *Store) ForgetHistory(ctx context.Context, id int64, before time.Time) (bool, error) {
+	n, err := affected(s.w.ExecContext(ctx, `UPDATE stations SET history_at = NULL WHERE id = ? AND history_at < ?`,
+		id, before.Unix()))
+	return n == 1, err
 }
 
 // GraphRefs returns the full-precision references of every station that has
@@ -421,6 +431,13 @@ func (s *Store) RecordRun(ctx context.Context, r Run) error {
 		r.Started.Unix(), r.Finished.Unix(), r.Rows, r.Observations, r.Dropped, r.Warnings, r.Upserted,
 		r.HistoryOK, r.HistoryFailed, r.RuleWebOK, r.OracleChecked, r.OracleMismatches, r.Err)
 	return err
+}
+
+// RunCount is how many runs are recorded.
+func (s *Store) RunCount(ctx context.Context) (int, error) {
+	var n int
+	err := s.r.QueryRowContext(ctx, `SELECT count(*) FROM ingest_runs`).Scan(&n)
+	return n, err
 }
 
 // LastRun is the most recent run, successful or not.
