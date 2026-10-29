@@ -1,0 +1,74 @@
+# CI: Go tests and the web typecheck, lint, unit tests and build on every
+# push and pull request, then the Playwright smoke test against the build.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    name: go (vet, gofmt, test -race)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.mod
+      - run: go vet ./...
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then echo "gofmt needed:"; echo "$unformatted"; exit 1; fi
+      - run: go test -race -count=1 ./...
+      - run: CGO_ENABLED=0 go build -trimpath -o bin/mahanathi ./cmd/mahanathi
+
+  web:
+    name: web (typecheck, lint, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @mahanathi/web typecheck
+      - run: pnpm --filter @mahanathi/e2e typecheck
+      - run: pnpm --filter @mahanathi/web lint
+      - run: pnpm --dir web exec prettier --ignore-path ../.prettierignore --check . ../e2e
+      - run: pnpm --filter @mahanathi/web test
+      - run: pnpm --filter @mahanathi/web build
+
+  e2e:
+    name: e2e (Playwright smoke)
+    needs: web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @mahanathi/e2e exec playwright install --with-deps chromium
+      - run: pnpm --filter @mahanathi/e2e test
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          retention-days: 7
