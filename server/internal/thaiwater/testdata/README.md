@@ -1,6 +1,6 @@
 # ThaiWater fixtures
 
-Real responses from the public ThaiWater API, recorded on **2026-10-29 at 17:54 ICT** (10:54 UTC) by the research for `docs/research/thaiwater-api.md`. Unit tests read these files; they never call the network.
+Real responses from the public ThaiWater API, recorded on **2026-10-29 at 17:54 ICT** (10:54 UTC) by the research for `docs/research/thaiwater-api.md`, plus two history responses recorded at 19:52 ICT for the normalize oracle test. Unit tests read these files; they never call the network.
 
 | File | Source request | Notes |
 |---|---|---|
@@ -8,6 +8,8 @@ Real responses from the public ThaiWater API, recorded on **2026-10-29 at 17:54 
 | `waterlevel_graph_737.json` | `GET .../waterlevel_graph?station_type=tele_waterlevel&station_id=737&start_date=2026-10-26&end_date=2026-10-29` | วัดท่าเจดีย์ (TTC06), HII, 10-minute cadence, above bank-full, scattered nulls. Byte-for-byte as received. |
 | `waterlevel_graph_1097520.json` | same, `station_id=1097520` | Gt.11 บ้านช้างแรก, RID, hourly, float32 noise (`40.159998`), nightly null runs, falling 1.77 m in four hours. Byte-for-byte. |
 | `waterlevel_graph_575568.json` | same, `station_id=575568` | BKC004 ปตร. คลองลัดบางยอ 2, HII, stopped reporting at 2026-10-27 19:40, so 497 of 540 values are null. Byte-for-byte. |
+| `waterlevel_graph_3441.json` | same, `station_id=3441`, **recorded 2026-10-29 19:52 ICT** | URTU09, EGAT, hourly. Its full-precision `min_bank` is 225.386 against 225.39 in the load, which is what keeps its 17:00 level at 4 (ADR 0003). Byte-for-byte. |
+| `waterlevel_graph_12479.json` | same, `station_id=12479`, **recorded 2026-10-29 19:52 ICT** | BSP002, HII, 10-minute cadence; full-precision `min_bank` 16.475 against 16.48. Byte-for-byte. |
 
 SHA-256 of the untrimmed load response: `8956900d604654e724eefd3795addf634a8352919383ad1cb9eaca9cec15887a` (1,395,146 bytes, kept out of git in `.cache/thaiwater/raw/`).
 
@@ -68,4 +70,4 @@ The script stops if a named station is missing, so a fresh snapshot can change t
 
 "Stale" means older than 3 hours at the recording time, per the humanize spec. Note that most stale rows still carry a `situation_level`; ThaiWater counts them, and we must not.
 
-Source: ThaiWater, คลังข้อมูลน้ำแห่งชาติ (National Hydroinformatics Data Center), operated by สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน) / Hydro-Informatics Institute (HII). The readings themselves come from the agencies named in each row (HII, RID, EGAT and the Friend in Need (of "Pa") Volunteers Foundation in this file). thaiwater.net states "Copyright © 2024 Hydro - Informatics Institute, All rights reserved." and publishes no explicit data licence that we could find; these trimmed copies exist only to test our parser. See `docs/research/thaiwater-api.md` for the attribution research and the open question about terms.
+Source: ThaiWater, คลังข้อมูลน้ำแห่งชาติ (National Hydroinformatics Data Center), operated by สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน) / Hydro-Informatics Institute (HII). The readings themselves come from the agencies named in each row (HII, RID, EGAT and the Friend in Need (of "Pa") Volunteers Foundation in this file). thaiwater.net states "Copyright © 2024 Hydro - Informatics Institute, All rights reserved." and publishes no explicit data licence that we could find; these trimmed copies exist only to test our parser. The product serves only numbers derived from the data, with attribution, and never serves these raw responses. See `docs/research/thaiwater-api.md` for the attribution research and the open question about terms.
