@@ -1,8 +1,8 @@
 # Phase 3 report: Look-dev (the visual world, before the product)
 
 - **Implementer:** the same session as Phase 2 (GLM-5.3 via the owner's router; quality gates unchanged and, if anything, leaned on harder).
-- **Phase window:** 2026-10-29 ~22:36 ICT (Step 0 fixes, `000b801`) to 2026-10-30 ~01:20 ICT (this report's commit is the last Phase 3 commit).
-- **Tree at report time:** clean at `6fb793e`.
+- **Phase window:** 2026-10-29 ~22:36 ICT (Step 0 fixes, `000b801`) to 2026-10-30 ~01:20 ICT.
+- **Tree at report time:** clean at `900c020` (the report itself is `8a6ed5c`; `900c020` after it is only the Prettier pass over the phase's edits, no behaviour change).
 
 ## Summary
 
