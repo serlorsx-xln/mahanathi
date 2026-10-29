@@ -10,8 +10,7 @@ import { test } from '@playwright/test';
 // per face (density), and figure behaviour (tabularity, minus sign).
 const OUT_DIR = resolve(import.meta.dirname, '../../docs/design/screens/phase-3');
 
-const NATIONAL =
-  'ตอนนี้ 18 สถานีน้ำล้นตลิ่ง ส่วนใหญ่อยู่ที่นครปฐม กาญจนบุรี และสุพรรณบุรี';
+const NATIONAL = 'ตอนนี้ 18 สถานีน้ำล้นตลิ่ง ส่วนใหญ่อยู่ที่นครปฐม กาญจนบุรี และสุพรรณบุรี';
 
 const UI_FAMILIES = [
   ['Mahanathi Sans (IBM Plex Sans Thai)', "'Mahanathi Sans', sans-serif"],
@@ -41,10 +40,16 @@ test('specimen measurements', async ({ page }) => {
     ({ national, uiFamilies, sentenceFamilies, inkStrings }) => {
       const out = {
         fontsLoaded: {} as Record<string, Record<string, boolean>>,
-        ink: {} as Record<string, Record<string, { ascentPct: number; descentPct: number; lineHeight16Use: number }>>,
+        ink: {} as Record<
+          string,
+          Record<string, { ascentPct: number; descentPct: number; lineHeight16Use: number }>
+        >,
         sentence: {} as Record<string, { widthEm: number }>,
         figures: {} as Record<string, { digit: number; digitsDiffer: number[] }>,
-        dom: [] as { label: string | null; stackClipped: { scrollOverflowPx: number; clientHeight: number }[] }[],
+        dom: [] as {
+          label: string | null;
+          stackClipped: { scrollOverflowPx: number; clientHeight: number }[];
+        }[],
       };
 
       const canvas = document.createElement('canvas');
@@ -68,7 +73,10 @@ test('specimen measurements', async ({ page }) => {
             ascentPct: +(m.actualBoundingBoxAscent / PX).toFixed(3),
             descentPct: +(m.actualBoundingBoxDescent / PX).toFixed(3),
             // ink height as a fraction of the 1.6 line box
-            lineHeight16Use: +((m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) / (PX * 1.6)).toFixed(3),
+            lineHeight16Use: +(
+              (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) /
+              (PX * 1.6)
+            ).toFixed(3),
           };
         }
 
@@ -98,7 +106,12 @@ test('specimen measurements', async ({ page }) => {
       }
       return out;
     },
-    { national: NATIONAL, uiFamilies: UI_FAMILIES, sentenceFamilies: SENTENCE_FAMILIES, inkStrings: INK_STRINGS },
+    {
+      national: NATIONAL,
+      uiFamilies: UI_FAMILIES,
+      sentenceFamilies: SENTENCE_FAMILIES,
+      inkStrings: INK_STRINGS,
+    },
   );
 
   // DOM-level: does any stacked-mark line overflow its hidden box?

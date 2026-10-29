@@ -14,7 +14,10 @@ test.describe('look-dev evidence pages', () => {
     await page.goto('/specimen');
     await page.getByRole('heading', { name: 'ตัวอย่างตัวอักษร' }).waitFor();
     await page.evaluate(() => document.fonts.ready);
-    await page.screenshot({ path: `${OUT}/specimen-${test.info().project.name}.png`, fullPage: true });
+    await page.screenshot({
+      path: `${OUT}/specimen-${test.info().project.name}.png`,
+      fullPage: true,
+    });
   });
 
   test('colour scale', async ({ page }) => {

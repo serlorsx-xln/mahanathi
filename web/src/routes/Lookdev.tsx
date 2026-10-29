@@ -75,7 +75,8 @@ export function Lookdev() {
     };
     void (async () => {
       try {
-        const get = (url: string) => fetch(url, { signal: controller.signal }).then((r) => r.json());
+        const get = (url: string) =>
+          fetch(url, { signal: controller.signal }).then((r) => r.json());
         const [fixture, heightfield, borders, rivers, provinces] = (await Promise.all([
           get('/fixture/now-2026-10-29.json'),
           get('/geodata/provinces.topo.json').then((provinces: unknown) =>
@@ -116,7 +117,8 @@ export function Lookdev() {
         role="img"
         aria-label="แผนที่ภูมิประเทศประเทศไทย แสดงเกจวัดระดับน้ำทุกสถานี"
       >
-        {data && webgl ? (          <Suspense fallback={<div className="lookdev__skeleton" />}>
+        {data && webgl ? (
+          <Suspense fallback={<div className="lookdev__skeleton" />}>
             <LookdevScene
               heightfield={data.heightfield as never}
               bordersTopo={data.borders}

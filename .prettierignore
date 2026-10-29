@@ -13,3 +13,5 @@ process/
 docs/
 test-results/
 playwright-report/
+# The impeccable hook's runtime cache is machine state, not source.
+web/.impeccable/hook.cache.json

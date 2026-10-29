@@ -47,9 +47,7 @@ function Swatch({
       <span
         className={hollow ? 'color__chip color__chip--hollow' : 'color__chip'}
         style={
-          hollow
-            ? { background: 'transparent', border: `2px solid ${hex}` }
-            : { background: hex }
+          hollow ? { background: 'transparent', border: `2px solid ${hex}` } : { background: hex }
         }
       />
       <span className="color__name">{label}</span>

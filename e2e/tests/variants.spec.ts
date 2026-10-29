@@ -18,7 +18,9 @@ test.describe('gate variants', () => {
     await expect(page.getByLabel('สถานีที่เลือก')).toBeVisible();
     await expect(page.getByLabel('สถานีที่เลือก')).toContainText('สองพี่น้อง');
     await page.waitForTimeout(500);
-    await page.screenshot({ path: `${OUT}/lookdev-reduced-motion-${test.info().project.name}.png` });
+    await page.screenshot({
+      path: `${OUT}/lookdev-reduced-motion-${test.info().project.name}.png`,
+    });
   });
 
   test('without WebGL the shell and the sentence survive', async ({ page }) => {

@@ -69,7 +69,9 @@ function Rig({
   // The brief: reduced motion cuts instead of flying.
   const reduced = useMemo(
     () =>
-      typeof window === 'undefined' ? false : window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      typeof window === 'undefined'
+        ? false
+        : window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
   );
 
