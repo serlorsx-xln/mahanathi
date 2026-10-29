@@ -23,33 +23,6 @@ const (
 	maxPctFactor     = 4      // more than 400 % of bank-full
 )
 
-// SuspectReason is why a reading is not believable as a current value.
-type SuspectReason int
-
-// The reasons, in the order they are reported.
-const (
-	SuspectBelowGround SuspectReason = iota + 1
-	SuspectImplausiblePct
-	SuspectJump
-	SuspectFuture
-)
-
-// String names the reason for logs and the API.
-func (r SuspectReason) String() string {
-	switch r {
-	case SuspectBelowGround:
-		return "below-ground"
-	case SuspectImplausiblePct:
-		return "implausible-percent"
-	case SuspectJump:
-		return "jump"
-	case SuspectFuture:
-		return "future-time"
-	default:
-		return "unknown"
-	}
-}
-
 // IsStale reports whether a reading taken at `at` is older than StaleAfter
 // at `now`. The clock is always passed in, never read.
 func IsStale(at, now time.Time) bool { return now.Sub(at) > StaleAfter }
@@ -57,25 +30,25 @@ func IsStale(at, now time.Time) bool { return now.Sub(at) > StaleAfter }
 // SuspectReasons checks one reading against the plausibility bounds. prev is
 // the hourly bucket just before the reading's own bucket; pass a zero Point
 // when it is unknown, and the jump check is skipped.
-func SuspectReasons(st domain.Station, r domain.Reading, prev domain.Point, now time.Time) []SuspectReason {
-	var out []SuspectReason
+func SuspectReasons(st domain.Station, r domain.Reading, prev domain.Point, now time.Time) []domain.SuspectReason {
+	var out []domain.SuspectReason
 	wl := toMM(r.WL)
 	if st.HasGround() {
 		ground, bank := toMM(st.Ground), toMM(st.BankFull)
 		if wl < ground-maxBelowGroundMM {
-			out = append(out, SuspectBelowGround)
+			out = append(out, domain.SuspectBelowGround)
 		}
 		if wl-ground > maxPctFactor*(bank-ground) {
-			out = append(out, SuspectImplausiblePct)
+			out = append(out, domain.SuspectImplausiblePct)
 		}
 	}
 	if prev.OK {
 		if d := wl - toMM(prev.WL); d > maxJumpMM || d < -maxJumpMM {
-			out = append(out, SuspectJump)
+			out = append(out, domain.SuspectJump)
 		}
 	}
 	if r.At.After(now.Add(futureTolerance)) {
-		out = append(out, SuspectFuture)
+		out = append(out, domain.SuspectFuture)
 	}
 	return out
 }

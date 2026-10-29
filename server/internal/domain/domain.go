@@ -178,3 +178,30 @@ type Point struct {
 	WL float64
 	OK bool
 }
+
+// SuspectReason is why a reading is not believable as a current value.
+type SuspectReason int
+
+// The reasons, in the order they are reported.
+const (
+	SuspectBelowGround SuspectReason = iota + 1
+	SuspectImplausiblePct
+	SuspectJump
+	SuspectFuture
+)
+
+// String names the reason for logs and the API.
+func (r SuspectReason) String() string {
+	switch r {
+	case SuspectBelowGround:
+		return "below-ground"
+	case SuspectImplausiblePct:
+		return "implausible-percent"
+	case SuspectJump:
+		return "jump"
+	case SuspectFuture:
+		return "future-time"
+	default:
+		return "unknown"
+	}
+}

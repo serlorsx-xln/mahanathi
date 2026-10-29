@@ -503,20 +503,20 @@ func TestSuspectReasons(t *testing.T) {
 		wl   float64
 		at   time.Time
 		prev domain.Point
-		want []SuspectReason
+		want []domain.SuspectReason
 	}{
 		{"ordinary", complete, 40.16, at, prev(40.20), nil},
 		{"20 m below ground is still believable", complete, 17.72, at, none, nil},
-		{"more than 20 m below ground", complete, 17.71, at, none, []SuspectReason{SuspectBelowGround}},
+		{"more than 20 m below ground", complete, 17.71, at, none, []domain.SuspectReason{domain.SuspectBelowGround}},
 		{"pct of exactly 400 is allowed", complete, 37.72 + 4*2.88, at, none, nil},
-		{"pct above 400", complete, 37.72 + 4*2.88 + 0.01, at, none, []SuspectReason{SuspectImplausiblePct}},
+		{"pct above 400", complete, 37.72 + 4*2.88 + 0.01, at, none, []domain.SuspectReason{domain.SuspectImplausiblePct}},
 		{"a 3 m jump in an hour is allowed", complete, 43.0, at, prev(40.0), nil},
-		{"a jump over 3 m in an hour", complete, 40.0, at, prev(43.01), []SuspectReason{SuspectJump}},
+		{"a jump over 3 m in an hour", complete, 40.0, at, prev(43.01), []domain.SuspectReason{domain.SuspectJump}},
 		{"no previous hour, no jump check", complete, 40.0, at, none, nil},
 		{"timestamp ten minutes ahead is clock skew", complete, 40.16, now.Add(10 * time.Minute), none, nil},
-		{"timestamp in the future", complete, 40.16, now.Add(11 * time.Minute), none, []SuspectReason{SuspectFuture}},
+		{"timestamp in the future", complete, 40.16, now.Add(11 * time.Minute), none, []domain.SuspectReason{domain.SuspectFuture}},
 		{"bank-only has no ground or percent check", bankOnly, -500, at, none, nil},
-		{"several at once", complete, 10.0, now.Add(time.Hour), prev(40.0), []SuspectReason{SuspectBelowGround, SuspectJump, SuspectFuture}},
+		{"several at once", complete, 10.0, now.Add(time.Hour), prev(40.0), []domain.SuspectReason{domain.SuspectBelowGround, domain.SuspectJump, domain.SuspectFuture}},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -530,11 +530,6 @@ func TestSuspectReasons(t *testing.T) {
 				}
 			}
 		})
-	}
-	for _, r := range []SuspectReason{SuspectBelowGround, SuspectImplausiblePct, SuspectJump, SuspectFuture} {
-		if r.String() == "" || r.String() == "unknown" {
-			t.Errorf("reason %d has no name", r)
-		}
 	}
 }
 

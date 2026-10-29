@@ -97,3 +97,11 @@ func TestStationArithmetic(t *testing.T) {
 		}
 	}
 }
+
+func TestSuspectReasonNames(t *testing.T) {
+	for r, w := range map[SuspectReason]string{SuspectBelowGround: "below-ground", SuspectImplausiblePct: "implausible-percent", SuspectJump: "jump", SuspectFuture: "future-time", 0: "unknown"} {
+		if r.String() != w {
+			t.Errorf("SuspectReason(%d).String() = %q, want %q", r, r.String(), w)
+		}
+	}
+}
