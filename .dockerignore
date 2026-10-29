@@ -1,0 +1,18 @@
+# Keep the build context small and free of local state.
+.git
+**/node_modules
+**/dist
+**/._*
+**/.DS_Store
+.cache
+geodata/.cache
+server/bin
+server/web/dist
+process/logs
+data
+e2e/test-results
+e2e/playwright-report
+*.db
+*.db-*
+.env
+.env.*
