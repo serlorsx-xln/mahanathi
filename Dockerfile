@@ -38,9 +38,11 @@ RUN pnpm --filter @mahanathi/web build
 FROM gcr.io/distroless/static-debian12:nonroot AS deploy
 COPY --from=server /out/mahanathi /mahanathi
 COPY --from=server --chown=65532:65532 /out/data /data
-# PORT (what Coolify passes) or the default :8080; MAHANATHI_ADDR still wins.
+# The app reads PORT; Coolify's web-app template probes 3000, so that is
+# the baked-in default (MAHANATHI_ADDR still wins if an operator sets it).
 ENV MAHANATHI_DATA_DIR=/data
-EXPOSE 8080
+ENV PORT=3000
+EXPOSE 3000
 USER nonroot:nonroot
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
   CMD ["/mahanathi", "healthcheck"]
@@ -63,7 +65,8 @@ FROM gcr.io/distroless/static-debian12:nonroot AS full
 COPY --from=full-server /out/mahanathi /mahanathi
 COPY --from=full-server --chown=65532:65532 /out/data /data
 ENV MAHANATHI_DATA_DIR=/data
-EXPOSE 8080
+ENV PORT=3000
+EXPOSE 3000
 USER nonroot:nonroot
 HEALTHCHECK --interval=30s --timeout=5s --start-period=120s --retries=3 \
   CMD ["/mahanathi", "healthcheck"]
