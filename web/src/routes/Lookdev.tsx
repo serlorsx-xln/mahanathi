@@ -29,6 +29,15 @@ export interface Fixture {
 
 const SOURCE_LINE = 'แหล่งที่มา: ThaiWater (กรมชลประทาน) · แผนที่ฐาน: OpenStreetMap (ODbL) · Protomaps';
 
+/** The gauge rendering for this page load: poles (the 3D layer) by
+ *  default, discs behind ?gauges=discs for the lead's comparison. */
+function gaugeMode(): 'poles' | 'discs' {
+  if (typeof window === 'undefined') return 'poles';
+  return new URLSearchParams(window.location.search).get('gauges') === 'discs'
+    ? 'discs'
+    : 'poles';
+}
+
 /** The relief needs WebGL. Without it the page keeps its shell and the
  *  sentence, and says so plainly (the product's 2D map fallback is a
  *  later phase; this is the look-dev prototype's honest floor). */
@@ -66,6 +75,7 @@ export function Lookdev() {
   const [webgl] = useState(webglAvailable);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [mode] = useState(gaugeMode);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -117,6 +127,8 @@ export function Lookdev() {
             <LookdevMap
               bordersTopo={data.borders}
               riversGeo={data.rivers}
+              stations={data.fixture.stations}
+              gaugeMode={mode}
               preset={preset}
               exaggeration={exaggeration}
               flightRequest={flightRequest}
@@ -125,6 +137,13 @@ export function Lookdev() {
               }}
               onReady={() => {
                 setSceneReady(true);
+              }}
+              onStationSelect={(s) => {
+                setPreset({
+                  ...STATION,
+                  station: s.id,
+                  view: { center: [s.lon, s.lat], zoom: 12.2, pitch: 60, bearing: -24 },
+                });
               }}
             />
           </Suspense>

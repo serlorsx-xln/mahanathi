@@ -18,6 +18,9 @@ import * as topojson from 'topojson-client';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { buildStyle } from './style';
 import { NATIONAL, STATION, type Preset } from './presets';
+import { GaugesLayer } from './gauges';
+import { DISC_LAYER, addDiscLayer, setDiscData } from './discs';
+import type { StationState } from './stations';
 
 // MapLibre 6 loads its worker by resolving `./maplibre-gl-worker.mjs`
 // against import.meta.url, which points into our chunk once Vite has
@@ -31,11 +34,16 @@ setWorkerUrl(workerUrl);
 export interface MapProps {
   bordersTopo: unknown;
   riversGeo: GeoJSON.FeatureCollection;
+  stations: StationState[];
+  /** poles: the 3D custom layer (default). discs: the flat fallback
+   *  behind ?gauges=discs, for the lead's visual comparison. */
+  gaugeMode: 'poles' | 'discs';
   preset: Preset;
   exaggeration: number;
   flightRequest: number;
   onReady: () => void;
   onFlightDone: () => void;
+  onStationSelect: (station: StationState) => void;
 }
 
 // One shared PMTiles protocol instance for the page (it caches tiles).
@@ -63,17 +71,24 @@ function reducedMotion(): boolean {
 export function LookdevMap({
   bordersTopo,
   riversGeo,
+  stations,
+  gaugeMode,
   preset,
   exaggeration,
   flightRequest,
   onReady,
   onFlightDone,
+  onStationSelect,
 }: MapProps) {
   const container = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MLMap | null>(null);
+  const gaugesRef = useRef<GaugesLayer | null>(null);
   const readyRef = useRef(false);
   const onReadyRef = useRef(onReady);
   const onFlightDoneRef = useRef(onFlightDone);
+  const onStationSelectRef = useRef(onStationSelect);
+  const presetRef = useRef(preset);
+  const stationsRef = useRef(stations);
 
   // Latest-ref wiring happens in effects, not during render.
   useEffect(() => {
@@ -81,6 +96,12 @@ export function LookdevMap({
   });
   useEffect(() => {
     onFlightDoneRef.current = onFlightDone;
+  });
+  useEffect(() => {
+    onStationSelectRef.current = onStationSelect;
+  });
+  useEffect(() => {
+    presetRef.current = preset;
   });
 
   useEffect(() => {
@@ -123,6 +144,10 @@ export function LookdevMap({
           fitBoundsOptions: { padding: 72, pitch: 0, bearing: 0, animate: false },
           attributionControl: false,
           maxPitch: 70,
+          // The e2e evidence pipeline samples the canvas (pixel checks
+          // against the tokens); without this the readback races the
+          // compositor and returns the clear colour.
+          canvasContextAttributes: { preserveDrawingBuffer: true },
           maxBounds: [
             [90, 0],
             [113, 27],
@@ -132,8 +157,31 @@ export function LookdevMap({
 
         map.on('load', () => {
           if (ctrl.signal.aborted || !map) return;
-          void map.setProjection({ type: 'globe' });
-          map.setTerrain({ source: 'dem', exaggeration });
+          const m = map;
+          void m.setProjection({ type: 'globe' });
+          m.setTerrain({ source: 'dem', exaggeration });
+          // The gauges: poles by default, discs behind ?gauges=discs.
+          if (gaugeMode === 'discs') {
+            addDiscLayer(m, stationsRef.current);
+          } else {
+            const gauges = new GaugesLayer();
+            gaugesRef.current = gauges;
+            m.addLayer(gauges);
+            gauges.setStations(stationsRef.current);
+          }
+          // Station selection: click a disc, or click near a pole.
+          m.on('click', (e) => {
+            const nearest = nearestStation(m, stationsRef.current, e.point);
+            if (nearest) onStationSelectRef.current(nearest);
+          });
+          if (gaugeMode === 'discs') {
+            m.on('mouseenter', DISC_LAYER, () => {
+              m.getCanvas().style.cursor = 'pointer';
+            });
+            m.on('mouseleave', DISC_LAYER, () => {
+              m.getCanvas().style.cursor = '';
+            });
+          }
           readyRef.current = true;
           onReadyRef.current();
         });
@@ -157,12 +205,44 @@ export function LookdevMap({
     applyPreset(map, preset, !reducedMotion());
   }, [preset]);
 
-  // Exaggeration: retarget the terrain in place.
+  // Reduced motion is watched live, not read once (bug 7): if the
+  // visitor turns it on while the page is open, the current view cuts
+  // instead of waiting for the next flight to respect it.
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => {
+      const map = mapRef.current;
+      if (mq.matches && map && readyRef.current) {
+        applyPreset(map, presetRef.current, false);
+      }
+    };
+    mq.addEventListener('change', onChange);
+    return () => {
+      mq.removeEventListener('change', onChange);
+    };
+  }, []);
+
+  // Exaggeration: retarget the terrain in place; the gauges re-seat
+  // themselves because their ground contact reads the terrain.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !readyRef.current) return;
     map.setTerrain({ source: 'dem', exaggeration });
+    gaugesRef.current?.setStations(stationsRef.current);
   }, [exaggeration]);
+
+  // Stations: pushed to whichever gauge layer is mounted, once per
+  // change - never per frame (bug 5).
+  useEffect(() => {
+    stationsRef.current = stations;
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    if (gaugeMode === 'discs') {
+      setDiscData(map, stations);
+    } else {
+      gaugesRef.current?.setStations(stations);
+    }
+  }, [stations, gaugeMode]);
 
   // The one authored flight: ใกล้ฉัน. Cut to national, then fly to the
   // sample station (its geolocation twin lands in Phase 4).
@@ -198,6 +278,28 @@ function viewOf(preset: Preset): {
   bearing: number;
 } {
   return preset.view ?? { center: [100.9, 13.8], zoom: 4.6, pitch: 0, bearing: 0 };
+}
+
+/** The station whose ground point is nearest the click, within a
+ *  finger-sized radius. A screen-space hit test - the honest floor for
+ *  the prototype (pitch occlusion is not modelled; the sheet names the
+ *  station, so a miss behind a ridge is visible, not silent). */
+function nearestStation(
+  map: MLMap,
+  stations: StationState[],
+  point: { x: number; y: number },
+): StationState | null {
+  let best: StationState | null = null;
+  let bestDist = 16; // px
+  for (const s of stations) {
+    const p = map.project([s.lon, s.lat]);
+    const d = Math.hypot(p.x - point.x, p.y - point.y);
+    if (d < bestDist) {
+      bestDist = d;
+      best = s;
+    }
+  }
+  return best;
 }
 
 function applyPreset(map: MLMap, preset: Preset, animate: boolean): void {

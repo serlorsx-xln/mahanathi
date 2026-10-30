@@ -14,8 +14,10 @@
   inset: 0;
 }
 
-/* MapLibre's mount: the relief itself, edge to edge. */
-.lookdev__map {
+/* MapLibre's mount: the relief itself, edge to edge. Two classes so the
+   rule beats .maplibregl-map's position: relative regardless of the
+   order the bundler concatenates the stylesheets in. */
+.lookdev .lookdev__map {
   position: absolute;
   inset: 0;
 }
