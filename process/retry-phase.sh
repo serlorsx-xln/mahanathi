@@ -57,9 +57,18 @@ Your previous run was cut off by a transient error in the owner's model router. 
 3. Continue the remaining work. Do not repeat completed steps, do not rewrite committed work, and do not re-read the full phase prompt.
 EOF
 
+# RESUME_CONT=1: the session was interrupted mid-phase by something other
+# than an api cut (e.g. the volume dropping), so attempt 1 resumes with the
+# continuation prompt instead of resending the whole phase prompt.
+first_prompt="$full_prompt"
+if [[ "${RESUME_CONT:-0}" == "1" ]]; then
+  first_prompt="$cont_prompt"
+  echo "RESUME_CONT: attempt 1 continues the phase instead of resending the prompt"
+fi
+
 echo "retry loop for phase ${phase} started $(date '+%H:%M:%S') → ${log}"
-echo "attempt 1 (full prompt) $(date '+%H:%M:%S')"
-claude_attempt "$full_prompt" || true
+echo "attempt 1 $(date '+%H:%M:%S')"
+claude_attempt "$first_prompt" || true
 st="$(state)"; echo "attempt 1: ${st}"
 
 i=1

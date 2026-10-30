@@ -340,15 +340,22 @@ export class GaugesLayer implements CustomLayerInterface {
     gl.useProgram(prog);
 
     // Per-frame uniforms only - no buffer is touched while the camera
-    // moves (bug 5). Screen-constant blade width: never thinner than
-    // ~2.5 px at the map's centre latitude, else the real 2.6 km.
+    // moves (bug 5). Screen-constant blade width, clamped both ways:
+    // never thinner than ~3.5 px (below that the blades dissolve into
+    // the anti-aliasing at the country view, measured), never wider
+    // than ~36 px (above that the landing-zoom blade becomes a
+    // monolithic slab - the gate critique measured 24% of the canvas
+    // as alert red before this cap).
     const zoom = map.getZoom();
     const pitch = (map.getPitch() * Math.PI) / 180;
     const bearing = (map.getBearing() * Math.PI) / 180;
     const center = map.getCenter();
     const centerMc = MercatorCoordinate.fromLngLat(center, 0);
     const metersPerPx = (40075016.7 * Math.cos((center.lat * Math.PI) / 180)) / (512 * Math.pow(2, zoom));
-    const widthM = Math.max(POLE_WIDTH_M, 2.5 * metersPerPx);
+    const widthM = Math.min(
+      Math.max(POLE_WIDTH_M, 3.5 * metersPerPx),
+      36 * metersPerPx,
+    );
 
     // The camera position, derived from the public camera state (there
     // is no free-camera getter on Map in v6): straight down at pitch 0,
@@ -365,7 +372,11 @@ export class GaugesLayer implements CustomLayerInterface {
     // One continuous fog (brief 04): the same token the sky and horizon
     // use, reached near the horizon distance for this altitude.
     const fogEnd = Math.sqrt(2 * EARTH_R_M * altM);
-    const fogStart = fogEnd * 0.35;
+    // The fog keeps one continuous token colour, but starts at 55% of
+    // the horizon distance: at the country view most of Thailand sits
+    // inside that radius, so the gauge field keeps its colour instead
+    // of dissolving into the fog the critique measured.
+    const fogStart = fogEnd * 0.55;
 
     const u = (name: string): WebGLUniformLocation | null =>
       gl.getUniformLocation(prog, name);

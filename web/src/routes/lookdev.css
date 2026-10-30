@@ -22,8 +22,16 @@
   inset: 0;
 }
 
-.lookdev__map .maplibregl-canvas {
+.lookdev__map .maplibregl-canvas:focus {
   outline: none;
+}
+
+/* MapLibre makes its canvas tab-focusable; the focus must be visible
+   (the gate critique caught the suppressed outline hiding keyboard
+   entry into the map). */
+.lookdev__map .maplibregl-canvas:focus-visible {
+  outline: 2px solid var(--color-accent-water);
+  outline-offset: -2px;
 }
 
 .lookdev__canvas canvas {
@@ -96,6 +104,8 @@
   background: var(--color-panel);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-lg);
+  /* 44 px minimum tap height (the gate's tap-target measurement). */
+  min-height: 44px;
   padding: var(--space-2) var(--space-4);
   cursor: pointer;
   transition: background var(--motion-base) var(--motion-ease-out);
@@ -103,6 +113,12 @@
 
 .lookdev__nearme:hover {
   background: var(--color-hover);
+}
+
+/* The caption must hold AA over the hover surface too (measured 4.44:1
+   before this rule). */
+.lookdev__nearme:hover .lookdev__nearme-note {
+  color: var(--color-text-secondary);
 }
 
 /* Honest dev annotation: the prototype flies to a fixture station, not
@@ -260,9 +276,31 @@
   padding: var(--space-4) var(--space-5);
 }
 
+.lookdev__station-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .lookdev__station h2 {
   font-size: var(--type-title-sm-size);
   font-weight: var(--type-weight-semibold);
+}
+
+.lookdev__station-close {
+  flex: none;
+  color: var(--color-text-faint);
+  background: none;
+  border: none;
+  min-width: 24px;
+  min-height: 24px;
+  padding: var(--space-2);
+  cursor: pointer;
+}
+
+.lookdev__station-close:hover {
+  color: var(--color-text-primary);
 }
 
 @media (min-width: 768px) {
@@ -304,6 +342,12 @@
   cursor: pointer;
 }
 
+@media (max-width: 767px) {
+  .lookdev__preset {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
 .lookdev__preset--active {
   color: var(--color-text-primary);
   border-color: var(--color-border-strong);
@@ -339,6 +383,18 @@
     right: var(--space-3);
     max-width: none;
     padding: var(--space-4);
+  }
+
+  /* A chosen station owns the phone: the sheet carries the essentials,
+     the national panel and the dev chrome step aside, and the relief -
+     the product - is visible again at the journey's peak. */
+  .lookdev[data-station='1'] .lookdev__panel,
+  .lookdev[data-station='1'] .lookdev__chrome--bottom {
+    display: none;
+  }
+
+  .lookdev[data-station='1'] .lookdev__station {
+    bottom: max(var(--space-4), env(safe-area-inset-bottom));
   }
 }
 
@@ -411,7 +467,10 @@
   color: var(--color-text-faint);
   background: none;
   border: none;
-  padding: var(--space-1);
+  /* 24 px minimum for a lone control (the gate's tap-target floor). */
+  min-width: 24px;
+  min-height: 24px;
+  padding: var(--space-2);
   cursor: pointer;
 }
 

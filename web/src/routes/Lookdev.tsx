@@ -127,7 +127,11 @@ export function Lookdev() {
   const summary = data?.fixture.summary;
 
   return (
-    <main className="lookdev" data-scene-ready={sceneReady ? '1' : undefined}>
+    <main
+      className="lookdev"
+      data-scene-ready={sceneReady ? '1' : undefined}
+      data-station={selected ? '1' : undefined}
+    >
       <div
         className="lookdev__canvas"
         role="img"
@@ -256,7 +260,26 @@ export function Lookdev() {
 
       {selected && (
         <section className="lookdev__station" aria-label="สถานีที่เลือก">
-          <h2>{selected.name}</h2>
+          <div className="lookdev__station-head">
+            <h2>{selected.name}</h2>
+            <button
+              type="button"
+              className="lookdev__station-close"
+              aria-label="ปิดหน้าต่างสถานี"
+              onClick={() => {
+                setPreset(NATIONAL);
+              }}
+            >
+              <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                <path
+                  d="M3 3 L13 13 M13 3 L3 13"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
           <p className="lookdev__sentence lookdev__sentence--station">{selected.sentence}</p>
           <dl className="lookdev__numbers lookdev__numbers--station">
             <div>

@@ -8,16 +8,16 @@ Updated at the end of every phase. The detail lives in `process/reports/phase-N.
 |---|---|---|---|---|
 | 1 | Discovery and foundation | **done**, reviewed by the lead, closed out in Phase 2's Step 0 | research with sources ✓, ADRs for stack, storage and data reference ✓ (plus rendering), scaffold builds and tests pass ✓, CI defined ✓ | `process/reports/phase-1.md` |
 | 2 | Data core (TDD) | **done**, awaiting the lead's review | pipeline live-verified on 804 stations ✓, oracle 789/789 ✓, timeline within budget (46 KB gzipped of 80) ✓, humanize coverage 100 % ✓, deploy image builds and self-healthchecks ✓ | `process/reports/phase-2.md` |
-| 3 | Look-dev | **done**, awaiting the lead's visual pass | tokens single-sourced with a tested mirror ✓, situation scale CVD-searched (ΔE ≥ 14 under deutan/protan) ✓, type decided by measurement (ADR 0005) ✓, geodata byte-reproducible ✓, relief on real 804-station data ✓, gate passed after two critique iterations (zero banned items) ✓ — see `docs/design/GATE-phase-3.md` | `process/reports/phase-3.md` |
+| 3 | Look-dev | **rebuilt in 3b**, awaiting the lead's visual pass + poles-vs-discs pick | the R3F relief was rejected visually and replaced on MapLibre (ADR 0007): globe, terrarium DEM, retinted Protomaps basemap, 804 gauges as a custom layer + disc fallback, gate re-run with fixes — see `docs/design/GATE-phase-3b.md` | `process/reports/phase-3.md`, `process/reports/phase-3b.md` |
 | 4 | Product build | not started | | |
 | 5 | Polish and hardening | not started | | |
 | 6 | Ship docs and handover | not started | | |
 
-## Current state (end of Phase 3, 2026-10-30)
+## Current state (end of Phase 3b, 2026-10-30)
 
 **What exists:**
 - **Server:** the whole data pipeline runs from one binary. `thaiwater` (client with fixtures), `normalize` (ADR 0003 arithmetic, mm-exact), `domain` (levels, percents, distances), `humanize` (the Thai sentence, 100 % coverage), `store` (SQLite WAL, migrations, retention), `ingest` (hourly at :07, 72 h backfill, oracle), `api` (`/now`, `/history`, `/timeline`, `/readyz`) and `main` wiring with env config and a `healthcheck` subcommand.
-- **Web:** the visual world is built and gated, on dev routes. `/lookdev` renders the relief (custom shaders, flat colour pipeline so tokens reach the screen verbatim) with all 804 real gauges from a Phase 2 fixture, three camera presets, one flight, reduced-motion cuts and a no-WebGL floor; `/specimen` and `/color` are the evidence pages. The product shell is Phase 4.
+- **Web:** the visual world is built and gated on MapLibre (ADR 0007). `/lookdev` renders the globe relief (our terrarium DEM, self-built Protomaps basemap retinted to the tokens, one continuous night fog) with all 804 real gauges as a custom instanced WebGL layer (bank-full cap + fill + overflow, stale hollow, suspect translucent) and a disc fallback behind `?gauges=discs`; three camera presets, the ใกล้ฉัน flight, reduced-motion cuts, a no-WebGL floor and the LINE in-app-browser offer. `/specimen` and `/color` are the evidence pages. The product shell is Phase 4. The basemap PMTiles (160 MB, ODbL) and DEM tiles are gitignored locals with recorded build commands (`geodata/SOURCES.md`).
 - **Design system:** `web/src/design/tokens.ts` is the single source (generated CSS mirror, drift-tested); DESIGN.md + sidecar recorded from the artifact. Type: Mahanathi Sans (renamed IBM Plex Sans Thai) + Noto Serif Thai, 64 KB self-hosted. Situation scale: CVD-searched, AA on every surface. ADRs 0005 (type) and 0006 (relief look, 12x).
 - **Build:** `make docker` builds the 21.4 MB deploy image (distroless, `/data` for 65532, self-healthcheck); `make docker-full` is the whole pipeline once Phase 3 ships.
 

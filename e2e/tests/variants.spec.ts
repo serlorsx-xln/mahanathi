@@ -7,6 +7,11 @@ import { expect, test } from '@playwright/test';
 const OUT = resolve(import.meta.dirname, '../../docs/design/screens/phase-3');
 
 test.describe('gate variants', () => {
+  // The relief is WebGL-heavy and Playwright screenshots stall on
+  // ReadPixels under load (the Phase 3 lesson, now true for this spec
+  // too since /lookdev gained terrain, basemap and gauges).
+  test.setTimeout(120_000);
+
   test('reduced motion cuts the flight instead of flying', async ({ page }) => {
     test.skip(test.info().project.name !== 'desktop', 'behaviour variant, desktop only');
     await page.emulateMedia({ reducedMotion: 'reduce' });

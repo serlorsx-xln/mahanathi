@@ -13,13 +13,50 @@ import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
 import { layers as protomapsLayers, namedTheme } from 'protomaps-themes-base';
 import { colors, relief } from '../design/tokens';
 
-/** Retint a protomaps layer's paint to the token world. */
+/** Mix two hex colours; the ratios (not the colours) are the only
+ *  hand-set values in this file - every base colour is a token. */
+function mix(a: string, b: string, t: number): string {
+  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  const out = pa.map((v, i) => Math.round(v + ((pb[i] ?? v) - v) * t));
+  return `#${out.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** Retint a protomaps layer's paint into the token world. The dark
+ *  theme's own greys (#1f1f1f earth, #3d3d3d roads, #111 buildings)
+ *  took over the close zooms before this mapping existed - the gate
+ *  critique measured 77.7% of the landing frame as Protomaps grey.
+ *  Every replacement colour is derived from the tokens above. */
 function retint(layer: LayerSpecification): LayerSpecification {
   if (layer.type === 'background') {
     return { ...layer, paint: { 'background-color': colors.ground } };
   }
-  if (layer.type === 'fill' && layer.id.startsWith('water')) {
+  const id = layer.id;
+  if (layer.type === 'fill' && id.startsWith('water')) {
     return { ...layer, paint: { ...layer.paint, 'fill-color': colors.sea } };
+  }
+  if (layer.type === 'fill' && id.startsWith('earth')) {
+    return { ...layer, paint: { ...layer.paint, 'fill-color': colors.ground } };
+  }
+  if (layer.type === 'fill' && id.startsWith('landcover')) {
+    // A whisper of the normal-level green over the ground.
+    return {
+      ...layer,
+      paint: { ...layer.paint, 'fill-color': mix(colors.ground, '#599c5b', 0.06) },
+    };
+  }
+  if (layer.type === 'fill' && id.startsWith('buildings')) {
+    return {
+      ...layer,
+      paint: { ...layer.paint, 'fill-color': mix(colors.ground, '#ffffff', 0.04) },
+    };
+  }
+  if (layer.type === 'line' && id.startsWith('roads')) {
+    // Quiet tracks: the ground lifted just enough to read as structure.
+    return {
+      ...layer,
+      paint: { ...layer.paint, 'line-color': mix(colors.ground, '#ffffff', 0.12) },
+    };
   }
   return layer;
 }
