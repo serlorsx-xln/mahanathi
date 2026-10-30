@@ -4,11 +4,11 @@ If any Phase 3b-fix item is still outstanding when you read this, finish it firs
 
 The owner's three new directions, researched and specified:
 
-## P0 — the view modes: '2D MAP' / '3D TERRAIN' (Google-Maps pattern)
-A segmented pill in the map chrome, English labels `2D MAP` / `3D TERRAIN` (aria-pressed, keyboard focusable), state synced to the URL as `?view=3d` (deep-linkable for the demo) and remembered in localStorage (try/catch).
+## P0 — the view modes: 'DEFAULT' / 'TERRAIN 3D' (Google-Maps pattern, owner's clarified intent)
+The owner clarified: the pattern is Google Maps' layer toggle — a plain default map view vs the realistic view. Our realistic view is the terrain relief (NOT satellite imagery — we ship no raster imagery; do not label it "Satellite", Google Maps itself has a "Terrain" layer, which is what ours is). A segmented pill in the map chrome, English labels `DEFAULT` / `TERRAIN 3D` (aria-pressed, keyboard focusable), state synced to the URL as `?view=3d` (deep-linkable for the demo) and remembered in localStorage (try/catch).
 
-- **2D MAP**: `map.setProjection({ type: 'mercator' })`, `setTerrain(null)`, pitch 0 / bearing 0, hillshade softened to 0.25, **full night fog** (the sky block only works in mercator — this mode gets the fog back).
-- **3D TERRAIN**: globe + terrain + globe atmosphere; presets keep their authored pitch (55/60).
+- **DEFAULT** (the plain map): `map.setProjection({ type: 'mercator' })`, `setTerrain(null)`, pitch 0 / bearing 0, hillshade softened to 0.25, **full night fog** (the sky block only works in mercator — this mode gets the fog back). This is the "แผนที่ปกติ" flat read.
+- **TERRAIN 3D** (the realistic one, and the app's default): globe + terrain + globe atmosphere; presets keep their authored pitch (55/60).
 - Two sky specs exported from `style.ts`, both built only from tokens (the no-hand-hex rule holds): mercator keeps today's fog-style sky; globe uses a higher `atmosphere-blend` (Rayleigh shader draws only on globe) — this converts the console warning into a designed trade. Update the ADR 0007 note/DEVLOG accordingly.
 - **Never switch projection and fly the camera in the same frame**: sequence setProjection → `projectiontransition` → easeTo. Re-apply terrain and `setStations` after the transition (the gauges layer is already projection-aware). Guard toggle clicks while mid-switch.
 - Mask the tile reload with a fade-through-fog overlay (~180 ms to ~0.4 opacity in the fog token, removed on next `idle`) — under reduced motion, cut. Presets flatten in 2D (pitch forced 0) and compose with the existing preset buttons.
@@ -18,7 +18,10 @@ A segmented pill in the map chrome, English labels `2D MAP` / `3D TERRAIN` (aria
 IBM Plex Sans Thai ("Mahanathi Sans") is confirmed loopless; **Noto Serif Thai — the sentence face — is the looped one.** Retire it: the national/station sentences render in Mahanathi Sans, differentiated by size/tracking/the sentence tone colour, not family. Update `tokens.ts` (`sentenceStack`), DESIGN.md, and **append an ADR 0005 addendum** recording the external confirmation (Google Fonts links) and the retirement decision. Re-shoot the affected screenshots.
 
 ## P1 — the copy rule: English instrument, Thai voice
-Write the rule down (DESIGN.md + a line in the design brief): **Thai is the voice (the sentence, situation labels, buttons the user reads as speech); English is the instrument (measurement labels, units, credits, timestamps, controls).** Then apply it: panel measurement labels → `WATER LEVEL` / `BANK FULL` / `% BANKFULL` / `MEASURED`, view labels `2D MAP`/`3D TERRAIN`, timestamps/units in English. Keep the datum footnote honest (ม.รทก. is not provably identical to m AMSL — keep the Thai note). Verify the WOFF2 subsets cover the new Latin strings (`scripts/research/subset_sizes.sh`; rebuild if short).
+Write the rule down (DESIGN.md + a line in the design brief): **Thai is the voice (the sentence, situation labels, buttons the user reads as speech); English is the instrument (measurement labels, units, credits, timestamps, controls).** Then apply it: panel measurement labels → `WATER LEVEL` / `BANK FULL` / `% BANKFULL` / `MEASURED`, view labels `DEFAULT`/`TERRAIN 3D`, timestamps/units in English. Keep the datum footnote honest (ม.รทก. is not provably identical to m AMSL — keep the Thai note). Verify the WOFF2 subsets cover the new Latin strings (`scripts/research/subset_sizes.sh`; rebuild if short).
+
+## Owner's standing instruction for this phase: cut freely
+Anything that does not clearly earn its place under today's clock and the UX bar — drop it without ceremony, and say so in the report. Fewer, better beats more, half-done.
 
 ## P1 — docs/DEMO.md (the interview script) + the credit line
 - The verified comparison, honest, no disparaging: ThaiWater's new portal is a clickable-map dashboard requiring station-by-station clicks; our differentiators (researched 2026-10-30): the plain-Thai national sentence, ใกล้ฉัน computed on-device (position never leaves the phone), the 72-h timeline, works in the LINE webview, dark night-first design, and being **built on their open data** (315 RID stations of the 804 — say so as a feature).
