@@ -69,9 +69,44 @@ export interface StyleInput {
    *  answered 200); without it we ship terrain, borders and rivers
    *  only, which is still the committed world. */
   basemap: boolean;
+  /** The view mode (Phase 4): '2d' flattens to mercator with the full
+   *  night fog and a softened hillshade; '3d' (the default) keeps the
+   *  globe, the terrain and the atmosphere. */
+  view?: ViewMode;
 }
 
-export function buildStyle({ basemap }: StyleInput): StyleSpecification {
+/** The view modes (Phase 4's Google-Maps pattern). */
+export type ViewMode = '2d' | '3d';
+
+// The night air, twice - both skies are the fog token and nothing else
+// (the no-hand-hex rule holds; the blend ratios are the only hand-set
+// numbers, like the retint's). Mercator carries the fog matrix (the
+// full night fog the engine supports there); the globe does not - its
+// fog matrix is a documented no-op (ADR 0007 addendum) - so the globe
+// sky pays for it in atmosphere instead. The console warning becomes
+// a designed trade: each mode gets the sky its projection can render.
+function skyFor(view: ViewMode): NonNullable<StyleSpecification['sky']> {
+  const blend =
+    view === '2d'
+      ? (['interpolate', ['linear'], ['zoom'], 0, 0.7, 6, 0.35, 12, 0] as never)
+      : (['interpolate', ['linear'], ['zoom'], 0, 0.9, 6, 0.55, 12, 0] as never);
+  return {
+    'sky-color': relief.fog,
+    'horizon-color': relief.fog,
+    'fog-color': relief.fog,
+    'fog-ground-blend': 0.55,
+    'horizon-fog-blend': 0.35,
+    'atmosphere-blend': blend,
+  };
+}
+
+/** The hillshade softens when the terrain is flat: in 2D the shading
+ *  is structure, not relief drama. */
+export function hillshadeExaggeration(view: ViewMode): number {
+  return view === '2d' ? 0.25 : 0.45;
+}
+
+export function buildStyle({ basemap, view = '3d' }: StyleInput): StyleSpecification {
   const base: LayerSpecification[] = basemap
     ? protomapsLayers('pmt', namedTheme('dark'), {}).map(retint)
     : [];
@@ -117,7 +152,7 @@ export function buildStyle({ basemap }: StyleInput): StyleSpecification {
         type: 'hillshade',
         source: 'dem',
         paint: {
-          'hillshade-exaggeration': 0.45,
+          'hillshade-exaggeration': hillshadeExaggeration(view),
           'hillshade-shadow-color': colors.sea,
           'hillshade-highlight-color': relief.albedoLow,
           'hillshade-accent-color': colors.sea,
@@ -144,16 +179,11 @@ export function buildStyle({ basemap }: StyleInput): StyleSpecification {
         },
       },
     ],
-    sky: {
-      // The night air: our fog token is the sky's horizon and the fog
-      // the far terrain sinks into (brief 04: one continuous fog).
-      'sky-color': relief.fog,
-      'horizon-color': relief.fog,
-      'fog-color': relief.fog,
-      'fog-ground-blend': 0.55,
-      'horizon-fog-blend': 0.35,
-      'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 0.8, 6, 0.4, 12, 0],
-    },
+    sky: skyFor(view),
   };
   return style;
 }
+
+/** The sky for the other mode, applied at runtime on a view switch
+ *  (setSky, not setStyle - a style swap would nuke the layers). */
+export { skyFor };

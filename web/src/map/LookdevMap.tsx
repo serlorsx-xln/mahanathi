@@ -16,7 +16,7 @@ import {
 import { Protocol } from 'pmtiles';
 import * as topojson from 'topojson-client';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { buildStyle } from './style';
+import { buildStyle, hillshadeExaggeration, skyFor, type ViewMode } from './style';
 import { NATIONAL, STATION, type Preset } from './presets';
 import { GaugesLayer } from './gauges';
 import { DISC_LAYER, addDiscLayer, setDiscData } from './discs';
@@ -41,9 +41,14 @@ export interface MapProps {
   preset: Preset;
   exaggeration: number;
   flightRequest: number;
+  /** The view mode (Phase 4): 2D flattens to mercator + full fog, 3D
+   *  is the globe relief. Switching is sequenced, never same-frame. */
+  view: ViewMode;
   onReady: () => void;
   onFlightDone: () => void;
   onStationSelect: (station: StationState) => void;
+  /** The map is mid view-switch (the route disables the toggle). */
+  onViewSwitching?: (switching: boolean) => void;
   /** The map itself failed to initialise; the route falls to its
    *  no-WebGL floor (the same honest shell). */
   onError: () => void;
@@ -79,10 +84,12 @@ export function LookdevMap({
   preset,
   exaggeration,
   flightRequest,
+  view,
   onReady,
   onFlightDone,
   onStationSelect,
   onError,
+  onViewSwitching,
 }: MapProps) {
   const container = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MLMap | null>(null);
@@ -96,6 +103,12 @@ export function LookdevMap({
   const flightRequestRef = useRef(flightRequest);
   const onReadyRef = useRef(onReady);
   const onErrorRef = useRef(onError);
+  const onViewSwitchingRef = useRef(onViewSwitching);
+  // The view the map is actually showing (set at load and at each
+  // switch's end) - the [view] effect no-ops until it differs.
+  const appliedViewRef = useRef<ViewMode>(view);
+  const viewRef = useRef(view);
+  const switchingRef = useRef(false);
 
   // Latest-ref wiring happens in effects, not during render.
   useEffect(() => {
@@ -118,6 +131,9 @@ export function LookdevMap({
   });
   useEffect(() => {
     flightRequestRef.current = flightRequest;
+  });
+  useEffect(() => {
+    viewRef.current = view;
   });
 
   useEffect(() => {
@@ -144,7 +160,7 @@ export function LookdevMap({
       .then((hasPmtiles) => {
         if (ctrl.signal.aborted || !container.current) return;
 
-        const style: StyleSpecification = buildStyle({ basemap: hasPmtiles });
+        const style: StyleSpecification = buildStyle({ basemap: hasPmtiles, view: viewRef.current });
         const borders = bordersToGeoJson(bordersTopo);
         const riversSource = style.sources.rivers;
         const bordersSource = style.sources.borders;
@@ -174,10 +190,18 @@ export function LookdevMap({
         map.on('load', () => {
           if (ctrl.signal.aborted || !map) return;
           const m = map;
-          void m.setProjection({ type: 'globe' });
-          // The ref, not the first-render closure: a slider move
-          // during load must not be overwritten by a stale value.
-          m.setTerrain({ source: 'dem', exaggeration: exaggerationRef.current });
+          // The initial view (a deep link or localStorage can ask for
+          // 2D): the globe is the product's signature, mercator the
+          // flat map with the full fog the engine supports there.
+          if (viewRef.current === '2d') {
+            void m.setProjection({ type: 'mercator' });
+          } else {
+            void m.setProjection({ type: 'globe' });
+            // The ref, not the first-render closure: a slider move
+            // during load must not be overwritten by a stale value.
+            m.setTerrain({ source: 'dem', exaggeration: exaggerationRef.current });
+          }
+          appliedViewRef.current = viewRef.current;
           // The gauges: poles by default, discs behind ?gauges=discs.
           if (gaugeMode === 'discs') {
             addDiscLayer(m, stationsRef.current);
@@ -212,10 +236,10 @@ export function LookdevMap({
           // spinner never resolved.
           const pendingPreset = presetRef.current;
           if (pendingPreset.key !== preset.key) {
-            applyPreset(m, pendingPreset, !reducedMotion());
+            applyPreset(m, pendingPreset, !reducedMotion(), appliedViewRef.current);
           }
           if (flightRequestRef.current > 0) {
-            applyPreset(m, NATIONAL, false);
+            applyPreset(m, NATIONAL, false, appliedViewRef.current);
             window.setTimeout(() => {
               const mm = mapRef.current;
               if (!mm) return;
@@ -246,12 +270,67 @@ export function LookdevMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Presets: cut under reduced motion, fly otherwise.
+  // Presets: cut under reduced motion, fly otherwise. Flattened while
+  // a view switch is in flight (the pill and ใกล้ฉัน are disabled for
+  // the same window - the sequencing rule is the lead's).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current || switchingRef.current) return;
+    applyPreset(map, preset, !reducedMotion(), appliedViewRef.current);
+  }, [preset]);
+
+  // The view switch (Phase 4): never the projection and the camera in
+  // the same frame. setProjection reloads the tile managers, so the
+  // sequence is projection → idle → camera, with the terrain and the
+  // gauges re-seated after the transition (the layer is
+  // projection-aware, but its ground contact reads the new terrain).
+  // The tile-reload window is masked by a fade through the fog token -
+  // a cut, not a fade, under reduced motion.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !readyRef.current) return;
-    applyPreset(map, preset, !reducedMotion());
-  }, [preset]);
+    if (appliedViewRef.current === view || switchingRef.current) return;
+    switchingRef.current = true;
+    onViewSwitchingRef.current?.(true);
+    const cut = reducedMotion();
+    // The tile-reload mask: a DOM side effect of the switch lifecycle,
+    // not React state - mounted here, removed in finish. A cut, not a
+    // fade, under reduced motion (the overlay never mounts).
+    const host = container.current?.parentElement ?? null;
+    const fade = !cut && host ? document.createElement('div') : null;
+    if (fade && host) {
+      fade.className = 'lookdev__viewfade';
+      fade.setAttribute('aria-hidden', 'true');
+      host.appendChild(fade);
+    }
+    const finish = () => {
+      appliedViewRef.current = view;
+      switchingRef.current = false;
+      fade?.remove();
+      onViewSwitchingRef.current?.(false);
+    };
+    // The sky and the hillshade follow the mode (paint-level, cheap -
+    // a setStyle would nuke the layers).
+    map.setSky(skyFor(view));
+    map.setPaintProperty('hillshade', 'hillshade-exaggeration', hillshadeExaggeration(view));
+    if (view === '2d') {
+      map.setTerrain(null);
+      void map.setProjection({ type: 'mercator' });
+      map.once('idle', () => {
+        map.easeTo({ pitch: 0, bearing: 0, duration: cut ? 0 : 600, essential: true });
+        map.once('moveend', finish);
+      });
+    } else {
+      void map.setProjection({ type: 'globe' });
+      map.once('idle', () => {
+        map.setTerrain({ source: 'dem', exaggeration: exaggerationRef.current });
+        gaugesRef.current?.setStations(stationsRef.current);
+        const v = viewOf(presetRef.current);
+        map.easeTo({ pitch: v.pitch, bearing: v.bearing, duration: cut ? 0 : 600, essential: true });
+        map.once('moveend', finish);
+      });
+    }
+  }, [view]);
 
   // Reduced motion is watched live, not read once (bug 7): if the
   // visitor turns it on while the page is open, the current view cuts
@@ -261,7 +340,7 @@ export function LookdevMap({
     const onChange = () => {
       const map = mapRef.current;
       if (mq.matches && map && readyRef.current) {
-        applyPreset(map, presetRef.current, false);
+        applyPreset(map, presetRef.current, false, appliedViewRef.current);
       }
     };
     mq.addEventListener('change', onChange);
@@ -293,20 +372,23 @@ export function LookdevMap({
   }, [stations, gaugeMode]);
 
   // The one authored flight: ใกล้ฉัน. Cut to national, then fly to the
-  // sample station (its geolocation twin lands in Phase 4).
+  // sample station (its geolocation twin lands in Phase 4). The button
+  // is disabled for the view-switch window, so no mid-switch start.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !readyRef.current || flightRequest === 0) return;
+    const flat = (v: { center: [number, number]; zoom: number; pitch: number; bearing: number }) =>
+      appliedViewRef.current === '2d' ? { ...v, pitch: 0 } : v;
     if (reducedMotion()) {
-      applyPreset(map, STATION, false);
+      applyPreset(map, STATION, false, appliedViewRef.current);
       onFlightDoneRef.current();
       return;
     }
-    applyPreset(map, NATIONAL, false);
+    applyPreset(map, NATIONAL, false, appliedViewRef.current);
     const t = window.setTimeout(() => {
       const m = mapRef.current;
       if (!m) return;
-      m.flyTo({ ...viewOf(STATION), duration: 2000, curve: 1.5, essential: true });
+      m.flyTo({ ...flat(viewOf(STATION)), duration: 2000, curve: 1.5, essential: true });
       m.once('moveend', () => {
         onFlightDoneRef.current();
       });
@@ -350,12 +432,18 @@ function nearestStation(
   return best;
 }
 
-function applyPreset(map: MLMap, preset: Preset, animate: boolean): void {
+function applyPreset(
+  map: MLMap,
+  preset: Preset,
+  animate: boolean,
+  view: ViewMode,
+): void {
   if (preset.bounds) {
     map.fitBounds(preset.bounds, { padding: 72, pitch: 0, bearing: 0, animate, duration: 1600 });
     return;
   }
-  const v = viewOf(preset);
+  // 2D is flat by definition: the authored pitches belong to the relief.
+  const v = view === '2d' ? { ...viewOf(preset), pitch: 0 } : viewOf(preset);
   if (animate) {
     map.flyTo({ ...v, duration: 1600, curve: 1.4, essential: true });
   } else {

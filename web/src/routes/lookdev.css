@@ -130,6 +130,73 @@
   color: var(--color-text-faint);
 }
 
+/* The view switch (Phase 4): a segmented pill in the map chrome,
+   Google-Maps pattern. One instrument control - panel surface, token
+   border, the active half carries the weight. */
+.lookdev__views {
+  display: flex;
+}
+
+.lookdev__view {
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-weight-regular);
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  min-height: 44px; /* the tap floor the gate measures */
+  cursor: pointer;
+  transition: color var(--motion-base) var(--motion-ease-out);
+}
+
+.lookdev__view:first-child {
+  border-radius: var(--radius-full) 0 0 var(--radius-full);
+}
+
+.lookdev__view:last-child {
+  border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  border-left: none;
+}
+
+.lookdev__view--active {
+  color: var(--color-text-primary);
+  font-weight: var(--type-weight-semibold);
+  border-color: var(--color-border-strong);
+}
+
+.lookdev__view:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* The tile-reload mask on a view switch: fog token, animated in over
+   ~180 ms and removed when the new projection settles. Under reduced
+   motion the switch is a cut - the overlay never mounts. */
+.lookdev__viewfade {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-annotation); /* above the map, below the panels */
+  background: var(--relief-fog);
+  pointer-events: none;
+  animation: lookdev-viewfade 180ms var(--motion-ease-out) forwards;
+}
+
+@keyframes lookdev-viewfade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lookdev__viewfade {
+    animation: none;
+  }
+}
+
 /* Screen-reader text for the loading status. */
 .lookdev__sr {
   position: absolute;

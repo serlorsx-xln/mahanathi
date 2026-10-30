@@ -9,6 +9,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { situations, stale } from '../design/tokens';
 import type { StationState } from '../map/stations';
 import { NATIONAL, PRESETS, STATION, type Preset } from '../map/presets';
+import type { ViewMode } from '../map/style';
 import './lookdev.css';
 
 const LookdevMap = lazy(async () => {
@@ -62,6 +63,20 @@ function inLineBrowser(): boolean {
   return /Line\//i.test(window.navigator.userAgent);
 }
 
+/** The view mode (Phase 4): the globe relief is the product's default;
+ *  a deep link (?view=2d / ?view=3d) wins, then the remembered choice
+ *  (localStorage can throw in private windows - try/catch). */
+function initialView(): ViewMode {
+  if (typeof window === 'undefined') return '3d';
+  const p = new URLSearchParams(window.location.search).get('view');
+  if (p === '2d' || p === '3d') return p;
+  try {
+    return window.localStorage.getItem('mahanathi.view') === '2d' ? '2d' : '3d';
+  } catch {
+    return '3d';
+  }
+}
+
 function formatTime(iso: string): string {
   const d = new Date(iso);
   return (
@@ -95,6 +110,24 @@ export function Lookdev() {
   const [attempt, setAttempt] = useState(0);
   const [mode] = useState(gaugeMode);
   const [lineHintDismissed, setLineHintDismissed] = useState(false);
+  const [view, setView] = useState<ViewMode>(initialView);
+  // The map is switching projection (Phase 4): the toggle - and the
+  // flight - are off for the window, per the sequencing rule.
+  const [viewSwitching, setViewSwitching] = useState(false);
+
+  /** Sync the view to the URL (deep-linkable for the demo) and remember
+   *  it. replaceState, not push: a view flip is not navigation. */
+  const chooseView = (v: ViewMode) => {
+    setView(v);
+    try {
+      window.localStorage.setItem('mahanathi.view', v);
+    } catch {
+      // private windows; the URL still carries the choice
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', v);
+    window.history.replaceState(null, '', url);
+  };
 
   useEffect(() => {
     const controller = new AbortController();
@@ -155,6 +188,8 @@ export function Lookdev() {
               preset={preset}
               exaggeration={exaggeration}
               flightRequest={flightRequest}
+              view={view}
+              onViewSwitching={setViewSwitching}
               onFlightDone={() => {
                 setFlightDone(true);
               }}
@@ -203,9 +238,33 @@ export function Lookdev() {
 
       <header className="lookdev__chrome lookdev__chrome--top">
         <div className="lookdev__wordmark">มหานที</div>
+        <div
+          className="lookdev__views"
+          role="group"
+          aria-label="มุมมองแผนที่"
+          data-switching={viewSwitching ? '1' : undefined}
+        >
+          {/* Instrument labels are English (the copy rule); the group's
+              name is Thai, the voice. */}
+          {(['2d', '3d'] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              aria-pressed={view === v}
+              className={view === v ? 'lookdev__view lookdev__view--active' : 'lookdev__view'}
+              disabled={viewSwitching}
+              onClick={() => {
+                chooseView(v);
+              }}
+            >
+              {v === '2d' ? '2D MAP' : '3D TERRAIN'}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           className="lookdev__nearme"
+          disabled={viewSwitching}
           onClick={() => {
             setFlightDone(false);
             setPreset(STATION);
