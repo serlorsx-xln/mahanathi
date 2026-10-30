@@ -112,6 +112,7 @@ Do **not** look at "3D globe hero" templates, Dribbble dashboards or SaaS landin
 - **Icons:** one consistent drawn set or authored SVG. No emoji or Unicode glyphs as icons.
 
 ## 10. The anti-slop gate (a hard checklist, run with screenshot evidence)
+
 Sources: the [impeccable slop catalog](https://impeccable.style/slop), [prg.sh, "Why your AI keeps building the same purple gradient website"](https://prg.sh/ramblings/Why-Your-AI-Keeps-Building-the-Same-Purple-Gradient-Website), [925studios slop tells](https://www.925studios.co/blog/ai-slop-design-tells), [capitalandcompute: fix slop tell by tell](https://capitalandcompute.net/blog/fix-ai-slop-design/), and the impeccable plugin's craft floor (installed locally).
 
 **Why slop happens:** models average the most common patterns when the brief is vague. The cure is a committed world, named references, explicit bans, tokens locked in one place, and reviewing the render rather than the code. Fixing tells cosmetically only produces a differently flavoured template, so fix the root cause.
@@ -173,3 +174,6 @@ Sources: the [impeccable slop catalog](https://impeccable.style/slop), [prg.sh, 
 3. Score every checklist item pass or fail in `docs/design/GATE-<phase>.md`.
 4. Fix root causes, then re-shoot.
 5. The gate passes only with zero banned items and every requirement findable within seconds.
+
+## 11. Template-first (Phase 4 standing policy)
+Before hand-building any UI piece, search for an existing component or template that fits — shadcn/ui first (the owner's chosen foundation), then broader. Hand-build only what provably does not exist. The branded intro is one of the few honest exceptions: no template carries our world, and the choreography stays ours.

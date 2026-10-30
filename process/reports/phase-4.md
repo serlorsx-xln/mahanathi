@@ -40,3 +40,14 @@ tsc clean; eslint clean (`--max-warnings=0`); unit **35/35**; gate-evidence spec
 ## Stop
 
 Stopped for the lead at ~15:05 as instructed: pushed-and-deployed beats perfect, and the push/deploy are the lead's alone. The app is shippable at every commit above.
+
+## Delta addendum (the owner's mid-phase directions, ~15:00)
+
+The lead delivered `process/prompts/phase-4-delta.md` during the final minutes. Disposition under the hard stop:
+
+1. **View labels renamed to DEFAULT / TERRAIN 3D** — landed. The owner's clarification (a plain default map vs the realistic view; ours is terrain relief, not satellite). The strings, DESIGN.md's Instrument/Voice rule and DEMO.md updated in the same commit; gate screenshots re-shot (the gate-shots test needed its isolated re-run — the same contention class).
+2. **Loading screen + intro animation** — **cut**, named here: ~1.2 s of choreography did not fit the minutes left, and a rushed intro risks the never-delays-interactivity rule. The skeleton surface and motion tokens it would reuse are in place for the next round.
+3. **Tailwind v4 + shadcn/ui foundation** — **cut**, named here: an install + init + the toggle/share rebuild is a half-hour unit done properly (the tokens.css drift test must keep passing, shadcn's variables scoped in their own layer), not a five-minute one. The two-stage decision (foundation + new components first, migration later with gates re-run) is the lead's to schedule post-interview.
+4. **Template-first standing policy** — landed: brief §11.
+
+Fewer, better — the clock won.

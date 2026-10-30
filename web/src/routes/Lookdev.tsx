@@ -246,7 +246,10 @@ export function Lookdev() {
           data-switching={viewSwitching ? '1' : undefined}
         >
           {/* Instrument labels are English (the copy rule); the group's
-              name is Thai, the voice. */}
+              name is Thai, the voice. DEFAULT / TERRAIN 3D, not
+              2D/3D MAP: ours is terrain relief, not satellite imagery
+              (the owner's clarification; Google Maps' own Terrain
+              layer is the familiar precedent). */}
           {(['2d', '3d'] as const).map((v) => (
             <button
               key={v}
@@ -258,7 +261,7 @@ export function Lookdev() {
                 chooseView(v);
               }}
             >
-              {v === '2d' ? '2D MAP' : '3D TERRAIN'}
+              {v === '2d' ? 'DEFAULT' : 'TERRAIN 3D'}
             </button>
           ))}
         </div>
