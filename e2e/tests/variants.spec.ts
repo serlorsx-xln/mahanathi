@@ -62,4 +62,37 @@ test.describe('gate variants', () => {
     await page.getByRole('button', { name: 'ลองใหม่' }).click();
     await page.getByLabel('สรุปสถานการณ์น้ำ').waitFor({ timeout: 60_000 });
   });
+
+  // J6: the LINE in-app browser gets the open-externally offer. This is
+  // the test that makes the gate's "e2e-verified" claim true (it was
+  // false until now - the original verification was the critique's
+  // one-off browser measurement, recorded in the DEVLOG correction).
+  test('the LINE webview gets the open-externally offer', async ({ browser }) => {
+    test.skip(test.info().project.name !== 'desktop', 'behaviour variant, desktop only');
+    const line = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      locale: 'th-TH',
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Line/13.20.0 Mobile/15E148 Safari/604.1',
+    });
+    const page = await line.newPage();
+    await page.goto('/lookdev');
+    await page.getByLabel('สรุปสถานการณ์น้ำ').waitFor({ timeout: 60_000 });
+    const hint = page.getByLabel('เปิดในเบราว์เซอร์');
+    await expect(hint).toBeVisible();
+    // The escape hatch is LINE's documented parameter, nothing else.
+    await expect(hint.getByRole('link')).toHaveAttribute('href', '?openExternalBrowser=1');
+    // Dismiss works and stays dismissed.
+    await page.getByLabel('ปิดคำแนะนำ').click();
+    await expect(hint).toHaveCount(0);
+    await line.close();
+
+    // And it never appears outside the LINE webview.
+    const plain = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page2 = await plain.newPage();
+    await page2.goto('/lookdev');
+    await page2.getByLabel('สรุปสถานการณ์น้ำ').waitFor({ timeout: 60_000 });
+    await expect(page2.getByLabel('เปิดในเบราว์เซอร์')).toHaveCount(0);
+    await plain.close();
+  });
 });

@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-10-30T07:00:12.004Z",
+  "baseUrl": "http://127.0.0.1:4173",
+  "landingDesktop": {
+    "alertRedPx": 87168,
+    "alertRedPct": 6.73,
+    "protomapsGreyPct": 0,
+    "consoleErrors": 0
+  },
+  "nationalDesktop": {
+    "sampled": 1296000,
+    "level1": 19,
+    "level3": 730,
+    "level4": 1068,
+    "level5": 125,
+    "consoleErrors": 0
+  },
+  "nationalPhone": {
+    "sampled": 2330640,
+    "level1": 0,
+    "level3": 0,
+    "level4": 0,
+    "level5": 0,
+    "consoleErrors": 0
+  },
+  "contrast": {
+    "panelSentence": {
+      "color": "rgb(230, 237, 242)",
+      "ratioVsPanel": 13.95,
+      "ratioVsGround": 15.43
+    },
+    "panelDt": {
+      "color": "rgb(132, 148, 160)",
+      "ratioVsPanel": 5.28,
+      "ratioVsGround": 5.84
+    },
+    "panelDd": {
+      "color": "rgb(164, 180, 191)",
+      "ratioVsPanel": 7.74,
+      "ratioVsGround": 8.56
+    },
+    "panelMeta": {
+      "color": "rgb(132, 148, 160)",
+      "ratioVsPanel": 5.28,
+      "ratioVsGround": 5.84
+    },
+    "nearme": {
+      "color": "rgb(230, 237, 242)",
+      "ratioVsPanel": 13.95,
+      "ratioVsGround": 15.43
+    },
+    "nearmeNote": {
+      "color": "rgb(132, 148, 160)",
+      "ratioVsPanel": 5.28,
+      "ratioVsGround": 5.84
+    },
+    "preset": {
+      "color": "rgb(230, 237, 242)",
+      "ratioVsPanel": 13.95,
+      "ratioVsGround": 15.43
+    },
+    "exaggLabel": {
+      "color": "rgb(132, 148, 160)",
+      "ratioVsPanel": 5.28,
+      "ratioVsGround": 5.84
+    },
+    "nearmeNoteHover": {
+      "color": "rgb(132, 148, 160)",
+      "ratioVsHover": 4.44,
+      "ratioAfterFixVsHover": 6.51
+    }
+  },
+  "tapTargets": {
+    "nearme": {
+      "w": 156,
+      "h": 44
+    },
+    "preset": {
+      "w": 0,
+      "h": 0
+    },
+    "stationClose": {
+      "w": 28,
+      "h": 42
+    },
+    "linehintClose": {
+      "w": 28,
+      "h": 28
+    }
+  },
+  "bundleGzipKb": {
+    "lazyReliefChunk": {
+      "file": "LookdevMap-BWwIXzuw.js",
+      "rawKb": 1105.5,
+      "gzipKb": 298
+    },
+    "initialShell": {
+      "file": "index-BdUmawXg.js",
+      "rawKb": 234.7,
+      "gzipKb": 73.1
+    },
+    "worker": {
+      "file": "maplibre-gl-worker-CMkqA50c.mjs",
+      "rawKb": 507.2,
+      "gzipKb": 144.9
+    }
+  }
+}
