@@ -8,10 +8,15 @@ note: >-
   evidence) against build 187ef97, synthesized in the parent, then the
   priority findings fixed and re-measured before commit. Committed in
   the same sitting as the run.
-total_score: 28
+total_score: 27
 max_score: 40
 p0_count: 0
 p1_count: 5
+correction: >-
+  2026-10-30 ~14:30, phase 3b-fix: the heuristic list below sums to 27,
+  not the 28 originally written here and repeated in GATE-phase-3b.md
+  and the DEVLOG (both corrected with dated notes). The scores
+  themselves are unchanged; only the sum was wrong.
 ---
 
 # `/impeccable critique` — Phase 3b re-gate (MapLibre relief, both gauge encodings)
@@ -20,7 +25,7 @@ p1_count: 5
 
 ## Assessment A verdict
 
-**Specific in its stillness, generic at its moments of motion.** The resting national frame is unmistakably this product; the two authored moments (first frame, ใกล้ฉัน landing) dissolved into generic material at the extremes. Heuristic scores (0–4): 2.5, 4, 2, 3, 3, 2.5, 2, 2.5, 3.5, 2 → 28/40.
+**Specific in its stillness, generic at its moments of motion.** The resting national frame is unmistakably this product; the two authored moments (first frame, ใกล้ฉัน landing) dissolved into generic material at the extremes. Heuristic scores (0–4): 2.5, 4, 2, 3, 3, 2.5, 2, 2.5, 3.5, 2 → 27/40 *(corrected 2026-10-30: originally written as 28 — the list sums to 27; see the frontmatter correction)*.
 
 **Priority issues found (P1, all fixed after synthesis):**
 
