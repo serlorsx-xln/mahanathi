@@ -49,3 +49,36 @@ At ~03:02 the UNITEK volume dropped off USB mid-write (kernel: transaction error
 ## Stop
 
 The phase stops here for the lead's review: the visual pass on real hardware, the poles-vs-discs decision, and the Phase 4 prompt. No push, no deploy — those are the lead's alone.
+
+---
+
+# Remediation appendix: phase-3b-fix (2026-10-30 ~13:00–15:00)
+
+The lead's adversarial review of the phase above found **25 findings** (2 blockers, 6 majors, 17 minors); the binding prompt is `process/prompts/phase-3b-fix.md`. All 25 are addressed. Commits: `ad6e49d` (stale cap + shader-failure degradation), `1c3bc7f` (load-order races, init guard, flight durations), `3c826af` (webgl2-only detection, one blur, sheen token), `b406535` (token-sourced landcover green + stale disc stroke), `23fbbbd` (@types/three dropped), `455eb8f` (honest no-WebGL copy + HII attribution, from critique iteration 2), `0af7929` (the second critique artifact), `249acc9` (the committed evidence spec + measurements), plus the document commits carrying this appendix.
+
+## The two blockers
+
+1. **The false re-shoot claim.** The gate said every screenshot was re-shot; the gauge shots were stale. Every shot now comes from the committed spec `e2e/tests/gate-phase3b.spec.ts` and was re-shot for real (twice — again after the copy fixes, so the shots show the corrected source line). The gate document records the correction.
+2. **Two backdrop blurs.** The station sheet's blur is removed; the panel keeps the one the design brief allows; the checklist row now scores it correctly.
+
+## The majors
+
+3. Stale poles were exactly invisible (the `atCap` dead branch) — clause removed; the close-up evidence `gauges-poles-stale-closeup-1440.png` is shot by the spec, which also asserts the cap colour's pixels (402 exact-token pixels at the tuned camera). The camera lesson is DEVLOG-recorded: at zoom 12 the 13.3 km-high cap band projects above the frustum's top edge — the pole rendered, the camera sat under it.
+4. Pre-load preset/exaggeration/flight requests are kept in refs and applied on `load`.
+5. `webglAvailable()` tests webgl2 only; a map-init failure now reaches the same fallback message (new `onError` prop).
+6. Every pixel/contrast/tap/budget number regenerates from the committed `e2e/measure/phase-3b.mjs` into `docs/design/screens/phase-3b/measurements.json`; the gate cites JSON paths. Numbers that were one-offs or mis-derived are corrected (hover contrast 7.74 → **6.51:1** vs the hover background; Protomaps grey 0.03% → **0%**; shell 72.6 → **73.1 kB**; relief chunk 295.4 → **298 kB**; worker 143.8 → **144.9 kB**).
+7. The landcover green and the stale disc stroke come from the tokens (no hand-written `#599c5b`; stale strokes in the stale token, never a level colour).
+8. The LINE e2e exists and passes (`variants.spec.ts`): the offer under LINE's UA, the exact `?openExternalBrowser=1` href, dismiss, and never in a plain context. The DEVLOG carries the correction of the earlier false "e2e-verified" claim.
+
+## The minors (one line each)
+
+9 init chain guarded → console.error + `onError`; 10 done with 7; 11 flights 2.0 s/1.6 s (brief's 1.2–2.0 s window); 12 @types/three removed; 13 skeleton sheen is a token; 14 arithmetic corrected to 27 with dated notes in the artifact, gate and DEVLOG; 15 shader compile failure degrades to the disc layer (deferred a tick — mutating the layer list inside render() is unsafe); 16 ADR 0008 records the provisional 1.5× exaggeration; 17 the fog-on-globe no-op is disclosed in ADR 0007's addendum, the gate and here (console: `calculateFogMatrix is not supported on globe projection.`); 18 the outage history is DEVLOG-recorded (the four-hour gap, the USB drop, the lead's css fix during it); 19 the second critique iteration ran for real — dual-agent, artifact `2026-10-30T07-03-19Z__src-routes-lookdev-tsx.md`, **31/40**, two P1s deferred to Phase 4 with named reasons.
+
+## Suites at close (real numbers, 2026-10-30 ~14:00–15:00)
+
+tsc clean; eslint clean (`--max-warnings=0`); unit tests **35/35**; e2e desktop: gate-evidence spec **4/4**, variants spec **4/4** (both including the new LINE test); the build green. The stale close-up, all 13 phase-3b screenshots and `measurements.json` regenerated against the final build (post copy-fixes).
+
+## New open questions for the lead (from critique iteration 2)
+
+- The **desktop national frame crops Thailand's tips** (northern land y = −7, Betong y = 923 at 1440×900; phone clean) — a globe/fitBounds interaction, Phase 4 with an e2e assertion on the four extreme land points.
+- **ใกล้ฉัน is a sample station**, disclosed only in the button's 12 px note — the disclosure belongs in the sheet head until real geolocation (J2) lands.

@@ -13,7 +13,7 @@ Updated at the end of every phase. The detail lives in `process/reports/phase-N.
 | 5 | Polish and hardening | not started | | |
 | 6 | Ship docs and handover | not started | | |
 
-## Current state (end of Phase 3b, 2026-10-30)
+## Current state (end of Phase 3b + 3b-fix, 2026-10-30)
 
 **What exists:**
 - **Server:** the whole data pipeline runs from one binary. `thaiwater` (client with fixtures), `normalize` (ADR 0003 arithmetic, mm-exact), `domain` (levels, percents, distances), `humanize` (the Thai sentence, 100 % coverage), `store` (SQLite WAL, migrations, retention), `ingest` (hourly at :07, 72 h backfill, oracle), `api` (`/now`, `/history`, `/timeline`, `/readyz`) and `main` wiring with env config and a `healthcheck` subcommand.
@@ -28,6 +28,8 @@ Updated at the end of every phase. The detail lives in `process/reports/phase-N.
 **Decisions:** ADR 0001–0004 as before. The timeline wire format (binary MNTL, delta varints) is documented in `docs/api.md`, the contract for Phase 4.
 
 **Model note:** from `23a869f` the implementing session runs on GLM-5.3 (the owner's decision, recorded in the DEVLOG and `process/README.md`); everything before is Opus 5.5 at xhigh.
+
+**Phase 3b-fix (2026-10-30 afternoon):** the lead's 25-finding review of the Phase 3b gate, fully remediated — the false re-shoot claim corrected (all evidence now regenerates from the committed spec `e2e/tests/gate-phase3b.spec.ts` and script `e2e/measure/phase-3b.mjs` → `measurements.json`), one functional blur, stale poles visible, load-order races fixed, webgl2-only detection, token-sourced colours, the real LINE e2e, honest no-WebGL copy and HII attribution, ADR 0008 (exaggeration) and ADR 0007's fog-on-globe addendum, the second critique iteration (31/40). Suites: tsc/eslint clean, unit 35/35, e2e 8/8 desktop. The report's remediation appendix has the finding-by-finding disposition; critique iteration 2 added two Phase-4 open questions (the desktop national frame cropping Thailand's tips; the ใกล้ฉัน sample-station disclosure).
 
 ## How to check the current state
 
