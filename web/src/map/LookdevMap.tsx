@@ -44,6 +44,9 @@ export interface MapProps {
   onReady: () => void;
   onFlightDone: () => void;
   onStationSelect: (station: StationState) => void;
+  /** The map itself failed to initialise; the route falls to its
+   *  no-WebGL floor (the same honest shell). */
+  onError: () => void;
 }
 
 // One shared PMTiles protocol instance for the page (it caches tiles).
@@ -79,20 +82,27 @@ export function LookdevMap({
   onReady,
   onFlightDone,
   onStationSelect,
+  onError,
 }: MapProps) {
   const container = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MLMap | null>(null);
   const gaugesRef = useRef<GaugesLayer | null>(null);
   const readyRef = useRef(false);
-  const onReadyRef = useRef(onReady);
   const onFlightDoneRef = useRef(onFlightDone);
   const onStationSelectRef = useRef(onStationSelect);
   const presetRef = useRef(preset);
   const stationsRef = useRef(stations);
+  const exaggerationRef = useRef(exaggeration);
+  const flightRequestRef = useRef(flightRequest);
+  const onReadyRef = useRef(onReady);
+  const onErrorRef = useRef(onError);
 
   // Latest-ref wiring happens in effects, not during render.
   useEffect(() => {
     onReadyRef.current = onReady;
+  });
+  useEffect(() => {
+    onErrorRef.current = onError;
   });
   useEffect(() => {
     onFlightDoneRef.current = onFlightDone;
@@ -102,6 +112,12 @@ export function LookdevMap({
   });
   useEffect(() => {
     presetRef.current = preset;
+  });
+  useEffect(() => {
+    exaggerationRef.current = exaggeration;
+  });
+  useEffect(() => {
+    flightRequestRef.current = flightRequest;
   });
 
   useEffect(() => {
@@ -159,7 +175,9 @@ export function LookdevMap({
           if (ctrl.signal.aborted || !map) return;
           const m = map;
           void m.setProjection({ type: 'globe' });
-          m.setTerrain({ source: 'dem', exaggeration });
+          // The ref, not the first-render closure: a slider move
+          // during load must not be overwritten by a stale value.
+          m.setTerrain({ source: 'dem', exaggeration: exaggerationRef.current });
           // The gauges: poles by default, discs behind ?gauges=discs.
           if (gaugeMode === 'discs') {
             addDiscLayer(m, stationsRef.current);
@@ -182,9 +200,39 @@ export function LookdevMap({
               m.getCanvas().style.cursor = '';
             });
           }
+          // The e2e evidence (and Phase 4 deep-linking) drives the
+          // camera through this handle; the user's paths are the
+          // presets, the flight and the click.
+          (window as unknown as { __mahanathiMap?: MLMap }).__mahanathiMap = m;
           readyRef.current = true;
+          // Anything asked for while the map was loading is applied
+          // now, from the refs, not dropped on the floor: a preset
+          // click, a slider move, or ใกล้ฉัน during load used to be
+          // swallowed (the effects no-op until ready) and the flight
+          // spinner never resolved.
+          const pendingPreset = presetRef.current;
+          if (pendingPreset.key !== preset.key) {
+            applyPreset(m, pendingPreset, !reducedMotion());
+          }
+          if (flightRequestRef.current > 0) {
+            applyPreset(m, NATIONAL, false);
+            window.setTimeout(() => {
+              const mm = mapRef.current;
+              if (!mm) return;
+              mm.flyTo({ ...viewOf(STATION), duration: 2000, curve: 1.5, essential: true });
+              mm.once('moveend', () => {
+                onFlightDoneRef.current();
+              });
+            }, 120);
+          }
           onReadyRef.current();
         });
+      })
+      .catch((e: unknown) => {
+        if (ctrl.signal.aborted) return;
+        if (e instanceof DOMException && e.name === 'AbortError') return;
+        console.error('map initialisation failed', e);
+        onErrorRef.current();
       });
 
     return () => {
@@ -258,7 +306,7 @@ export function LookdevMap({
     const t = window.setTimeout(() => {
       const m = mapRef.current;
       if (!m) return;
-      m.flyTo({ ...viewOf(STATION), curve: 1.5, speed: 0.9, essential: true });
+      m.flyTo({ ...viewOf(STATION), duration: 2000, curve: 1.5, essential: true });
       m.once('moveend', () => {
         onFlightDoneRef.current();
       });
@@ -309,7 +357,7 @@ function applyPreset(map: MLMap, preset: Preset, animate: boolean): void {
   }
   const v = viewOf(preset);
   if (animate) {
-    map.flyTo({ ...v, curve: 1.4, speed: 0.9, essential: true });
+    map.flyTo({ ...v, duration: 1600, curve: 1.4, essential: true });
   } else {
     map.jumpTo(v);
   }
