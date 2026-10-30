@@ -119,3 +119,35 @@ measured ink extents.
 - Every string the product sets is covered by the subset character set
   (`scripts/research/subset_sizes.sh`'s UNICODEES); anything new needs
   a subset rebuild, which the promote script does.
+
+## Addendum (2026-10-30, Phase 4): the serif retires — the loopless rule
+
+The owner's direction for Phase 4: **all Thai type loopless (no หัว)**.
+The lead's research (recorded in `process/prompts/phase-4.md`, verified
+against Google Fonts' live specimen pages —
+`fonts.google.com/specimen/IBM+Plex+Sans+Thai`,
+`fonts.google.com/specimen/Noto+Serif+Thai`) confirmed what the
+decision's own material implies: IBM Plex Sans Thai is a loopless
+design, while Noto Serif Thai — the sentence face this ADR chose — is
+the looped one. A looped face cannot stay once the rule is the
+owner's.
+
+**Decision: Noto Serif Thai is retired from the product.** The
+national and station sentences render in Mahanathi Sans, keeping
+their hierarchy by size, leading and the sentence tone colour — never
+by family (no letter-spacing: tracking breaks Thai combining marks).
+The wordmark follows (it was the serif's other job).
+
+Consequences:
+
+- The `@font-face` for Noto Serif Thai is removed from the build
+  (`fonts.css`); the WOFF2 and its OFL text stay beside the fonts as
+  the specimen's comparison material, promoted like every other
+  rejected candidate by `scripts/research/promote_fonts.py`.
+- `sentenceStack` in `tokens.ts` is the UI stack; the serif's
+  fallbacks (Trirong) leave with it.
+- The payload drops by the serif's ~16 KB (the 64 KB figure above was
+  the pairing's; the loopless build is ~48 KB).
+- The pairing judgement this ADR recorded stands as history — the
+  specimen evidence is unchanged — and this addendum records why the
+  second voice left: an owner's rule outranks a specimen's preference.

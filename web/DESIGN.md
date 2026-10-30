@@ -39,7 +39,7 @@ typography:
     fontSize: "clamp(2.5rem, 1.5rem + 4vw, 4rem)"
     lineHeight: 1.3
   sentence:
-    fontFamily: "'Noto Serif Thai', 'Trirong', serif"
+    fontFamily: "'Mahanathi Sans', 'Noto Sans Thai', sans-serif"
     fontWeight: 400
     fontSize: "clamp(1.375rem, 1rem + 2vw, 2.125rem)"
     lineHeight: 1.65
@@ -67,7 +67,7 @@ typography:
     fontSize: "0.75rem"
     lineHeight: 1.5
   wordmark:
-    fontFamily: "'Noto Serif Thai', 'Trirong', serif"
+    fontFamily: "'Mahanathi Sans', 'Noto Sans Thai', sans-serif"
     fontWeight: 400
     fontSize: "1.25rem"
     lineHeight: 1.2
@@ -136,7 +136,7 @@ components:
 
 Picture the national survey's plaster relief model of Thailand in a dark map room, lit only where water is being measured right now. Everything visible is either geography, data, or the words that explain the data. The relief is the page: there is no landing page, no hero section, no feature cards, no footer — the first frame *is* the product (Thailand in relief, the current state of every gauge, one computed sentence about the country now). Chrome is nearly absent, in the earth.nullschool sense: a wordmark, one primary action (**ใกล้ฉัน**), and quiet panels that float over the terrain.
 
-Restraint is the luxury. The palette comes from the subject — night slate (never `#000`), the ochre of Chao Phraya floodwater, muted paddy green, one disciplined alert family — and every colour lives in one TypeScript module (`web/src/design/tokens.ts`) that generates the CSS custom properties (`tokens.css`, via `pnpm tokens:css`, with a drift test). Shaders import the module directly, so no colour exists outside it. The 3D pipeline is deliberately flat (`NoToneMapping` Canvas, explicit output-colour-space chunks in both custom shaders) so a token colour that survives lighting reaches the screen exactly: the national screenshot samples the sea and ground back at their token hexes (ADR 0006). Type is Thai-first: Mahanathi Sans (IBM Plex Sans Thai, OFL-renamed, 400/600) for the UI and numbers, Noto Serif Thai 400 for the human sentence (ADR 0005). Motion is exponential ease-out, 160–260 ms for UI, one 1600 ms interruptible camera flight as the single authored moment; `prefers-reduced-motion` cuts instead of flying.
+Restraint is the luxury. The palette comes from the subject — night slate (never `#000`), the ochre of Chao Phraya floodwater, muted paddy green, one disciplined alert family — and every colour lives in one TypeScript module (`web/src/design/tokens.ts`) that generates the CSS custom properties (`tokens.css`, via `pnpm tokens:css`, with a drift test). Shaders import the module directly, so no colour exists outside it. The 3D pipeline is deliberately flat (`NoToneMapping` Canvas, explicit output-colour-space chunks in both custom shaders) so a token colour that survives lighting reaches the screen exactly: the national screenshot samples the sea and ground back at their token hexes (ADR 0006). Type is Thai-first and loopless: Mahanathi Sans (IBM Plex Sans Thai, OFL-renamed, 400/600) for everything — the UI, the numbers and the human sentence (ADR 0005 and its loopless addendum; the serif is retired). Motion is exponential ease-out, 160–260 ms for UI, one 1600 ms interruptible camera flight as the single authored moment; `prefers-reduced-motion` cuts instead of flying.
 
 This system was proved on the dev surfaces `/lookdev`, `/specimen` and `/color` (Phase 3), gated item-by-item against the anti-slop checklist in `docs/brief/01-DESIGN-DIRECTION.md` §10 with screenshot evidence in `docs/design/screens/phase-3/` and the scored pass in `docs/design/GATE-phase-3.md`. Phase 4 extends this world; it must not average it away.
 
@@ -190,14 +190,14 @@ Every situation colour passes WCAG AA as small text on ground, panel and elevate
 ## Typography
 
 **UI and Numbers Font:** Mahanathi Sans (IBM Plex Sans Thai 400/600, self-hosted hinted WOFF2 subsets; fallback `'Noto Sans Thai', sans-serif`)
-**Sentence Font:** Noto Serif Thai 400 (self-hosted, unhinted; fallback `'Trirong', serif`)
+**Sentence Font:** Mahanathi Sans 400 — the sentence's hierarchy is size, leading and the tone colour, never family. Noto Serif Thai carried the sentence until the loopless rule retired it (ADR 0005 addendum).
 **Label/Mono Font:** none — all chosen figures are already tabular; mono was considered and rejected (ADR 0005).
 
-**Character:** an engineered loopless Thai sans with a harmonised Latin (one team drew both scripts) carries the instrument's voice; an upright Thai serif gives the one human sentence a second, quieter voice. The wordmark มหานที is set in the serif. Two families, distinct roles, no italic anywhere (every `@font-face` is `font-style: normal`).
+**Character:** one engineered loopless Thai sans with a harmonised Latin (one team drew both scripts) carries everything — the instrument's voice and the human sentence's. The sentence once had a second, quieter voice in an upright Thai serif; the owner's all-Thai-loopless rule (no หัว) retired it, and the hierarchy it carried now lives in size, leading and tone colour alone. The wordmark มหานที is the sans at weight 400. One family, no italic anywhere (every `@font-face` is `font-style: normal`).
 
 ### Hierarchy
 - **Display** (clamp(2.5rem → 4rem), 1.3): the scale's ceiling — display caps at 4rem against the brief's 6rem maximum.
-- **Sentence** (Noto Serif Thai 400, clamp(1.375rem, 1rem + 2vw, 2.125rem), 1.65): the human sentence, the typographic centrepiece of the answer panel; `text-wrap: balance`. Leading 1.65 because Thai stacked marks need room.
+- **Sentence** (Mahanathi Sans 400, clamp(1.375rem, 1rem + 2vw, 2.125rem), 1.65): the human sentence, the typographic centrepiece of the answer panel; `text-wrap: balance`. Leading 1.65 because Thai stacked marks need room.
 - **Title** (600, 1.375rem, 1.5) and **Title-sm** (600, 1.125rem, 1.5): station names and section heads.
 - **Body** (400, 1rem, 1.6): the default; Plex's worst measured ink box uses 84% of a 1.6 line box (ADR 0005).
 - **Small** (0.875rem, 1.55) and **Caption** (0.75rem, 1.5): subordinate readouts, meta lines, measured time and source credits.

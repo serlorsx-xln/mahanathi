@@ -3,7 +3,10 @@
    OFL forbids the Reserved Font Name on modified versions; the OFL
    texts ship beside the files. The /specimen route also loads the
    rejected candidates for comparison - restore them with
-   scripts/research/promote_fonts.py (no arguments) and reload. */
+   scripts/research/promote_fonts.py (no arguments) and reload.
+   Noto Serif Thai is retired from the build (the loopless rule, ADR
+   0005 addendum); its WOFF2 stays beside the files as the specimen's
+   comparison material, promoted the same way as the others. */
 
 @font-face {
   font-family: 'Mahanathi Sans';
@@ -16,13 +19,6 @@
   font-family: 'Mahanathi Sans';
   src: url('/fonts/mahanathi-sans-600.woff2') format('woff2');
   font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Noto Serif Thai';
-  src: url('/fonts/noto-serif-thai-400.woff2') format('woff2');
-  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
