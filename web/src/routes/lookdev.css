@@ -399,6 +399,76 @@
   pointer-events: none;
 }
 
+/* The branded entry moment (phase 4-intro): the wordmark over the
+   ground token while tiles land, then a fade through the fog into the
+   ready frame. Ground-to-fog, one wordmark, two motion tokens - no
+   new assets, no video. The overlay is pointer-transparent from the
+   first paint: the app underneath is interactive the moment its data
+   renders; the intro only choreographs the already-ready frame. */
+.lookdev__intro {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ground);
+  pointer-events: none;
+  opacity: 1;
+}
+
+.lookdev__intro-wordmark {
+  font-family: var(--font-sentence);
+  font-size: var(--type-wordmark-size);
+  line-height: var(--type-wordmark-line-height);
+  color: var(--color-text-primary);
+  animation: lookdev-intro-wordmark 600ms var(--motion-ease-out) both;
+}
+
+/* The wordmark breathes in: opacity + a barely-there rise, the same
+   restraint as the skeleton's sweep. */
+@keyframes lookdev-intro-wordmark {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The reveal: ground gives way to the fog token, then to nothing -
+   the frame was already drawn underneath. The fade's length matches
+   INTRO_FADE_MS in the route. */
+.lookdev__intro--reveal {
+  animation: lookdev-intro-fade 600ms var(--motion-ease-out) forwards;
+}
+
+@keyframes lookdev-intro-fade {
+  from {
+    background: var(--color-ground);
+    opacity: 1;
+  }
+  to {
+    background: var(--relief-fog);
+    opacity: 0;
+  }
+}
+
+.lookdev__intro--reveal .lookdev__intro-wordmark {
+  animation: none;
+  opacity: 0;
+}
+
+/* The cut: no choreography, just the frame. */
+@media (prefers-reduced-motion: reduce) {
+  .lookdev__intro,
+  .lookdev__intro-wordmark {
+    animation: none;
+  }
+}
+
 /* Dev controls: presets and the exaggeration slider. */
 .lookdev__presets {
   display: flex;

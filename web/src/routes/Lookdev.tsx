@@ -64,6 +64,11 @@ function inLineBrowser(): boolean {
   return /Line\//i.test(window.navigator.userAgent);
 }
 
+/** The intro fade's length (ms): the second half of the ~1.2 s moment.
+ *  The wordmark reveal runs while tiles load; this is only the
+ *  fade-through-fog into the ready frame. */
+const INTRO_FADE_MS = 600;
+
 /** The view mode (Phase 4): the globe relief is the product's default;
  *  a deep link (?view=2d / ?view=3d) wins, then the remembered choice
  *  (localStorage can throw in private windows - try/catch). */
@@ -115,6 +120,14 @@ export function Lookdev() {
   // The map is switching projection (Phase 4): the toggle - and the
   // flight - are off for the window, per the sequencing rule.
   const [viewSwitching, setViewSwitching] = useState(false);
+  // The intro's reveal start (phase 4-intro): the timestamp the ready
+  // frame was first seen, set once from the ready callback (an
+  // external-system event, not an effect). The phase itself is derived
+  // below, in render. The intro never gates interactivity - the
+  // overlay is pointer-transparent and the app is live underneath
+  // from the first data render.
+  const [revealedAt, setRevealedAt] = useState<number | null>(null);
+  const [introDone, setIntroDone] = useState(false);
 
   /** Sync the view to the URL (deep-linkable for the demo) and remember
    *  it. replaceState, not push: a view flip is not navigation. */
@@ -135,8 +148,7 @@ export function Lookdev() {
     let cancelled = false;
     const markFailed = () => {
       if (!cancelled) setFailed(true);
-    };
-    void (async () => {
+    };    void (async () => {
       try {
         const get = (url: string) =>
           fetch(url, { signal: controller.signal }).then((r) => r.json());
@@ -168,6 +180,31 @@ export function Lookdev() {
 
   const summary = data?.fixture.summary;
 
+  // The reveal's end: one timeout, armed by the external ready event
+  // (revealedAt), retired when it fires. Subscription form - the
+  // setState lives in the timer's callback, not the effect body.
+  useEffect(() => {
+    if (revealedAt === null || introDone) return;
+    const t = window.setTimeout(() => {
+      setIntroDone(true);
+    }, INTRO_FADE_MS);
+    return () => {
+      window.clearTimeout(t);
+    };
+  }, [revealedAt, introDone]);
+
+  // The intro phase, derived in render: wordmark until the ready frame
+  // exists, revealing for the fade's length, done after. Under reduced
+  // motion the reveal is skipped entirely - the cut, not the fade.
+  const introPhase: 'wordmark' | 'revealing' | 'done' = introDone
+    ? 'done'
+    : revealedAt !== null &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 'revealing'
+      : revealedAt !== null
+        ? 'done'
+        : 'wordmark';
+
   return (
     <main
       className="lookdev"
@@ -196,6 +233,10 @@ export function Lookdev() {
               }}
               onReady={() => {
                 setSceneReady(true);
+                // The intro's reveal starts here, once - the moment
+                // the ready frame first exists (the wordmark state
+                // simply persisted until now if data was slow).
+                setRevealedAt((prev) => prev ?? performance.now());
               }}
               onStationSelect={(s) => {
                 setPreset({
@@ -418,6 +459,22 @@ export function Lookdev() {
           </span>
         )}
       </footer>
+
+      {/* The branded entry moment (phase 4-intro): the wordmark over
+          the ground token while tiles load, then a fade through the fog
+          into the ready frame. Pointer-transparent from the first
+          paint - it choreographs the frame, it never gates the app. */}
+      {introPhase !== 'done' ? (
+        <div
+          className={
+            introPhase === 'revealing' ? 'lookdev__intro lookdev__intro--reveal' : 'lookdev__intro'
+          }
+          data-intro={introPhase}
+          aria-hidden="true"
+        >
+          <div className="lookdev__intro-wordmark">มหานที</div>
+        </div>
+      ) : null}
     </main>
   );
 }
