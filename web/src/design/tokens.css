@@ -22,6 +22,7 @@
   --color-scrollbar-track: #0e161d;
   --color-gauge-steel: #aebac4;
   --color-gauge-track: #2a3742;
+  --color-skeleton-sheen: rgba(255, 255, 255, 0.015);
   --relief-albedo-low: #8f8a74;
   --relief-albedo-high: #a89e8c;
   --relief-neighbour: #4d5860;

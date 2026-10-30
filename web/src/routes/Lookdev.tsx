@@ -38,13 +38,15 @@ function gaugeMode(): 'poles' | 'discs' {
     : 'poles';
 }
 
-/** The relief needs WebGL. Without it the page keeps its shell and the
- *  sentence, and says so plainly (the product's 2D map fallback is a
- *  later phase; this is the look-dev prototype's honest floor). */
+/** The relief needs WebGL2 - MapLibre 6 requires it, so a WebGL1-only
+ *  context (exactly the population the LINE webview special-cases)
+ *  must take the honest floor, not pass the gate and get a dead map.
+ *  Without it the page keeps its shell and the sentence, and says so
+ *  plainly (the product's 2D map fallback is a later phase). */
 function webglAvailable(): boolean {
   if (typeof window === 'undefined') return true; // the SSR render
   const c = document.createElement('canvas');
-  return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
+  return !!c.getContext('webgl2');
 }
 
 /** LINE's in-app browser (J6): detect it and offer to open externally -
@@ -83,6 +85,9 @@ export function Lookdev() {
   // e2e evidence must not screenshot an empty canvas.
   const [sceneReady, setSceneReady] = useState(false);
   const [webgl] = useState(webglAvailable);
+  // The map itself can fail after the gate passed (init throw): the
+  // floor is the same honest shell.
+  const [mapFailed, setMapFailed] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [mode] = useState(gaugeMode);
@@ -137,7 +142,7 @@ export function Lookdev() {
         role="img"
         aria-label="แผนที่ภูมิประเทศประเทศไทย แสดงเกจวัดระดับน้ำทุกสถานี"
       >
-        {data && webgl ? (
+        {data && webgl && !mapFailed ? (
           <Suspense fallback={<div className="lookdev__skeleton" />}>
             <LookdevMap
               bordersTopo={data.borders}
@@ -159,6 +164,9 @@ export function Lookdev() {
                   station: s.id,
                   view: { center: [s.lon, s.lat], zoom: 12.2, pitch: 60, bearing: -24 },
                 });
+              }}
+              onError={() => {
+                setMapFailed(true);
               }}
             />
           </Suspense>
@@ -184,7 +192,7 @@ export function Lookdev() {
         </section>
       )}
 
-      {!webgl && (
+      {(!webgl || mapFailed) && (
         <p className="lookdev__nogl" role="status">
           อุปกรณ์นี้ไม่รองรับกราฟิก 3D จึงแสดงเฉพาะข้อความสรุป ข้อมูลระดับน้ำยังอ่านได้ตามปกติ
         </p>

@@ -39,6 +39,10 @@ export const colors = {
   // Gauge hardware.
   gaugeSteel: '#aebac4', // the pole and the bank-full cap
   gaugeTrack: '#2a3742', // the quiet slot behind the fill
+
+  // The loading skeleton's sweep highlight - a named value, not a
+  // hand-set rgba in the route CSS.
+  skeletonSheen: 'rgba(255, 255, 255, 0.015)',
 } as const;
 
 /** The relief material, consumed by the 3D scene, not by CSS. */

@@ -44,7 +44,7 @@
   background: linear-gradient(
       100deg,
       transparent 30%,
-      rgba(255, 255, 255, 0.015) 50%,
+      var(--color-skeleton-sheen) 50%,
       transparent 70%
     )
     var(--color-ground);
@@ -261,17 +261,18 @@
   color: var(--color-text-faint);
 }
 
-/* The selected station: a bottom sheet on phones; the second surface
-   allowed the blur, for the same legibility reason. */
+/* The selected station: a bottom sheet on phones. The brief allows one
+   functional blur and the panel over the relief owns it; the sheet is
+   a solid token surface - opaque, so no terrain bleeds through
+   unblurred behind the text. */
 .lookdev__station {
   position: absolute;
   left: var(--space-3);
   right: var(--space-3);
   bottom: 5.5rem;
   z-index: var(--z-panel);
-  background: var(--color-panel-veil);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sheet);
   padding: var(--space-4) var(--space-5);
 }
