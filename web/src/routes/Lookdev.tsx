@@ -30,8 +30,9 @@ export interface Fixture {
 
 // The publisher is HII's ThaiWater platform; the stations themselves
 // come from four agencies (HII, RID, FOP, EGAT - the Phase 2 research),
-// so the credit names the platform, not one agency.
-const SOURCE_LINE = 'แหล่งที่มา: ThaiWater · สถาบันสารสนเทศทรัพยากรน้ำ (HII) · แผนที่ฐาน: OpenStreetMap (ODbL) · Protomaps';
+// so the credit names the platform and its two largest contributors.
+const SOURCE_LINE =
+  'แหล่งที่มา: ThaiWater (ข้อมูลเปิด HII · RID) · แผนที่ฐาน: OpenStreetMap (ODbL) · Protomaps';
 
 /** The gauge rendering for this page load: poles (the 3D layer) by
  *  default, discs behind ?gauges=discs for the lead's comparison. */
