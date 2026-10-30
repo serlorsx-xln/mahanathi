@@ -74,9 +74,9 @@ The lead's adversarial review of the phase above found **25 findings** (2 blocke
 
 9 init chain guarded → console.error + `onError`; 10 done with 7; 11 flights 2.0 s/1.6 s (brief's 1.2–2.0 s window); 12 @types/three removed; 13 skeleton sheen is a token; 14 arithmetic corrected to 27 with dated notes in the artifact, gate and DEVLOG; 15 shader compile failure degrades to the disc layer (deferred a tick — mutating the layer list inside render() is unsafe); 16 ADR 0008 records the provisional 1.5× exaggeration; 17 the fog-on-globe no-op is disclosed in ADR 0007's addendum, the gate and here (console: `calculateFogMatrix is not supported on globe projection.`); 18 the outage history is DEVLOG-recorded (the four-hour gap, the USB drop, the lead's css fix during it); 19 the second critique iteration ran for real — dual-agent, artifact `2026-10-30T07-03-19Z__src-routes-lookdev-tsx.md`, **31/40**, two P1s deferred to Phase 4 with named reasons.
 
-## Suites at close (real numbers, 2026-10-30 ~14:00–15:00)
+## Suites at close (real numbers, 2026-10-30 ~14:00–15:30)
 
-tsc clean; eslint clean (`--max-warnings=0`); unit tests **35/35**; e2e desktop: gate-evidence spec **4/4**, variants spec **4/4** (both including the new LINE test); the build green. The stale close-up, all 13 phase-3b screenshots and `measurements.json` regenerated against the final build (post copy-fixes).
+tsc clean; eslint clean (`--max-warnings=0`); unit tests **35/35**; the full e2e run (all three projects, `--workers=2`): **35 passed, 10 skipped, 0 failed** — the skips are the variants' deliberate desktop-only gates. At the default 5-worker full parallelism two WebGL-heavy tests timed out (the ReadPixels-contention class this project has recorded since Phase 3: three projects' relief tests at once on the USB-served repo); both pass in isolation and at reduced parallelism. The stale close-up, all 13 phase-3b screenshots and `measurements.json` regenerated against the final build (post copy-fixes).
 
 ## New open questions for the lead (from critique iteration 2)
 
