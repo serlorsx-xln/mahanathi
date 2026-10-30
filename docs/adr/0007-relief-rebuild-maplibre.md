@@ -77,3 +77,19 @@ and `geodata/SOURCES.md`).
   process error, acknowledged by the lead in the Phase 3b prompt and
   recorded here: the project's honesty standard applies to the lead
   too. The Phase 3b prompt (02:05) is the round that actually ran.
+
+## Addendum (2026-10-30, phase 3b-fix): fog on globe is a no-op
+
+A limitation verified during remediation (the lead's finding 17): while
+the globe projection is active, MapLibre 6.16.0 ignores the style sky
+block's fog — the console warns verbatim
+`calculateFogMatrix is not supported on globe projection.` The
+decision's "one continuous fog" therefore holds exactly where we
+implement it ourselves: the gauge shader carries `relief.fog`
+explicitly (fog start at 0.55 of the horizon distance), and the sky
+block still sets the horizon/atmosphere colour. The *terrain's*
+distance fade on globe comes from the atmosphere blend, not the fog
+matrix. Options if true terrain fog on globe becomes a requirement:
+switch close-ups to mercator (where the fog matrix works, and the
+projection transition handles the seam), or track MapLibre upstream.
+Disclosed in `GATE-phase-3b.md` and the phase report.
