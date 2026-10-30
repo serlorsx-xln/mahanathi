@@ -91,6 +91,7 @@ Do **not** look at "3D globe hero" templates, Dribbble dashboards or SaaS landin
 - **Timing:** exponential ease-out, 160–260 ms for UI and 1.2–2.0 s for camera moves.
 
 ## 8. Copy (Thai), a calm knowledgeable friend
+- **Thai is the voice, English is the instrument (Phase 4 rule).** Thai carries the sentence, the situation labels and anything the user reads as speech; English carries the measurement labels, units, timestamps, view labels and credits. A caveat the reader must understand (the ม.รทก. datum note) is voice and stays Thai.
 - Be plain and factual. Always state the measured time and the source.
 - **Never** say ปลอดภัย, จะท่วม, ไม่ท่วม or anything that predicts or reassures. The humanize package enforces this with a banned-phrase test.
 - No marketing words: ปฏิวัติ, ยกระดับ, ล้ำสมัย, ครบจบในที่เดียว.

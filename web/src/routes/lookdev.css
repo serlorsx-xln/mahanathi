@@ -328,6 +328,14 @@
   color: var(--color-text-faint);
 }
 
+/* The station sheet's datum caveat: Thai (it is voice - a caveat the
+   reader must understand, not a measurement label). */
+.lookdev__datum {
+  margin-top: var(--space-3);
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+}
+
 /* The selected station: a bottom sheet on phones. The brief allows one
    functional blur and the panel over the relief owns it; the sheet is
    a solid token surface - opaque, so no terrain bleeds through

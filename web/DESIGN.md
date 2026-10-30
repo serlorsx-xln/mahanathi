@@ -208,7 +208,9 @@ Every situation colour passes WCAG AA as small text on ground, panel and elevate
 
 **The Thai Stays in the DOM Rule.** Thai text never enters WebGL; labels over the relief are DOM elements projected from 3D positions (drei `Html`), so stacked tone marks and vowels are shaped by the browser.
 
-Fonts are self-hosted WOFF2 subsets (Thai + Latin), `font-display: swap`, ≈64 KB total; subsets renamed "Mahanathi Sans" per the OFL's Reserved Font Name condition. New strings need a subset rebuild (`scripts/research/promote_fonts.py`).
+**The Instrument/Voice Rule (Phase 4).** Thai is the voice — the sentence, the situation labels, the buttons a user reads as speech. English is the instrument — measurement labels (`WATER LEVEL`, `BANK FULL`, `% BANKFULL`, `MEASURED`), view labels (`2D MAP`, `3D TERRAIN`), units, timestamps (ICT), credits. A caveat the reader must *understand* (the ม.รทก. datum note) is voice and stays Thai even inside an instrument block.
+
+Fonts are self-hosted WOFF2 subsets (Thai + Latin), `font-display: swap`; subsets renamed "Mahanathi Sans" per the OFL's Reserved Font Name condition. New strings need a subset rebuild (`scripts/research/promote_fonts.py`).
 
 ## Layout
 

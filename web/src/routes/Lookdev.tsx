@@ -79,13 +79,13 @@ function initialView(): ViewMode {
 
 function formatTime(iso: string): string {
   const d = new Date(iso);
-  return (
-    d.toLocaleTimeString('th-TH', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Asia/Bangkok',
-    }) + ' น.'
-  );
+  // Timestamps are instrument (the copy rule): English, Bangkok time.
+  return `${d.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Bangkok',
+  })} ICT`;
 }
 
 export function Lookdev() {
@@ -353,22 +353,27 @@ export function Lookdev() {
           <p className="lookdev__sentence lookdev__sentence--station">{selected.sentence}</p>
           <dl className="lookdev__numbers lookdev__numbers--station">
             <div>
-              <dt>ระดับน้ำ</dt>
+              <dt>WATER LEVEL</dt>
               <dd>{selected.wl !== null ? `${selected.wl.toFixed(3)} ม.รทก.` : '·'}</dd>
             </div>
             <div>
-              <dt>ระดับตลิ่ง</dt>
+              <dt>BANK FULL</dt>
               <dd>{selected.bankFull !== null ? `${selected.bankFull.toFixed(3)} ม.รทก.` : '·'}</dd>
             </div>
             <div>
-              <dt>% ของตลิ่ง</dt>
+              <dt>% BANKFULL</dt>
               <dd>{selected.pct !== null ? `${selected.pct.toFixed(2)}%` : '·'}</dd>
             </div>
             <div>
-              <dt>วัดเมื่อ</dt>
+              <dt>MEASURED</dt>
               <dd>{selected.measuredAt ? formatTime(selected.measuredAt) : '·'}</dd>
             </div>
           </dl>
+          {/* The datum note stays Thai (it is voice, a caveat the reader
+              must understand, not a measurement label): ม.รทก. is the
+              Thai reference datum and its equality with m AMSL is not
+              provable from the published data (brief 02). */}
+          <p className="lookdev__datum">หน่วย ม.รทก. อ้างอิงศูนย์กลางของไทย ยังไม่สามารถยืนยันได้ว่าตรงกับ m AMSL สากล</p>
         </section>
       )}
 
