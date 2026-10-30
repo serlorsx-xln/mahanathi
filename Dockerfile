@@ -32,6 +32,13 @@ COPY web/package.json web/
 COPY e2e/package.json e2e/
 RUN pnpm install --frozen-lockfile --filter @mahanathi/web...
 COPY web/ web/
+# The look-dev routes fetch geodata at /geodata/...; in dev the vite plugin
+# serves geodata/assets, in production the embedded front end must carry
+# them, so the build bakes them into web/public (vite copies public/ to
+# dist/). The 160 MB PMTiles basemap is deliberately not baked - the app
+# HEAD-checks it and ships terrain-only when absent, per ADR 0007.
+COPY geodata/assets/borders.topo.json geodata/assets/rivers.geojson geodata/assets/provinces.topo.json web/public/geodata/
+COPY geodata/assets/dem web/public/geodata/dem
 RUN pnpm --filter @mahanathi/web build
 
 # deploy: the server alone; / serves the placeholder page.
