@@ -19,6 +19,7 @@ import {
   type CustomRenderMethodInput,
 } from 'maplibre-gl';
 import { colors, relief, situations, stale as staleToken } from '../design/tokens';
+import { addDiscLayer } from './discs';
 import type { StationState } from './stations';
 
 const CAP = 0.78; // where the bank-full cap sits on the pole
@@ -145,7 +146,11 @@ void main() {
   // nothing was allowed to clip past the pole top).
   float waterTop = ${CAP} * min(vFill, 1.0)
     + vOverflow * clamp(vFill - 1.0, 0.0, ${OVERFLOW_SPAN}) * (1.0 - ${CAP}) / ${OVERFLOW_SPAN};
-  bool atCap = abs(vLocalY - ${CAP}) < ${CAP_WIDTH} && vStale < 0.5;
+  // atCap is not stale-gated: the stale branch below runs first and
+  // keeps only the cap stroke, so the gate here would have discarded
+  // every fragment of a stale pole (the hollow cap never drew - the
+  // lead's review caught the dead branch).
+  bool atCap = abs(vLocalY - ${CAP}) < ${CAP_WIDTH};
   bool inWater = vLocalY <= waterTop && vLocalY > ${BASE_DISCARD};
 
   float alpha = 1.0;
@@ -238,6 +243,23 @@ export class GaugesLayer implements CustomLayerInterface {
     map.on('idle', this.idleBound);
   }
 
+  /** Emergency exit: replace this layer with the disc encoding. The
+   *  poles are the signature, but a dead frame loop is worse than flat
+   *  circles - and the discs were built as the guaranteed fallback. */
+  private degradeToDiscs(e: unknown): void {
+    console.error('gauge shader failed, falling back to discs', e);
+    const map = this.map;
+    if (!map) return;
+    const stations = this.lastStations;
+    // Swapping layers from inside render() would mutate the layer list
+    // mid-iteration; the swap happens after the frame.
+    window.setTimeout(() => {
+      if (!this.map) return;
+      this.map.removeLayer(this.id);
+      addDiscLayer(this.map, stations);
+    }, 0);
+  }
+
   onRemove(map: MLMap): void {
     map.off('idle', this.idleBound);
     const gl = this.gl;
@@ -254,9 +276,14 @@ export class GaugesLayer implements CustomLayerInterface {
     this.gl = null;
   }
 
+  /** The raw stations, kept so a shader failure can degrade to the
+   *  disc layer without the caller's help. */
+  private lastStations: StationState[] = [];
+
   /** Rebuild the instances. Called when stations or exaggeration change
    *  - the inputs the encoding depends on - and never per frame. */
   setStations(stations: StationState[]): void {
+    this.lastStations = stations;
     const rows: InstanceRow[] = stations.map((s) => {
       const mc = MercatorCoordinate.fromLngLat({ lng: s.lon, lat: s.lat });
       const pct = s.pct ?? 0;
@@ -329,11 +356,19 @@ export class GaugesLayer implements CustomLayerInterface {
     if (!map) return;
 
     // The prelude changes with the projection; the program carries the
-    // prelude, so it is compiled per projection variant (and once).
+    // prelude, so it is compiled per projection variant (and once). A
+    // throw here would abort MapLibre's whole frame loop, so a compile
+    // failure degrades to the disc layer instead (the guaranteed
+    // fallback the brief asked for, reached by its emergency exit).
     const variant = options.shaderData.variantName;
     if (variant !== this.compiledVariant) {
       const vert = `#version 300 es\n${options.shaderData.vertexShaderPrelude}\n${options.shaderData.define}\n${VERT}`;
-      this.recompile(gl, vert, variant);
+      try {
+        this.recompile(gl, vert, variant);
+      } catch (e) {
+        this.degradeToDiscs(e);
+        return;
+      }
     }
     const prog = this.program;
     if (!prog || !this.vao) return;
