@@ -11,7 +11,7 @@
 // the about page and SOURCES.md credit OSM/Protomaps regardless).
 import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
 import { layers as protomapsLayers, namedTheme } from 'protomaps-themes-base';
-import { colors, relief } from '../design/tokens';
+import { colors, relief, situations } from '../design/tokens';
 
 /** Mix two hex colours; the ratios (not the colours) are the only
  *  hand-set values in this file - every base colour is a token. */
@@ -39,10 +39,13 @@ function retint(layer: LayerSpecification): LayerSpecification {
     return { ...layer, paint: { ...layer.paint, 'fill-color': colors.ground } };
   }
   if (layer.type === 'fill' && id.startsWith('landcover')) {
-    // A whisper of the normal-level green over the ground.
+    // A whisper of the normal-level situation green over the ground -
+    // the token, not a hand-written hex (this file's own rule).
+    const normal = situations.find((s) => s.level === 3);
+    const green = normal ? normal.hex : colors.ground;
     return {
       ...layer,
-      paint: { ...layer.paint, 'fill-color': mix(colors.ground, '#599c5b', 0.06) },
+      paint: { ...layer.paint, 'fill-color': mix(colors.ground, green, 0.06) },
     };
   }
   if (layer.type === 'fill' && id.startsWith('buildings')) {
