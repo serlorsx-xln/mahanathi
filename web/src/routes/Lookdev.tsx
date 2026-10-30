@@ -47,6 +47,16 @@ function webglAvailable(): boolean {
   return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
 }
 
+/** LINE's in-app browser (J6): detect it and offer to open externally -
+ *  the terrain needs a real browser's WebGL and memory headroom. The
+ *  offer is a link, because only a navigation LINE intercepts can leave
+ *  the webview; `?openExternalBrowser=1` is LINE's documented escape
+ *  hatch. */
+function inLineBrowser(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /Line\//i.test(window.navigator.userAgent);
+}
+
 function formatTime(iso: string): string {
   const d = new Date(iso);
   return (
@@ -76,6 +86,7 @@ export function Lookdev() {
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [mode] = useState(gaugeMode);
+  const [lineHintDismissed, setLineHintDismissed] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -189,6 +200,32 @@ export function Lookdev() {
           ใกล้ฉัน<span className="lookdev__nearme-note">· ตัวอย่างสถานี</span>
         </button>
       </header>
+
+      {inLineBrowser() && !lineHintDismissed && (
+        <aside className="lookdev__linehint" aria-label="เปิดในเบราว์เซอร์">
+          <p>
+            แผนที่ภูมิประเทศ 3 มิติทำงานได้ดีที่สุดในเบราว์เซอร์
+            <a href="?openExternalBrowser=1">เปิดในเบราว์เซอร์ภายนอก</a>
+          </p>
+          <button
+            type="button"
+            className="lookdev__linehint-close"
+            aria-label="ปิดคำแนะนำ"
+            onClick={() => {
+              setLineHintDismissed(true);
+            }}
+          >
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+              <path
+                d="M3 3 L13 13 M13 3 L3 13"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </aside>
+      )}
 
       {summary && (
         <section className="lookdev__panel" aria-label="สรุปสถานการณ์น้ำ">

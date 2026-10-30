@@ -367,3 +367,68 @@
     animation: none;
   }
 }
+
+/* The LINE in-app browser offer (J6): one quiet line under the top
+   chrome, solid panel so it reads over any terrain. On phones it sits
+   below the answer panel (which owns that corner) instead of fighting
+   it for the pointer. */
+.lookdev__linehint {
+  position: absolute;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-panel);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: min(28rem, calc(100% - var(--space-6)));
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.lookdev__linehint p {
+  margin: 0;
+  font-size: var(--type-small-size);
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+  text-wrap: balance;
+}
+
+.lookdev__linehint a {
+  color: var(--color-text-primary);
+  font-weight: var(--type-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  margin-left: var(--space-2);
+  white-space: nowrap;
+}
+
+.lookdev__linehint-close {
+  flex: none;
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+  background: none;
+  border: none;
+  padding: var(--space-1);
+  cursor: pointer;
+}
+
+.lookdev__linehint-close:hover {
+  color: var(--color-text-primary);
+}
+
+/* Phones: the panel takes the top-left; the hint moves under it. */
+@media (max-width: 767px) {
+  .lookdev__linehint {
+    top: auto;
+    bottom: 5.5rem;
+  }
+}
+
+/* The close control is an authored stroke, not a Unicode glyph (the
+   design brief's icon rule). */
+.lookdev__linehint-close svg {
+  display: block;
+}

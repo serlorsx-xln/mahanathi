@@ -71,3 +71,23 @@ Terrarium tiles (concurrency 4) happens once, on the first run.
 `build_heightmap.py` is byte-reproducible: the committed
 `assets/heightmap.png` is identical to the research run's candidate for
 the shipped configuration (`heightmap_candidates_band75_b2/`).
+
+## Local (gitignored) assets
+
+These are rebuilt by recorded commands, not shipped in git (size or
+regenerability puts them outside the commit budget):
+
+- `assets/dem/` — terrarium-encoded DEM tiles z4–8 (462 tiles, ~127 MB),
+  built from the committed `assets/heightmap.png` by
+  `geodata/scripts/build_terrarium.py` (byte-reproducible from the
+  committed heightmap).
+- `assets/thailand.pmtiles` — the dark basemap (160 MB, maxzoom 13),
+  built with planetiler (`protomaps-basemap` HEAD, `--area=thailand
+  --maxzoom=13`) from the Geofabrik `thailand-latest.osm.pbf` extract.
+  **Licence: OpenStreetMap data is ODbL**; the basemap is a derivative
+  database of OSM and inherits share-alike for the database. The page
+  credits "© ผู้ร่วมแก้ไข OpenStreetMap · Protomaps" (protomaps-basemap
+  is BSD-3). Thai basemap labels are deferred: the build carries
+  `name:th` in the vector tiles, but `fonts.protomaps.com` does not
+  resolve, so no glyph set is served; a self-hosted Thai glyph PBF set
+  is the follow-up.
