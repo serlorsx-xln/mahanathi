@@ -1,6 +1,6 @@
-// The blank page for Phase 1 stays the product entry: the wordmark only.
-// The Phase 3 look-dev surfaces are dev routes beside it, removed when
-// the product surfaces arrive in Phase 4.
+// The product entry is the relief itself: the root renders the look-dev
+// surface (the judges' QR points at the root, not a dev route). The
+// Phase 3 evidence routes stay beside it as reachable paths.
 import { ColorEvidence } from './routes/ColorEvidence';
 import { Specimen } from './routes/Specimen';
 import { Lookdev } from './routes/Lookdev';
@@ -14,12 +14,6 @@ export function App() {
   if (path === '/color') {
     return <ColorEvidence />;
   }
-  if (path === '/lookdev') {
-    return <Lookdev />;
-  }
-  return (
-    <main>
-      <h1>มหานที</h1>
-    </main>
-  );
+  // The root and /lookdev are the same surface - the relief is the product.
+  return <Lookdev />;
 }
