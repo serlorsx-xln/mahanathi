@@ -83,26 +83,22 @@ test.describe('phase 3b gate evidence', () => {
     // The stale cap: steel * 0.75, unmixed - at this camera the station
     // is ~40 km out and the fog starts at ~355 km, so nothing blends.
     const capPx = await page.evaluate(() => {
-      const src = document.querySelector('.maplibregl-canvas');
+      const src = document.querySelector('.maplibregl-canvas') as HTMLCanvasElement | null;
+      if (!src) return -1; // the map itself failed: the caller's zero check reads this as a failure
       const c = document.createElement('canvas');
       c.width = src.width;
       c.height = src.height;
       const ctx = c.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return -1;
       ctx.drawImage(src, 0, 0);
       const d = ctx.getImageData(0, 0, c.width, c.height).data;
       // #aebac4 * 0.75 = (130, 139, 147); generous bands for AA edges.
       let n = 0;
       for (let i = 0; i < d.length; i += 4) {
-        if (
-          d[i] >= 105 &&
-          d[i] <= 155 &&
-          d[i + 1] >= 114 &&
-          d[i + 1] <= 164 &&
-          d[i + 2] >= 122 &&
-          d[i + 2] <= 172 &&
-          d[i] < d[i + 1] &&
-          d[i + 1] < d[i + 2]
-        )
+        const r = d[i] as number;
+        const g = d[i + 1] as number;
+        const b = d[i + 2] as number;
+        if (r >= 105 && r <= 155 && g >= 114 && g <= 164 && b >= 122 && b <= 172 && r < g && g < b)
           n++;
       }
       return n;
