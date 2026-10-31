@@ -71,10 +71,7 @@ test.describe('phase 3b gate evidence', () => {
       const east = -Math.sin((-24 * Math.PI) / 180) * offKm;
       const north = -Math.cos((-24 * Math.PI) / 180) * offKm;
       map?.jumpTo({
-        center: [
-          st.lon + east / (111 * Math.cos((st.lat * Math.PI) / 180)),
-          st.lat + north / 111,
-        ],
+        center: [st.lon + east / (111 * Math.cos((st.lat * Math.PI) / 180)), st.lat + north / 111],
         zoom: 10.6,
         pitch: 60,
         bearing: -24,
@@ -97,10 +94,14 @@ test.describe('phase 3b gate evidence', () => {
       let n = 0;
       for (let i = 0; i < d.length; i += 4) {
         if (
-          d[i] >= 105 && d[i] <= 155 &&
-          d[i + 1] >= 114 && d[i + 1] <= 164 &&
-          d[i + 2] >= 122 && d[i + 2] <= 172 &&
-          d[i] < d[i + 1] && d[i + 1] < d[i + 2]
+          d[i] >= 105 &&
+          d[i] <= 155 &&
+          d[i + 1] >= 114 &&
+          d[i + 1] <= 164 &&
+          d[i + 2] >= 122 &&
+          d[i + 2] <= 172 &&
+          d[i] < d[i + 1] &&
+          d[i + 1] < d[i + 2]
         )
           n++;
       }

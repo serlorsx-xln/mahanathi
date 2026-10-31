@@ -72,10 +72,10 @@ export function Specimen() {
           น. วันที่ 29 ตุลาคม 2026
         </p>
         <p className="specimen__note">
-          ตัดสินแล้วตาม ADR 0005 (IBM Plex Sans Thai + Noto Serif Thai)
-          ต่อมาถอน Noto Serif Thai ตามกฎไร้หัวตัวอักษรของเจ้าของ (ภาคผนวกของ ADR 0005)
-          หลังจากนี้หน้านี้คงไว้เป็นหลักฐาน ฟอนต์ที่ไม่ถูกเลือกถูกลบออกจาก build
-          ถ้าต้องการเปิดเปรียบเทียบสด ให้รัน scripts/research/promote_fonts.py แล้วรีเฟรชหน้านี้
+          ตัดสินแล้วตาม ADR 0005 (IBM Plex Sans Thai + Noto Serif Thai) ต่อมาถอน Noto Serif Thai
+          ตามกฎไร้หัวตัวอักษรของเจ้าของ (ภาคผนวกของ ADR 0005) หลังจากนี้หน้านี้คงไว้เป็นหลักฐาน
+          ฟอนต์ที่ไม่ถูกเลือกถูกลบออกจาก build ถ้าต้องการเปิดเปรียบเทียบสด ให้รัน
+          scripts/research/promote_fonts.py แล้วรีเฟรชหน้านี้
         </p>
       </header>
 

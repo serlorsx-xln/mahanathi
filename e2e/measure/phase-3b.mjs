@@ -54,7 +54,10 @@ async function canvasSample(page, targets) {
       }
       return res;
     },
-    { hexes: Object.fromEntries(Object.entries(targets).map(([k, v]) => [k, hexToRgb(v)])), tol: 14 },
+    {
+      hexes: Object.fromEntries(Object.entries(targets).map(([k, v]) => [k, hexToRgb(v)])),
+      tol: 14,
+    },
   );
 }
 
@@ -195,7 +198,12 @@ for (const [label, device] of [
         }
         node = node.parentElement;
       }
-      if (fg) out[name] = { color: cs.color, background: getComputedStyle(node).backgroundColor, rgb: over(fg, bg) };
+      if (fg)
+        out[name] = {
+          color: cs.color,
+          background: getComputedStyle(node).backgroundColor,
+          rgb: over(fg, bg),
+        };
     }
     return out;
   });

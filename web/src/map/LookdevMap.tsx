@@ -160,7 +160,10 @@ export function LookdevMap({
       .then((hasPmtiles) => {
         if (ctrl.signal.aborted || !container.current) return;
 
-        const style: StyleSpecification = buildStyle({ basemap: hasPmtiles, view: viewRef.current });
+        const style: StyleSpecification = buildStyle({
+          basemap: hasPmtiles,
+          view: viewRef.current,
+        });
         const borders = bordersToGeoJson(bordersTopo);
         const riversSource = style.sources.rivers;
         const bordersSource = style.sources.borders;
@@ -326,7 +329,12 @@ export function LookdevMap({
         map.setTerrain({ source: 'dem', exaggeration: exaggerationRef.current });
         gaugesRef.current?.setStations(stationsRef.current);
         const v = viewOf(presetRef.current);
-        map.easeTo({ pitch: v.pitch, bearing: v.bearing, duration: cut ? 0 : 600, essential: true });
+        map.easeTo({
+          pitch: v.pitch,
+          bearing: v.bearing,
+          duration: cut ? 0 : 600,
+          essential: true,
+        });
         map.once('moveend', finish);
       });
     }
@@ -432,12 +440,7 @@ function nearestStation(
   return best;
 }
 
-function applyPreset(
-  map: MLMap,
-  preset: Preset,
-  animate: boolean,
-  view: ViewMode,
-): void {
+function applyPreset(map: MLMap, preset: Preset, animate: boolean, view: ViewMode): void {
   if (preset.bounds) {
     map.fitBounds(preset.bounds, { padding: 72, pitch: 0, bearing: 0, animate, duration: 1600 });
     return;

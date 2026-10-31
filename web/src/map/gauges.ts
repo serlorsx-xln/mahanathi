@@ -386,18 +386,16 @@ export class GaugesLayer implements CustomLayerInterface {
     const bearing = (map.getBearing() * Math.PI) / 180;
     const center = map.getCenter();
     const centerMc = MercatorCoordinate.fromLngLat(center, 0);
-    const metersPerPx = (40075016.7 * Math.cos((center.lat * Math.PI) / 180)) / (512 * Math.pow(2, zoom));
-    const widthM = Math.min(
-      Math.max(POLE_WIDTH_M, 3.5 * metersPerPx),
-      36 * metersPerPx,
-    );
+    const metersPerPx =
+      (40075016.7 * Math.cos((center.lat * Math.PI) / 180)) / (512 * Math.pow(2, zoom));
+    const widthM = Math.min(Math.max(POLE_WIDTH_M, 3.5 * metersPerPx), 36 * metersPerPx);
 
     // The camera position, derived from the public camera state (there
     // is no free-camera getter on Map in v6): straight down at pitch 0,
     // swung back and up as it pitches, bearing the facing direction.
     const mercPerM = centerMc.meterInMercatorCoordinateUnits();
     const dMerc =
-      0.5 * gl.drawingBufferHeight / Math.tan(options.fov / 2) / (512 * Math.pow(2, zoom));
+      (0.5 * gl.drawingBufferHeight) / Math.tan(options.fov / 2) / (512 * Math.pow(2, zoom));
     const camMerc: [number, number, number] = [
       centerMc.x - dMerc * Math.sin(pitch) * Math.sin(bearing),
       centerMc.y + dMerc * Math.sin(pitch) * Math.cos(bearing),
@@ -413,8 +411,7 @@ export class GaugesLayer implements CustomLayerInterface {
     // of dissolving into the fog the critique measured.
     const fogStart = fogEnd * 0.55;
 
-    const u = (name: string): WebGLUniformLocation | null =>
-      gl.getUniformLocation(prog, name);
+    const u = (name: string): WebGLUniformLocation | null => gl.getUniformLocation(prog, name);
 
     // MapLibre's projection prelude declares its uniforms but does not
     // set them in our program - that is the custom layer's job, every
@@ -435,10 +432,7 @@ export class GaugesLayer implements CustomLayerInterface {
     gl.uniform1f(u('uWidthScale'), widthM / POLE_WIDTH_M);
     gl.uniform3f(u('uCamMerc'), camMerc[0], camMerc[1], camMerc[2]);
     gl.uniform1f(u('uMercPerM'), mercPerM);
-    gl.uniform1f(
-      u('uElevScale'),
-      options.shaderData.variantName === 'globe' ? 1 : mercPerM,
-    );
+    gl.uniform1f(u('uElevScale'), options.shaderData.variantName === 'globe' ? 1 : mercPerM);
     gl.uniform3fv(u('uSteel'), hexToRgb(colors.gaugeSteel));
     gl.uniform3fv(u('uTrack'), hexToRgb(colors.gaugeTrack));
     gl.uniform3fv(u('uAlert'), hexToRgb(OVERFLOW.hex));

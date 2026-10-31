@@ -38,9 +38,7 @@ const SOURCE_LINE =
  *  default, discs behind ?gauges=discs for the lead's comparison. */
 function gaugeMode(): 'poles' | 'discs' {
   if (typeof window === 'undefined') return 'poles';
-  return new URLSearchParams(window.location.search).get('gauges') === 'discs'
-    ? 'discs'
-    : 'poles';
+  return new URLSearchParams(window.location.search).get('gauges') === 'discs' ? 'discs' : 'poles';
 }
 
 /** The relief needs WebGL2 - MapLibre 6 requires it, so a WebGL1-only
@@ -377,7 +375,9 @@ export function Lookdev() {
               must understand, not a measurement label): ม.รทก. is the
               Thai reference datum and its equality with m AMSL is not
               provable from the published data (brief 02). */}
-          <p className="lookdev__datum">หน่วย ม.รทก. อ้างอิงศูนย์กลางของไทย ยังไม่สามารถยืนยันได้ว่าตรงกับ m AMSL สากล</p>
+          <p className="lookdev__datum">
+            หน่วย ม.รทก. อ้างอิงศูนย์กลางของไทย ยังไม่สามารถยืนยันได้ว่าตรงกับ m AMSL สากล
+          </p>
         </section>
       )}
 

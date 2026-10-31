@@ -44,22 +44,10 @@ export function addDiscLayer(map: MLMap, stations: StationState[]): void {
       'circle-color': levelMatch as never,
       // Stale: hollow - the stroke only, never a fill. Suspect: the
       // fill at less than full trust. Otherwise a solid fill.
-      'circle-opacity': [
-        'case',
-        ['get', 'stale'],
-        0,
-        ['get', 'suspect'],
-        0.45,
-        1,
-      ],
+      'circle-opacity': ['case', ['get', 'stale'], 0, ['get', 'suspect'], 0.45, 1],
       // A stale disc strokes in the stale colour, never its (possibly
       // level-shaped) old value - the poles' hollow-cap rule.
-      'circle-stroke-color': [
-        'case',
-        ['get', 'stale'],
-        staleToken.hex,
-        levelMatch,
-      ] as never,
+      'circle-stroke-color': ['case', ['get', 'stale'], staleToken.hex, levelMatch] as never,
       'circle-stroke-width': ['case', ['get', 'stale'], 1.5, 0],
       'circle-stroke-opacity': 0.9,
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 4, 2.2, 8, 3.5, 12, 6],
