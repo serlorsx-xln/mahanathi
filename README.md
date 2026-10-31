@@ -1,8 +1,8 @@
 # มหานที (Mahanathi)
 
-**ระดับน้ำที่วัดได้จริง อ่านเป็นรูปทรง บอกเป็นภาษาไทย** — ทุกสถานีวัดระดับน้ำของประเทศไทย (804 สถานี) บนภูมิประเทศสามมิติ อัปเดตทุกชั่วโมง แตะ **ใกล้ฉัน** แล้วอ่านประโยคเดียวว่าแม่น้ำที่ใกล้คุณที่สุดกำลังทำอะไร เช่น
+**ระดับน้ำที่วัดได้จริง อ่านเป็นรูปทรง บอกเป็นภาษาไทย** — ทุกสถานีวัดระดับน้ำของประเทศไทย (804 สถานี) บนภูมิประเทศสามมิติ อัปเดตทุกชั่วโมง แตะที่สถานีใดก็ได้แล้วอ่านประโยคเดียวว่าแม่น้ำสายนั้นกำลังทำอะไร เช่น
 
-> *"แม่น้ำเจ้าพระยาใกล้คุณที่สุด (สถานีบางไทร, 3.2 กม.) ตอนนี้ต่ำกว่าตลิ่ง 1.40 เมตร สูงขึ้น 12 ซม. ใน 6 ชั่วโมงที่ผ่านมา · วัดเมื่อ 14:00 น."*
+> *"ต่ำกว่าตลิ่ง 1.40 เมตร สูงขึ้น 12 ซม. ใน 6 ชั่วโมงที่ผ่านมา · วัดเมื่อ 14:00 น."*
 
 ภาพรวมทั้งประเทศก็เป็นประโยคเดียว คำนวณจากค่าที่วัดได้ เช่น "ตอนนี้ 1 สถานีน้ำล้นตลิ่ง อยู่ที่ประจวบคีรีขันธ์" — เราเล่าเฉพาะสิ่งที่วัดได้และเวลาที่วัด ไม่มีการพยากรณ์ งานนั้นเป็นของหน่วยงานที่รับผิดชอบ และขอบคุณข้อมูลเปิดจาก ThaiWater (HII · RID) ที่ทำให้เรื่องนี้เป็นไปได้
 
@@ -60,9 +60,9 @@ make dev        # the Go server and the Vite dev server together
 ```
 
 Front end only: `pnpm --filter @mahanathi/web dev`. The full map surface
-locally also needs the two gitignored local assets — the 160 MB Protomaps
-basemap and the 127 MB terrarium DEM — built by the recorded commands in
-`geodata/SOURCES.md`.
+locally also needs the gitignored local basemap — the 160 MB Protomaps
+PMTiles archive, built by the recorded commands in `geodata/SOURCES.md`
+(the terrarium DEM ships with the repository).
 
 ```sh
 make build                      # web build → go:embed → server/bin/mahanathi
@@ -104,9 +104,10 @@ on purpose.
 ## Status: what ships, what's cut
 
 Ships: the live globe relief with all 804 gauges, the Thai sentences
-(station and national), the ใกล้ฉัน sample-station flight, three camera
-presets, 2D/3D view modes, reduced-motion cuts, a no-WebGL floor and the
-LINE in-app-browser offer.
+(station and national), the ใกล้ฉัน flight to a sample station (real
+geolocation is the next unit — the button labels itself ตัวอย่างสถานี),
+three camera presets, 2D/3D view modes, reduced-motion cuts, a no-WebGL
+floor and the LINE in-app-browser offer.
 
 Deliberately cut, planned rather than failed (`process/reports/phase-4.md`):
 
