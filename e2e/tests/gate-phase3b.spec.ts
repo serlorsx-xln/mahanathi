@@ -111,6 +111,10 @@ test.describe('phase 3b gate evidence', () => {
   });
 
   test('gate shots at three viewports plus variants', async ({ page, browser }) => {
+    // The evidence run walks every viewport and variant on one page:
+    // a 2-core CI runner on software WebGL settles terrain tiles far
+    // slower than a desktop, so the budget here is generous on purpose.
+    test.setTimeout(420_000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(String(e)));
     await page.goto('/lookdev');
